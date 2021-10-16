@@ -1,262 +1,263 @@
-'From Cuis 5.0 [latest update: #4122] on 3 May 2020 at 4:19:04 pm'!
+'From Cuis 5.0 [latest update: #4928] on 16 October 2021 at 12:22:27 pm'!
 'Description '!
-!provides: 'CommandShell' 1 0!
-SystemOrganization addCategory: #'CommandShell-Base'!
-SystemOrganization addCategory: #'CommandShell-Commands'!
-SystemOrganization addCategory: #'CommandShell-Morphic'!
-SystemOrganization addCategory: #'CommandShell-MVC'!
-SystemOrganization addCategory: #'CommandShell-Piping'!
-SystemOrganization addCategory: #'CommandShell-UI'!
-SystemOrganization addCategory: #'CommandShell-Tests'!
+!provides: 'CommandShell' 1 1!
+!requires: 'OSProcess' 1 17 nil!
+SystemOrganization addCategory: 'CommandShell-Base'!
+SystemOrganization addCategory: 'CommandShell-Commands'!
+SystemOrganization addCategory: 'CommandShell-Morphic'!
+SystemOrganization addCategory: 'CommandShell-MVC'!
+SystemOrganization addCategory: 'CommandShell-Piping'!
+SystemOrganization addCategory: 'CommandShell-UI'!
+SystemOrganization addCategory: 'CommandShell-Tests'!
 
 
-!classDefinition: #CuisShellWindow category: #'CommandShell-Morphic'!
+!classDefinition: #CuisShellWindow category: 'CommandShell-Morphic'!
 TextModel subclass: #CuisShellWindow
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Morphic'!
-!classDefinition: 'CuisShellWindow class' category: #'CommandShell-Morphic'!
+!classDefinition: 'CuisShellWindow class' category: 'CommandShell-Morphic'!
 CuisShellWindow class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandShell category: #'CommandShell-Base'!
+!classDefinition: #CommandShell category: 'CommandShell-Base'!
 Model subclass: #CommandShell
 	instanceVariableNames: 'outputStream errorStream shellSyntax environment builtinCommands commandHistory historyIndex promptString promptStringTwo foregroundProxies backgroundProxies backgroundPipelines commandLineProcesses backgroundMessageQueue keyboardConnector activeController safeToExit readSyncSemaphore'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Base'!
-!classDefinition: 'CommandShell class' category: #'CommandShell-Base'!
+!classDefinition: 'CommandShell class' category: 'CommandShell-Base'!
 CommandShell class
 	instanceVariableNames: ''!
 
-!classDefinition: #CrLfFileEditor category: #'CommandShell-Commands'!
+!classDefinition: #CrLfFileEditor category: 'CommandShell-Commands'!
 Model subclass: #CrLfFileEditor
 	instanceVariableNames: 'contents lineEndConvention directory fileName viewStyle'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Commands'!
-!classDefinition: 'CrLfFileEditor class' category: #'CommandShell-Commands'!
+!classDefinition: 'CrLfFileEditor class' category: 'CommandShell-Commands'!
 CrLfFileEditor class
 	instanceVariableNames: ''!
 
-!classDefinition: #PipeJunction category: #'CommandShell-Piping'!
+!classDefinition: #PipeJunction category: 'CommandShell-Piping'!
 Model subclass: #PipeJunction
 	instanceVariableNames: 'pipeToInput pipeFromOutput errorPipelineStream'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'PipeJunction class' category: #'CommandShell-Piping'!
+!classDefinition: 'PipeJunction class' category: 'CommandShell-Piping'!
 PipeJunction class
 	instanceVariableNames: ''!
 
-!classDefinition: #PipeableEvaluator category: #'CommandShell-Piping'!
+!classDefinition: #PipeableEvaluator category: 'CommandShell-Piping'!
 PipeJunction subclass: #PipeableEvaluator
 	instanceVariableNames: 'argumentArray runState exitStatus outputHasBeenRedirected'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'PipeableEvaluator class' category: #'CommandShell-Piping'!
+!classDefinition: 'PipeableEvaluator class' category: 'CommandShell-Piping'!
 PipeableEvaluator class
 	instanceVariableNames: ''!
 
-!classDefinition: #ExpressionEvaluator category: #'CommandShell-Piping'!
+!classDefinition: #ExpressionEvaluator category: 'CommandShell-Piping'!
 PipeableEvaluator subclass: #ExpressionEvaluator
 	instanceVariableNames: 'expression evaluationBlock'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'ExpressionEvaluator class' category: #'CommandShell-Piping'!
+!classDefinition: 'ExpressionEvaluator class' category: 'CommandShell-Piping'!
 ExpressionEvaluator class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellBuiltinEvaluator category: #'CommandShell-Piping'!
+!classDefinition: #ShellBuiltinEvaluator category: 'CommandShell-Piping'!
 PipeableEvaluator subclass: #ShellBuiltinEvaluator
 	instanceVariableNames: 'shellBuiltin commandShell'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'ShellBuiltinEvaluator class' category: #'CommandShell-Piping'!
+!classDefinition: 'ShellBuiltinEvaluator class' category: 'CommandShell-Piping'!
 ShellBuiltinEvaluator class
 	instanceVariableNames: ''!
 
-!classDefinition: #PipeableOSProcess category: #'CommandShell-Piping'!
+!classDefinition: #PipeableOSProcess category: 'CommandShell-Piping'!
 PipeJunction subclass: #PipeableOSProcess
 	instanceVariableNames: 'pipeFromError processProxy keepInitialStdOutOpen keepInitialStdErrOpen accessProtect'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'PipeableOSProcess class' category: #'CommandShell-Piping'!
+!classDefinition: 'PipeableOSProcess class' category: 'CommandShell-Piping'!
 PipeableOSProcess class
 	instanceVariableNames: ''!
 
-!classDefinition: #ProxyPipeline category: #'CommandShell-Piping'!
+!classDefinition: #ProxyPipeline category: 'CommandShell-Piping'!
 OrderedCollection subclass: #ProxyPipeline
 	instanceVariableNames: 'commandLine background completionSemaphore completionWatcher'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'ProxyPipeline class' category: #'CommandShell-Piping'!
+!classDefinition: 'ProxyPipeline class' category: 'CommandShell-Piping'!
 ProxyPipeline class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandShellTranscript category: #'CommandShell-UI'!
+!classDefinition: #CommandShellTranscript category: 'CommandShell-UI'!
 WriteStream subclass: #CommandShellTranscript
 	instanceVariableNames: 'cliShell lastPromptString activeController labelStringBlock'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-UI'!
-!classDefinition: 'CommandShellTranscript class' category: #'CommandShell-UI'!
+!classDefinition: 'CommandShellTranscript class' category: 'CommandShell-UI'!
 CommandShellTranscript class
 	instanceVariableNames: ''!
 
-!classDefinition: #InternalPipe category: #'CommandShell-Piping'!
+!classDefinition: #InternalPipe category: 'CommandShell-Piping'!
 Stream subclass: #InternalPipe
 	instanceVariableNames: 'queue writerClosed nonBlockingMode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'InternalPipe class' category: #'CommandShell-Piping'!
+!classDefinition: 'InternalPipe class' category: 'CommandShell-Piping'!
 InternalPipe class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandShellTestCase category: #'CommandShell-Tests'!
+!classDefinition: #CommandShellTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #CommandShellTestCase
 	instanceVariableNames: 'shell checkFileHandleCount procDir'
 	classVariableNames: 'CheckFileHandleCount TempResult'
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'CommandShellTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'CommandShellTestCase class' category: 'CommandShell-Tests'!
 CommandShellTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #ExpressionEvaluatorTestCase category: #'CommandShell-Tests'!
+!classDefinition: #ExpressionEvaluatorTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #ExpressionEvaluatorTestCase
 	instanceVariableNames: 'pipeJunction'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'ExpressionEvaluatorTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'ExpressionEvaluatorTestCase class' category: 'CommandShell-Tests'!
 ExpressionEvaluatorTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #InternalPipeTestCase category: #'CommandShell-Tests'!
+!classDefinition: #InternalPipeTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #InternalPipeTestCase
 	instanceVariableNames: 'pipe'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'InternalPipeTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'InternalPipeTestCase class' category: 'CommandShell-Tests'!
 InternalPipeTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #PipeableOSProcessTestCase category: #'CommandShell-Tests'!
+!classDefinition: #PipeableOSProcessTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #PipeableOSProcessTestCase
 	instanceVariableNames: 'procDir'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'PipeableOSProcessTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'PipeableOSProcessTestCase class' category: 'CommandShell-Tests'!
 PipeableOSProcessTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #PipelineEventsTestCase category: #'CommandShell-Tests'!
+!classDefinition: #PipelineEventsTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #PipelineEventsTestCase
 	instanceVariableNames: 'shell checkFileHandleCount procDir'
 	classVariableNames: 'TempResult'
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'PipelineEventsTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'PipelineEventsTestCase class' category: 'CommandShell-Tests'!
 PipelineEventsTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellSyntaxTestCase category: #'CommandShell-Tests'!
+!classDefinition: #ShellSyntaxTestCase category: 'CommandShell-Tests'!
 TestCase subclass: #ShellSyntaxTestCase
 	instanceVariableNames: 'shellSyntax'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Tests'!
-!classDefinition: 'ShellSyntaxTestCase class' category: #'CommandShell-Tests'!
+!classDefinition: 'ShellSyntaxTestCase class' category: 'CommandShell-Tests'!
 ShellSyntaxTestCase class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellWindowMorph category: #'CommandShell-Morphic'!
+!classDefinition: #ShellWindowMorph category: 'CommandShell-Morphic'!
 PluggableTextMorph subclass: #ShellWindowMorph
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Morphic'!
-!classDefinition: 'ShellWindowMorph class' category: #'CommandShell-Morphic'!
+!classDefinition: 'ShellWindowMorph class' category: 'CommandShell-Morphic'!
 ShellWindowMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellSyntax category: #'CommandShell-Base'!
+!classDefinition: #ShellSyntax category: 'CommandShell-Base'!
 Object subclass: #ShellSyntax
 	instanceVariableNames: 'cwdDictionary cwdIndex'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Base'!
-!classDefinition: 'ShellSyntax class' category: #'CommandShell-Base'!
+!classDefinition: 'ShellSyntax class' category: 'CommandShell-Base'!
 ShellSyntax class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellBuiltin category: #'CommandShell-Commands'!
+!classDefinition: #ShellBuiltin category: 'CommandShell-Commands'!
 Object subclass: #ShellBuiltin
 	instanceVariableNames: 'name procedureSelector helpSelector needsPrompt'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Commands'!
-!classDefinition: 'ShellBuiltin class' category: #'CommandShell-Commands'!
+!classDefinition: 'ShellBuiltin class' category: 'CommandShell-Commands'!
 ShellBuiltin class
 	instanceVariableNames: ''!
 
-!classDefinition: #RemoteTask category: #'CommandShell-Piping'!
+!classDefinition: #RemoteTask category: 'CommandShell-Piping'!
 Object subclass: #RemoteTask
 	instanceVariableNames: 'task taskIdentifier childProxy completionBlock aioHandler'
 	classVariableNames: 'HeadlessChild Materializer Serializer SerializingStrategy'
 	poolDictionaries: ''
 	category: 'CommandShell-Piping'!
-!classDefinition: 'RemoteTask class' category: #'CommandShell-Piping'!
+!classDefinition: 'RemoteTask class' category: 'CommandShell-Piping'!
 RemoteTask class
 	instanceVariableNames: ''!
 
-!classDefinition: #ExternalCommandShell category: #'CommandShell-UI'!
+!classDefinition: #ExternalCommandShell category: 'CommandShell-UI'!
 Object subclass: #ExternalCommandShell
 	instanceVariableNames: 'cliShell isRunning inputStream lineBuffer sigIntSema sigIntHandler'
 	classVariableNames: 'ExternalShell'
 	poolDictionaries: ''
 	category: 'CommandShell-UI'!
-!classDefinition: 'ExternalCommandShell class' category: #'CommandShell-UI'!
+!classDefinition: 'ExternalCommandShell class' category: 'CommandShell-UI'!
 ExternalCommandShell class
 	instanceVariableNames: ''!
 
-!classDefinition: #TtyTextMorphForEditView category: #'CommandShell-Morphic'!
+!classDefinition: #TtyTextMorphForEditView category: 'CommandShell-Morphic'!
 ProtoObject subclass: #TtyTextMorphForEditView
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-Morphic'!
-!classDefinition: 'TtyTextMorphForEditView class' category: #'CommandShell-Morphic'!
+!classDefinition: 'TtyTextMorphForEditView class' category: 'CommandShell-Morphic'!
 TtyTextMorphForEditView class
 	instanceVariableNames: ''!
 
-!classDefinition: #ShellWindowView category: #'CommandShell-MVC'!
+!classDefinition: #ShellWindowView category: 'CommandShell-MVC'!
 ProtoObject subclass: #ShellWindowView
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-MVC'!
-!classDefinition: 'ShellWindowView class' category: #'CommandShell-MVC'!
+!classDefinition: 'ShellWindowView class' category: 'CommandShell-MVC'!
 ShellWindowView class
 	instanceVariableNames: ''!
 
-!classDefinition: #TtyPluggableTextController category: #'CommandShell-MVC'!
+!classDefinition: #TtyPluggableTextController category: 'CommandShell-MVC'!
 ProtoObject subclass: #TtyPluggableTextController
 	instanceVariableNames: 'acceptOnCr callbackQueue closed readSyncSemaphore'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CommandShell-MVC'!
-!classDefinition: 'TtyPluggableTextController class' category: #'CommandShell-MVC'!
+!classDefinition: 'TtyPluggableTextController class' category: 'CommandShell-MVC'!
 TtyPluggableTextController class
 	instanceVariableNames: ''!
 
@@ -11947,6 +11948,43 @@ upOneDirectoryLevel: aPathName
 					[prefix, newPath]]
 ! !
 
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:08'!
+helpSelector
+
+	^ helpSelector! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:08'!
+helpSelector: aSymbol
+
+	helpSelector := aSymbol! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/26/2001 19:54'!
+name: aString
+
+	name := aString! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:24'!
+needsPrompt
+	"True if the command should be followed by a prompt"
+
+	^ needsPrompt ifNil: [needsPrompt := true]! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:22'!
+needsPrompt: trueOrFalse
+	"True if the command should be followed by a prompt"
+
+	needsPrompt := trueOrFalse! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
+procedureSelector
+
+	^ procedureSelector! !
+
+!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
+procedureSelector: aSymbol
+
+	procedureSelector := aSymbol! !
+
 !ShellBuiltin methodsFor: 'private' stamp: 'dtl 8/7/2002 12:56'!
 canAccessOSProcess
 	"True if OSProcess is in the image and if the OSProcess plugin is functioning properly"
@@ -12524,43 +12562,6 @@ typeHelp
 
 	^ 'type [names...] - indicate how each name would be interpreted if used as a command'
 ! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:08'!
-helpSelector
-
-	^ helpSelector! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:08'!
-helpSelector: aSymbol
-
-	helpSelector := aSymbol! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/26/2001 19:54'!
-name: aString
-
-	name := aString! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:24'!
-needsPrompt
-	"True if the command should be followed by a prompt"
-
-	^ needsPrompt ifNil: [needsPrompt := true]! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:22'!
-needsPrompt: trueOrFalse
-	"True if the command should be followed by a prompt"
-
-	needsPrompt := trueOrFalse! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
-procedureSelector
-
-	^ procedureSelector! !
-
-!ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
-procedureSelector: aSymbol
-
-	procedureSelector := aSymbol! !
 
 !ShellBuiltin methodsFor: 'evaluating' stamp: 'dtl 2/1/2003 16:21'!
 performWith: argumentArray evaluator: aPipeableEvaluator shell: aCommandShell input: inputStream output: outputStream error: errorStream
@@ -13641,6 +13642,14 @@ update: something
 	^ super update: something
 ! !
 
+!TtyPluggableTextController methodsFor: 'control defaults' stamp: 'dtl 6/18/2001 20:54'!
+controlActivity
+
+	[self callbackQueue isEmpty]
+		whileFalse:
+			[callbackQueue next value].
+	^ super controlActivity! !
+
 !TtyPluggableTextController methodsFor: 'menu messages' stamp: 'dtl 9/15/2012 18:58'!
 accept
 	"Evaluate command in a separate process. The separate process will
@@ -13712,14 +13721,6 @@ positionAfterPromptString
 				ifTrue: [^ i + model promptString size]].
 	^ 0
 ! !
-
-!TtyPluggableTextController methodsFor: 'control defaults' stamp: 'dtl 6/18/2001 20:54'!
-controlActivity
-
-	[self callbackQueue isEmpty]
-		whileFalse:
-			[callbackQueue next value].
-	^ super controlActivity! !
 
 !TtyPluggableTextController methodsFor: 'typing support' stamp: 'dtl 6/23/2001 18:53'!
 dispatchOnCharacter: char with: typeAheadStream
