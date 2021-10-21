@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4928] on 16 October 2021 at 12:22:27 pm'!
+'From Cuis 5.0 [latest update: #4928] on 21 October 2021 at 9:40:23 am'!
 'Description '!
-!provides: 'CommandShell' 1 1!
+!provides: 'CommandShell' 1 2!
 !requires: 'OSProcess' 1 17 nil!
 SystemOrganization addCategory: 'CommandShell-Base'!
 SystemOrganization addCategory: 'CommandShell-Commands'!
@@ -11,14 +11,34 @@ SystemOrganization addCategory: 'CommandShell-UI'!
 SystemOrganization addCategory: 'CommandShell-Tests'!
 
 
-!classDefinition: #CuisShellWindow category: 'CommandShell-Morphic'!
-TextModel subclass: #CuisShellWindow
-	instanceVariableNames: ''
+!classDefinition: #ProxyPipeline category: 'CommandShell-Piping'!
+OrderedCollection subclass: #ProxyPipeline
+	instanceVariableNames: 'commandLine background completionSemaphore completionWatcher'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'CommandShell-Morphic'!
-!classDefinition: 'CuisShellWindow class' category: 'CommandShell-Morphic'!
-CuisShellWindow class
+	category: 'CommandShell-Piping'!
+!classDefinition: 'ProxyPipeline class' category: 'CommandShell-Piping'!
+ProxyPipeline class
+	instanceVariableNames: ''!
+
+!classDefinition: #CommandShellTranscript category: 'CommandShell-UI'!
+WriteStream subclass: #CommandShellTranscript
+	instanceVariableNames: 'cliShell lastPromptString activeController labelStringBlock'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CommandShell-UI'!
+!classDefinition: 'CommandShellTranscript class' category: 'CommandShell-UI'!
+CommandShellTranscript class
+	instanceVariableNames: ''!
+
+!classDefinition: #InternalPipe category: 'CommandShell-Piping'!
+Stream subclass: #InternalPipe
+	instanceVariableNames: 'queue writerClosed nonBlockingMode'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CommandShell-Piping'!
+!classDefinition: 'InternalPipe class' category: 'CommandShell-Piping'!
+InternalPipe class
 	instanceVariableNames: ''!
 
 !classDefinition: #CommandShell category: 'CommandShell-Base'!
@@ -91,34 +111,24 @@ PipeJunction subclass: #PipeableOSProcess
 PipeableOSProcess class
 	instanceVariableNames: ''!
 
-!classDefinition: #ProxyPipeline category: 'CommandShell-Piping'!
-OrderedCollection subclass: #ProxyPipeline
-	instanceVariableNames: 'commandLine background completionSemaphore completionWatcher'
+!classDefinition: #CuisShellWindow category: 'CommandShell-Morphic'!
+TextModel subclass: #CuisShellWindow
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'CommandShell-Piping'!
-!classDefinition: 'ProxyPipeline class' category: 'CommandShell-Piping'!
-ProxyPipeline class
+	category: 'CommandShell-Morphic'!
+!classDefinition: 'CuisShellWindow class' category: 'CommandShell-Morphic'!
+CuisShellWindow class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandShellTranscript category: 'CommandShell-UI'!
-WriteStream subclass: #CommandShellTranscript
-	instanceVariableNames: 'cliShell lastPromptString activeController labelStringBlock'
+!classDefinition: #ShellWindowMorph category: 'CommandShell-Morphic'!
+PluggableTextMorph subclass: #ShellWindowMorph
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'CommandShell-UI'!
-!classDefinition: 'CommandShellTranscript class' category: 'CommandShell-UI'!
-CommandShellTranscript class
-	instanceVariableNames: ''!
-
-!classDefinition: #InternalPipe category: 'CommandShell-Piping'!
-Stream subclass: #InternalPipe
-	instanceVariableNames: 'queue writerClosed nonBlockingMode'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CommandShell-Piping'!
-!classDefinition: 'InternalPipe class' category: 'CommandShell-Piping'!
-InternalPipe class
+	category: 'CommandShell-Morphic'!
+!classDefinition: 'ShellWindowMorph class' category: 'CommandShell-Morphic'!
+ShellWindowMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #CommandShellTestCase category: 'CommandShell-Tests'!
@@ -179,16 +189,6 @@ TestCase subclass: #ShellSyntaxTestCase
 	category: 'CommandShell-Tests'!
 !classDefinition: 'ShellSyntaxTestCase class' category: 'CommandShell-Tests'!
 ShellSyntaxTestCase class
-	instanceVariableNames: ''!
-
-!classDefinition: #ShellWindowMorph category: 'CommandShell-Morphic'!
-PluggableTextMorph subclass: #ShellWindowMorph
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'CommandShell-Morphic'!
-!classDefinition: 'ShellWindowMorph class' category: 'CommandShell-Morphic'!
-ShellWindowMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #ShellSyntax category: 'CommandShell-Base'!
@@ -262,8 +262,21 @@ TtyPluggableTextController class
 	instanceVariableNames: ''!
 
 
-!CuisShellWindow commentStamp: '<historical>' prior: 0!
-I am a simple teletype shell session morph, providing a view on an instance of CommandShell.!
+!ProxyPipeline commentStamp: 'dtl 12/13/2002 19:30' prior: 0!
+A collection of connected PipeJunctions, representing external OS processes or internal evaluators. This class exists primarily to make the functioning of a collection of command pipelines, some of which may be evaluated as asynchronous "background" processes, easier to understand.
+
+Events triggered by my proxies are handled and forwarded in such a way that a client (such as a CommandShell) will receive events from a ProxyPipeline as if it were an individual PipeJunction.
+
+The user of a ProxyPipeline is responsible for closing the external resources associated with the proxies by sending either #closePipes or #finalize.!
+
+!CommandShellTranscript commentStamp: 'dtl 1/20/2007 09:11' prior: 0!
+CommandShellTranscript is a user interface for a ComandShell. It behaves like a simple teletype text terminal.!
+
+!InternalPipe commentStamp: '<historical>' prior: 0!
+I am a first-in, first-out queue with streaming behavior. I behave similarly to an OSPipe,
+but am implemented in the Smalltalk image rather than with external OS pipes. I can
+behave either as a blocking pipe or as a nonblocking pipe, similar to an OS pipe with
+its reader end set in blocking or nonblocking mode.!
 
 !CommandShell commentStamp: '<historical>' prior: 0!
 I am a command shell, similar to /bin/sh, with a simple command line user interface. I collaborate with process proxies to provide command execution, and I provide a limited set of built in commands similar to those in /bin/sh. My built in commands are implemented in Smalltalk, and any other commands are passed to process proxies to be executed either internally as Smalltalk "doIt" expressions, or externally as commands passed to the external operating system. I am similar to a TranscriptStream (some methods are copied directly from TranscriptStream), but I also know how to accept lines of command input, parse them, and hand them off to process proxies for execution.
@@ -329,21 +342,11 @@ All reading and writing should be done with the streaming protocol, rather than 
 
 Normal exit for the external process may not happen when expected. If the process is writing to the output pipe, it may block on write until enough of its data is read from the pipeFromOutput pipe, after which it will exit normally.!
 
-!ProxyPipeline commentStamp: 'dtl 12/13/2002 19:30' prior: 0!
-A collection of connected PipeJunctions, representing external OS processes or internal evaluators. This class exists primarily to make the functioning of a collection of command pipelines, some of which may be evaluated as asynchronous "background" processes, easier to understand.
+!CuisShellWindow commentStamp: '<historical>' prior: 0!
+I am a simple teletype shell session morph, providing a view on an instance of CommandShell.!
 
-Events triggered by my proxies are handled and forwarded in such a way that a client (such as a CommandShell) will receive events from a ProxyPipeline as if it were an individual PipeJunction.
-
-The user of a ProxyPipeline is responsible for closing the external resources associated with the proxies by sending either #closePipes or #finalize.!
-
-!CommandShellTranscript commentStamp: 'dtl 1/20/2007 09:11' prior: 0!
-CommandShellTranscript is a user interface for a ComandShell. It behaves like a simple teletype text terminal.!
-
-!InternalPipe commentStamp: '<historical>' prior: 0!
-I am a first-in, first-out queue with streaming behavior. I behave similarly to an OSPipe,
-but am implemented in the Smalltalk image rather than with external OS pipes. I can
-behave either as a blocking pipe or as a nonblocking pipe, similar to an OS pipe with
-its reader end set in blocking or nonblocking mode.!
+!ShellWindowMorph commentStamp: '<historical>' prior: 0!
+I am a simple teletype shell session morph, providing a view on an instance of CommandShell.!
 
 !CommandShellTestCase commentStamp: '<historical>' prior: 0!
 Unit tests for CommandShell. This tests a reasonable range of command line inputs, verifying command execution and IO redirection for internal and external process proxies.
@@ -364,9 +367,6 @@ CommandShell.
 
 !ShellSyntaxTestCase commentStamp: '<historical>' prior: 0!
 Unit tests for ShellSyntax. Conditional tests are needed for Windows and other platforms, so not all tests are effective on all platforms. Unix is the development platform, and many of the tests are specific to a Unix file system environment.!
-
-!ShellWindowMorph commentStamp: '<historical>' prior: 0!
-I am a simple teletype shell session morph, providing a view on an instance of CommandShell.!
 
 !ShellSyntax commentStamp: 'dtl 9/7/2009 12:36' prior: 0!
 My instances implement parsing of strings in a manner similar to a simple Unix command shell. I provide path name expansion in the context of an external file system, and support the syntax required for IO redirection. All file name globbing and PATH searching are implemented in Smalltalk rather than in C library functions or an external command shell.
@@ -439,6 +439,14 @@ I am a simple teletype shell session view, providing a view on an instance of Co
 
 !TtyPluggableTextController commentStamp: '<historical>' prior: 0!
 I add keyboard hooks to a PluggableTextController to allow filtering of keystrokes for a simple tty terminal emulator.!
+
+!ProxyPipeline methodsFor: 'printing' stamp: 'dtl 11/20/2002 19:32'!
+printOn: aStream
+
+	self background
+		ifTrue: [aStream nextPutAll: 'a background ']
+		ifFalse: [aStream nextPutAll: 'a foreground '].
+	aStream nextPutAll: self class name, ' for "', self commandLine asString, '"'! !
 
 !CommandShell class methodsFor: 'system startup' stamp: 'dtl 7/12/2002 19:26'!
 startUp: resuming
@@ -513,14 +521,6 @@ printOn: aStream
 	self processProxy printOn: aStream
 ! !
 
-!ProxyPipeline methodsFor: 'printing' stamp: 'dtl 11/20/2002 19:32'!
-printOn: aStream
-
-	self background
-		ifTrue: [aStream nextPutAll: 'a background ']
-		ifFalse: [aStream nextPutAll: 'a foreground '].
-	aStream nextPutAll: self class name, ' for "', self commandLine asString, '"'! !
-
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/26/2001 19:54'!
 name
 
@@ -580,94 +580,1137 @@ startUp
 
 	self closed ifFalse: [^ super startUp]! !
 
-!CuisShellWindow methodsFor: 'menu commands' stamp: 'dtl 9/15/2012 18:59'!
-accept
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:05'!
+atEnd
 
-	self model cr; flush; processCommand: self commandLineInput asString echo: false
+	^ self isEmpty or: [self last atEnd]
 ! !
 
-!CuisShellWindow methodsFor: 'updating' stamp: 'dtl 1/21/2007 13:02'!
-appendEntry
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 9/12/2003 11:53'!
+isComplete
+	"True if all proxies are complete. The proxies may report their completion events
+	out of sequence, so test all the proxies (not just the last one in the pipeline)."
 
-	| str |
-	"Append the text in the model's writeStream to the editable text. "
-	textMorph asText size > model characterLimit ifTrue:
-		["Knock off first half of text"
-		self selectInvisiblyFrom: 1 to: textMorph asText size // 2.
-		self replaceSelectionWith: Text new].
-	self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
-	str := model contents.
-	(str size > 0) ifTrue:
-		[self replaceSelectionWith: (Text
-			string: str
-			attribute: (TextFontChange fontNumber: self textStyle defaultFontIndex)).
-		self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
-		model reset]
+	^ self noneSatisfy: [:proxy | proxy isComplete not]
+! !
+
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 4/19/2003 09:16'!
+isExternalProcess
+	"Answer true if the process which I represent is an external OSProcess. For protocol
+	compatibility with PipeJunction."
+
+	^ false! !
+
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:23'!
+needsPrompt
+
+	^ self isEmpty or: [self last needsPrompt]! !
+
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:35'!
+pipesAreEmpty
+	"True after processing is complete and all available data has been read from
+	the output pipe and the errorPipelineStream pipe."
+
+	^ self isComplete and: [self isEmpty or: [self last pipesAreEmpty]]
+! !
+
+!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 7/5/2006 09:07'!
+succeeded
+	"Answer true if all proxies succeeded, otherwise false"
+
+	self detect: [:proxy | proxy succeeded not] ifNone: [^ true].
+	^ false
+! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
+background
+	"Answer true if this pipeline should be evaluated in the background."
+
+	^ background ifNil: [background := false]! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
+background: trueOrFalse
+
+	background := trueOrFalse! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2002 19:20'!
+commandLine
+	"Command line string from which this pipeline was constructed"
+
+	^ commandLine! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
+commandLine: aString
+	"Command line string from which this pipeline was constructed"
+
+	commandLine := aString! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:28'!
+completionSemaphore
+	"Answer the value of completionSemaphore. This semaphore is signaled
+	when the last proxy completes. Subsequent cleanup is preformed by a
+	process waiting on the semaphore. Completion notification is often triggered
+	by the grimReaperProcess, so the separate pipeline cleanup prevents
+	those activities from being processed in the context of the grimReaperProcess."
+
+	^ completionSemaphore ifNil: [completionSemaphore := Semaphore new]! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:21'!
+completionWatcher
+	"A process that waits for notification that the last proxy has completed,
+	and performs any necessary cleanup. Completion notification is often
+	triggered by the grimReaperProcess, so the separate pipeline cleanup
+	prevents those activities from being processed in the context of the
+	grimReaperProcess."
+
+	^ completionWatcher! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
+completionWatcher: anObject
+	"Set the value of completionWatcher"
+
+	completionWatcher := anObject! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 2/8/2020 17:37'!
+errorPipelineStream
+	"Accumulates the error output of commands in a command pipeline."
+
+	^ self isEmpty
+		ifTrue: []
+		ifFalse: [self last errorPipelineStream]! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 2/8/2020 17:34'!
+pipeFromOutput
+	"The output from the last proxy in the pipeline, if any"
+
+	^ self isEmpty
+		ifTrue: []
+		ifFalse: [self last pipeFromOutput]! !
+
+!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 4/28/2003 20:58'!
+pipeToInput
+	"The input to the first proxy in the pipeline, if any"
+
+	self isEmpty
+		ifTrue: [^ nil]
+		ifFalse: [^ self first pipeToInput]! !
+
+!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 12/31/2002 10:57'!
+close
+	"Close input pipe to first proxy in the pipeline. The proxies are not
+	finalized, this simply closes the input stream to allow normal processing
+	to proceed to completion."
+
+	self isEmpty ifFalse: [self first close]
+! !
+
+!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 9/3/2010 17:37'!
+closePipes
+
+	| p |
+	self do: [:e | e closePipes].
+	self unregisterEvents.
+	(p := self pipeFromOutput) ifNotNil: [p close]
+! !
+
+!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 11/8/2007 20:42'!
+fromString: aCommandString shell: aCommandShell 
+	"Initialize a new instance created from aCommandString using aCommandShell. "
+
+	self commandLine: aCommandString.
+	(aCommandShell splitPipelineCommands: aCommandString)
+		inject: nil
+		into: [:prevProxy :command | 
+			| nextProxy |
+			nextProxy := aCommandShell
+				redirectedPipeableProxyFor: command
+				predecessorProxy: prevProxy.
+			prevProxy
+				ifNotNil: [prevProxy prepareOutputFor: nextProxy.
+					prevProxy canProvideOutputPipe
+						ifFalse: [nextProxy closeWriter]].
+			self add: nextProxy].
+	self isEmpty
+		ifFalse: [self last prepareOutputFor: self; addDependent: self]! !
+
+!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 8/20/2006 19:05'!
+unregisterEvents
+
+	self isEmpty ifFalse: [self last removeDependent: self]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:07'!
+errorUpToEnd
+	"Answer all available characters from the error stream shared by my proxies."
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [ self last errorUpToEnd ]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:08'!
+errorUpToEndOfFile
+	"Answer all available characters from the error stream. Block and
+	continue reading until end of file is detected."
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [ self last errorUpToEndOfFile ]
 
 ! !
 
-!CuisShellWindow methodsFor: 'updating' stamp: 'dtl 5/2/2020 10:53'!
-update: something
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:10'!
+flush
+	"Flush output to the standard input stream of my first proxy."
 
-	(something == #doCommand)
+	^ self first flush! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:26'!
+next
+
+	^ self isEmpty
+		ifTrue: []
+		ifFalse: [self last next]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
+next: count
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [self last next: count]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
+nextFromError: count
+	"Answer up to count characters from the error pipeline stream, or an empty string
+	if no data is available. All characters are routed through the errorPipelineStream,
+	which is shared by all my proxies."
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [self last errorPipelineStream next: count]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:09'!
+nextPut: aCharacter
+	"Write aCharacter to the standard input stream of my first proxy."
+
+	^ self first nextPut: aCharacter! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:09'!
+nextPutAll: characters
+	"Write characters to the standard input stream of my first proxy."
+
+	^ self first nextPutAll: characters! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
+output
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [self last output]! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:39'!
+upToEnd
+	"Answer all available characters from the output stream."
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [self last upToEnd]
+! !
+
+!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:39'!
+upToEndOfFile
+	"Answer all available characters from the output stream. Block and
+	continue reading until end of file is detected."
+
+	^ self isEmpty
+		ifTrue: [ '' ]
+		ifFalse: [self last upToEndOfFile]
+! !
+
+!ProxyPipeline methodsFor: 'finalization' stamp: 'dtl 4/9/2006 09:43'!
+finalize
+
+	self closePipes.
+	^ super finalize
+! !
+
+!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 2/8/2020 17:17'!
+handleCompletionWhenSignaled: aSemaphore
+	"Answer a process that will complete processing the the last proxy has
+	signaled its completion."
+
+	^ [aSemaphore wait.
+		self waitForAllToComplete.
+		self isEmpty
+			ifFalse: [ self last closeErrorPipeline.
+				self triggerEvent: #complete ] ] fork
+! !
+
+!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 2/8/2020 17:20'!
+handleRunstateChange
+
+	(self isEmpty not and: [self last isComplete])
+		ifTrue: [self completionSemaphore signal]! !
+
+!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 11/20/2006 12:43'!
+waitForAllToComplete
+	"In some cases the last proxy in a pipeline may complete before some
+	of the others. In particular, if one proxy has redirected its output to
+	a file, the next proxy will see a nil input stream, and may quickly
+	complete its processing before its predecessor proxies have finished
+	writing to the file. Time out with an error if pipeline fails to complete
+	after 10 seconds."
+
+	(1 to: 100) do: [:e |
+		self isComplete ifTrue: [^ self].
+		(Delay forMilliseconds: 100) wait].
+	self error: 'pipeline did not complete evaluation'
+
+! !
+
+!ProxyPipeline methodsFor: 'updating' stamp: 'dtl 8/22/2006 06:28'!
+update: aParameter
+
+	aParameter == self pipeFromOutput
+		ifTrue: [^ self triggerEvent: #outputDataReady].
+	aParameter == self errorPipelineStream
+		ifTrue: [^ self triggerEvent: #errorDataReady].
+	aParameter == #runState
+		ifTrue: [^ self handleRunstateChange].
+	self error: 'unexpected parameter'
+
+! !
+
+!ProxyPipeline methodsFor: 'evaluation' stamp: 'dtl 8/28/2012 07:44'!
+value
+	"Initiate evaluation of each member of the pipeline, and answer the
+	last proxy in the pipeline. Evaluation may proceed asynchronously, and
+	the sender should wait for the last proxy to complete its evalation in order
+	to obtain complete output and error contents from the pipeline."
+
+	"(ProxyPipeline command: 'ls | cat | wc' shell: CommandShell new) value"
+
+	self completionWatcher: (self handleCompletionWhenSignaled: self completionSemaphore).
+	self do: [:proxy |
+		proxy value.
+		"A proxy may have associated Smalltalk processes for stream handling.
+		Schedule a short delay to permit these processes to be started prior to
+		starting the next proxy in the pipeline."
+		(Delay forMilliseconds: 10) wait]
+! !
+
+!ProxyPipeline class methodsFor: 'command processing' stamp: 'dtl 1/24/2013 08:39'!
+command: aCommandString
+	"Evaluate a new instance created from aCommandString. Sender is responsible
+	for closing the pipes with #closePipes or #finalize."
+
+	"ProxyPipeline command: 'ls | cat | wc'"
+	"ProxyPipeline command: 'ls NOSUCHFILE * | cat | wc'"
+	"ProxyPipeline command: 'ls | copyToOutput | wc'"
+	"ProxyPipeline command: ''"
+
+	Smalltalk at: #CommandShell
+		ifPresent: [ :cls | ^ self command: aCommandString shell: cls new ].
+	self notify: 'CommandShell not found'
+! !
+
+!ProxyPipeline class methodsFor: 'command processing' stamp: 'dtl 4/27/2003 11:32'!
+command: aCommandString shell: aCommandShell
+	"Evaluate a new instance created from aCommandString using aCommandShell.
+	Sender is responsible for closing the pipes #closePipes or #finalize."
+
+	"ProxyPipeline command: 'ls | cat | wc' shell: CommandShell new"
+	"ProxyPipeline command: 'ls NOSUCHFILE * | cat | wc' shell: CommandShell new"
+	"ProxyPipeline command: 'ls | copyToOutput | wc' shell: CommandShell new "
+	"ProxyPipeline command: '' shell: CommandShell new"
+
+	^ (self fromString: aCommandString shell: aCommandShell) value
+! !
+
+!ProxyPipeline class methodsFor: 'instance creation' stamp: 'dtl 6/8/2006 06:57'!
+fromString: aCommandString shell: aCommandShell
+	"Answer a new instance created from aCommandString using aCommandShell."
+
+	"ProxyPipeline fromString: 'ls | cat | wc' shell: CommandShell new"
+	"ProxyPipeline fromString: 'ls NOSUCHFILE * | cat | wc' shell: CommandShell new"
+	"ProxyPipeline fromString: 'ls | copyToOutput | wc' shell: CommandShell new "
+	"ProxyPipeline fromString: '' shell: CommandShell new"
+
+	^ super new fromString: aCommandString shell: aCommandShell
+! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 6/24/2001 19:09'!
+activeController
+	"In Morphic, alway nil. In MVC, the controller that most recently invoked
+	a command."
+
+	^ activeController! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
+activeController: aController
+	"In Morphic, alway nil. In MVC, the controller that most recently invoked
+	a command."
+
+	activeController := aController! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/17/2007 06:28'!
+characterLimit
+	"Tell the views how much to retain on screen"
+	^ 20000! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 19:00'!
+cliShell
+	"Answer the value of cliShell"
+
+	^ cliShell ifNil: [cliShell := CommandShell new]! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
+cliShell: commandShell
+	"Set the value of cliShell"
+
+	cliShell := commandShell! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/22/2007 21:24'!
+keyboardConnector
+
+	^ self cliShell keyboardConnector! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 20:18'!
+labelStringBlock
+	"Answer a block that when evaluated answers a string to be used
+	as the window label."
+
+	^ labelStringBlock ifNil: [labelStringBlock := self defaultLabelStringBlock]! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 20:16'!
+labelStringBlock: aBlockAnsweringAString
+
+	labelStringBlock := aBlockAnsweringAString! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/20/2007 11:44'!
+lastPromptString
+	"Answer the value of lastPromptString"
+
+	^ lastPromptString ifNil: [lastPromptString := self cliShell promptString]! !
+
+!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
+lastPromptString: anObject
+	"Set the value of lastPromptString"
+
+	lastPromptString := anObject! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+bs
+	self position > 0 ifTrue: [^ self skip: -1].
+	self changed: #bs! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+clear
+	"Clear all characters and redisplay the view"
+	self changed: #clearText.
+	self reset! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+endEntry
+	"Display all the characters since the last endEntry, and reset the stream"
+	self changed: #appendEntry.
+	self reset! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+flush
+	self endEntry! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 12/11/2007 21:35'!
+nextPut: anObject 
+
+	self scheduleToEvaluate:
+		[super nextPut: anObject]! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 12/11/2007 21:35'!
+nextPutAll: characters
+	"Convert line terminators to cr. Note that #nextPut: does not do this conversion."
+
+	self scheduleToEvaluate:
+		[characters isEmpty ifFalse:
+			[super nextPutAll: (characters copyReplaceAll: String lf with: String cr).
+			self flush]]! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+pastEndPut: anObject
+	"If the stream reaches its limit, just output the contents and reset."
+	self endEntry.
+	^ self nextPut: anObject! !
+
+!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
+show: anObject  "TextCollector compatibility"
+	self nextPutAll: anObject asString; endEntry! !
+
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 19:38'!
+checkSttyForEvent: keyboardEvent
+	"Check for interrupt characters and such. Consume interrupt character and
+	answer nil, otherwise answer keyboardEvent."
+
+	(self isInterruptEvent: keyboardEvent)
 		ifTrue:
-			[^ self accept].
-	(something == #exit)
+			[self handleInterruptCharacterEvent.
+			^ nil].
+	(self isEndOfFileEvent: keyboardEvent)
 		ifTrue:
-			[^ self owner delete].
-	^ super update: something
+			[self cliShell doEndOfFile.
+			^ nil].
+	^ keyboardEvent! !
+
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 20:29'!
+confirmBeforeKilling: externalProxies
+	"Interrupt character detected, do interrupt stuff."
+
+	| msgStrm |
+	(externalProxies size > 0)
+		ifTrue:
+			[msgStrm := WriteStream on: String new.
+			(externalProxies size > 1)
+				ifTrue: [msgStrm nextPutAll: 'kill processes']
+				ifFalse: [msgStrm nextPutAll: 'kill process'].
+			externalProxies do: [:e | msgStrm nextPutAll: ' ', e pid printString, ' (', e programName, ')'].
+			msgStrm nextPut: $?.
+			(self confirm: msgStrm contents)
+				ifTrue:
+					[externalProxies reverseDo: [:e | e terminate]]]
 ! !
 
-!CuisShellWindow methodsFor: 'command input' stamp: 'dtl 3/18/2001 18:17'!
-commandLineInput
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 1/20/2007 09:42'!
+filterAndForward: aCharacter
+	"Filter aCharacter, taking special action if needed. If a child process is active,
+	forward aCharacter to the child and answer nil. Otherwise answer aCharacter."
 
-	^ (self text copyFrom: self positionAfterPromptString to: self text size) asString.
+	^ self cliShell filterAndForward: aCharacter! !
 
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/7/2007 06:54'!
+filterAndForwardEvent: keyboardEvent 
+	"Filter keyboardEvent, taking special action if needed. If a child process
+	is active, forward keyboardEvent to the child and answer nil. Otherwise
+	answer keyboardEvent."
+
+	^ (self checkSttyForEvent: keyboardEvent)
+		ifNotNil: [self cliShell filterAndForwardEvent: keyboardEvent]! !
+
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 19:38'!
+handleInterruptCharacterEvent
+	"Interrupt character detected, do interrupt stuff."
+
+	self confirmBeforeKilling: (self cliShell foregroundProxies
+		select: [:e | e isExternalProcess]
+		thenCollect: [:r | r processProxy]).
+	self confirmBeforeKilling: (self cliShell backgroundProxies
+		select: [:e | e isExternalProcess]
+		thenCollect: [:r | r processProxy]).
 ! !
 
-!CuisShellWindow methodsFor: 'command input' stamp: 'dtl 4/7/2001 12:21'!
-positionAfterPromptString
-	"Answer the index of the first character after the last prompt string in my text. If
-	not found, then assume that the contents of the text are all intended to be command
-	input."
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 12/25/2007 16:30'!
+isEndOfFileEvent: keystrokeEvent 
+	"A <ctl>d event, represented either as character value 4, or as $d with
+	the control or meta key. The actual representation varies on different
+	versions of Squeak."
 
-	| t loc |
-	t := self text.
-	(1 to: (t size - model promptString size))
-		reverseDo: [:i |
-			((loc := t findString: model promptString startingAt: i) ~= 0)
-				ifTrue: [^ loc + model promptString size]].
-	^ 1
-! !
+	^ keystrokeEvent keyValue == 4
+		or: [keystrokeEvent keyCharacter = $d
+				and: [keystrokeEvent controlKeyPressed]]! !
 
-!CuisShellWindow methodsFor: 'model access' stamp: 'dtl 1/21/2007 10:33'!
-setText: aText
-	scrollBar setValue: 0.0.
-	textMorph
-		ifNil: [textMorph := TtyTextMorphForEditView new
-						contents: aText wrappedTo: self innerBounds width-6.
-				textMorph setEditView: self.
-				textMorph setTextStyle: self textStyle.
-				scroller addMorph: textMorph]
-		ifNotNil: [textMorph newContents: aText].
-	self hasUnacceptedEdits: false.
-	self setScrollDeltas.! !
+!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 12/25/2007 16:30'!
+isInterruptEvent: keystrokeEvent 
+	"A <ctl>c event, represented either as character value 3, or as $c with
+	the control or meta key. The actual representation varies on different
+	versions of Squeak."
 
-!CuisShellWindow methodsFor: 'model access' stamp: 'dtl 11/18/2009 22:20'!
-textStyle
-	"A fixed width font for the text morph"
+	^ keystrokeEvent keyValue == 3
+		or: [keystrokeEvent keyCharacter = $c
+				and: [keystrokeEvent controlKeyPressed]]! !
 
-	^ (TextStyle named: 'DefaultFixedTextStyle')
-		ifNil: [TextStyle default]! !
+!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 1/20/2007 11:56'!
+close
 
-!CuisShellWindow class methodsFor: 'instance creation' stamp: 'dtl 5/3/2020 12:28:03'!
+	super close.
+	self changed: #exit! !
+
+!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 12/11/2007 20:31'!
 open
-	"Open a new CommandShell, and answer the instance of CuisShellWindow which it uses."
 
-	"CuisShellWindow open"
+	^ self openLabel: nil "invoke default label setting block"! !
 
-	"TODO: label should update to CWD"
-	^ self openLabel: 'Command Shell'! !
+!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 12/11/2007 20:30'!
+openAsMorphLabel: labelString 
+	"Build a morph viewing this stream"
+
+	| window textMorph |
+	window := SystemWindow new model: self.
+	textMorph := ShellWindowMorph
+					on: self
+					text: nil
+					accept: nil
+					readSelection: nil
+					menu: #codePaneMenu:shifted:.
+	textMorph acceptOnCR: true.
+	window addMorph: textMorph frame: (0@0 corner: 1@1).
+	self prompt.
+	labelString ifNotNil: [self labelStringBlock: [labelString]].
+	self changed: #relabel.
+	^ window! !
+
+!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'ThierryGoubier 9/20/2013 15:20'!
+openLabel: aString 
+	"Open a window on this stream. This is copied from the corresponding method in
+	TranscriptStream."
+
+	| topView controllerClass codeView |
+	CommandShell isMorphic ifTrue: [^ (self openAsMorphLabel: aString) openInWorld].
+
+	aString ifNotNil: [self labelStringBlock: [aString]].
+	topView := (Smalltalk at: #StandardSystemView) new.
+	controllerClass := Smalltalk
+		at: #DeferredActionStandardSystemController
+		ifAbsent: [(Smalltalk at: #StandardSystemController)].	
+	topView model: self;
+			controller: controllerClass new;
+			borderWidth: 1;
+			label: aString;
+			minimumSize: 100 @ 50.
+	codeView := (Smalltalk at: #ShellWindowView)
+					on: self
+					text: nil
+					accept: nil
+					readSelection: nil
+					menu: #codePaneMenu:shifted:.
+	codeView window: (0@0 extent: 200@200).
+	topView addSubView: codeView.
+	topView controller addDeferredUIMessage:
+		[self changed: #relabel.
+		self prompt].
+	topView controller open.
+! !
+
+!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 6/17/2015 21:22'!
+codePaneMenu: aMenu shifted: shifted
+	"Note that unless we override perform:orSendTo:, PluggableTextController will respond
+	to all menu items.
+
+	If StringHolder is not present, try to delegate to Workspace instead."
+
+	^ (Smalltalk
+		at: #StringHolder
+		ifAbsent: [Smalltalk
+				at: #Workspace
+				ifAbsent: [^ self ]]) basicNew codePaneMenu: aMenu shifted: shifted! !
+
+!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 12/11/2007 20:19'!
+defaultLabelStringBlock
+
+	^ [ | directoryString |
+	directoryString := self cliShell workingDirectory.
+	directoryString isEmpty ifTrue: [directoryString := self cliShell shellSyntax nullDirectoryString].
+	self class defaultWindowName, ': ', directoryString]
+! !
+
+!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 12/11/2007 20:20'!
+labelString
+
+	^ self labelStringBlock value
+! !
+
+!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 1/17/2007 06:29'!
+perform: selector orSendTo: otherTarget
+	"Selector was just chosen from a menu by a user.  If can respond, then
+	perform it on myself. If not, send it to otherTarget, presumably the
+	editPane from which the menu was invoked."
+
+	(self respondsTo: selector)
+		ifTrue: [^ self perform: selector]
+		ifFalse: [^ otherTarget perform: selector]! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 4/8/2018 12:19'!
+newLine
+
+	self scheduleToEvaluate:
+		[self show: ''.
+		self restoreSelectionMarker]! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 12/11/2007 21:36'!
+prompt
+
+	self scheduleToEvaluate:
+		[self show: self cliShell promptString.
+		self restoreSelectionMarker]! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 1/20/2007 11:46'!
+promptString
+	"Dependents call this when restoring the prompt string display"
+
+	self flag: #FIXME. "change the dependents to call #lastPromptString"
+	^ self lastPromptString! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 4/8/2018 12:17'!
+promptTwo
+
+	self scheduleToEvaluate:
+		[self show: self cliShell promptStringTwo.
+		self restoreSelectionMarker]! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 1/20/2007 11:40'!
+restorePrompt
+
+	self flag: #FIXME. "remember last prompt string and redisplay it"
+	self prompt! !
+
+!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 11/30/2010 07:33'!
+restoreSelectionMarker
+	"Restore selection marker in MVC"
+
+	| c |
+	CommandShell isMorphic
+		ifFalse:
+			[c := self activeController.
+			self scheduleToEvaluate: [c initializeSelection]]
+! !
+
+!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 9/15/2012 18:59'!
+processCommand: aCommandString
+	"Evaluate aCommandString in a separate Smalltalk process. This permits the
+	user interface to remain responsive."
+
+	^ self processCommand: aCommandString echo: true
+! !
+
+!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 9/15/2012 18:56'!
+processCommand: aCommandString echo: showCommand
+	"Evaluate aCommandString in a separate Smalltalk process. This permits the
+	user interface to remain responsive. If showCommand is true, update dependent
+	views in order to display the command."
+
+	^ self cliShell processCommand: aCommandString echo: showCommand
+! !
+
+!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 6/29/2010 22:15'!
+scheduleToEvaluate: aBlock
+	"Evaluate aBlock, typically to create a new scheduled window. Make it work in
+	both Morphic and MVC. In Morphic, just evaluate aBlock, but in MVC, put it in
+	a queue for evaluation within a control loop. This method may be sent from
+	a process running independent of MVC controller scheduling.
+	
+	Newer Squeak images implement #addDeferredUIMessage in the current
+	project, eliminating the need for an #isMorphic test. This mechanism is not
+	available for older images or for Pharo."
+
+	CommandShell isMorphic
+		ifTrue: [WorldState addDeferredUIMessage: aBlock]
+		ifFalse: [self activeController ifNotNil: [activeController addDeferredUIMessage: aBlock]]! !
+
+!CommandShellTranscript methodsFor: 'updating' stamp: 'dtl 4/8/2018 12:13'!
+update: event
+
+	event == #prompt	"display $PS1"
+		ifTrue: [^ self prompt].
+	event == #alternatePrompt	"display $PS2"
+		ifTrue: [^ self promptTwo].
+	event == #restorePrompt	"restore last prompt display"
+		ifTrue: [self flag: #FIXME. ^ self prompt].
+	event == #newLine
+		ifTrue: [^ self newLine].
+	event == #exit
+		ifTrue: [^ self close].
+	event == #clearText
+		ifTrue: [^ self clear].
+	event == #interruptCharacter
+		ifTrue: [^ self handleInterruptCharacterEvent].
+	event == #relabel
+		ifTrue: [^ self changed: event].
+	"Treat anything other than the symbols above as a string to be displayed on
+	the command line in the view"
+	self show: event asString; cr.
+! !
+
+!CommandShellTranscript methodsFor: 'preferences' stamp: 'dtl 2/15/2018 19:38'!
+windowColorToUse
+	"Recent Squeak images have user interface themes that are tied to preferences
+	in class Model. CommandShellTranscript is used as a model, but does not inherit	
+	from Model. Defer to the default window color for a model."
+
+	^ Model new windowColorToUse! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:40:32'!
+editorClass
+	^self class! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:41:30'!
+model
+	^ model! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:41:22'!
+model: aModel
+	model := aModel! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:40:33'!
+morph
+	^ morph! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:42:08'!
+morph: aMorph
+	morph := aMorph! !
+
+!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:38:42'!
+refetch
+	"Nothing here. Answer true if actualContents was actually fetched."
+	^false! !
+
+!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/20/2007 10:32'!
+commandShell: cliShell
+
+	| ttyDisplay |
+	ttyDisplay := self new cliShell: cliShell.
+	cliShell outputStream: ttyDisplay; errorStream: ttyDisplay.
+	cliShell addDependent: ttyDisplay.
+	^ ttyDisplay
+! !
+
+!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
+new
+
+	^ (self on: (String new: 1000)) initialize! !
+
+!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
+open
+	"CommandShell open"
+
+	^ self new open! !
+
+!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
+openLabel: aString
+
+	"CommandShell openLabel: self defaultWindowName"
+
+	^ self new openLabel: aString
+! !
+
+!CommandShellTranscript class methodsFor: 'defaults' stamp: 'dtl 4/11/2018 21:12'!
+defaultWindowName
+
+	^ 'Command Shell'! !
+
+!CommandShellTranscript class methodsFor: 'window color' stamp: 'dtl 4/11/2018 21:12'!
+windowColorSpecification
+	"Answer a WindowColorSpec object that declares my preference"
+
+	| windowColorSpec |
+	windowColorSpec := Smalltalk
+				at: #WindowColorSpec
+				ifAbsent: [^ self error: 'this image does not support WindowColorSpec'].
+	^ windowColorSpec
+		classSymbol: self name
+		wording: 'Command Shell'
+		brightColor: (Color lightGray lighter paler)
+		pastelColor: (Color lightGray lighter lighter paler paler)
+		helpMessage: 'CommandShell window for evaluating Smalltalk and OS commands'! !
+
+!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/20/2003 20:34'!
+addDummyNilAsEndOfFileIndicatorForBlockingPipe
+	"And add a trailing nil to the pipe to mimic the behaviour of an external pipe
+	which blocks until the writer end is closed. Writing a trailing nil the the queue
+	has the side effect of waking up any process which is blocked waiting on the
+	queue, which will receive the nil as an indication that the pipe has been closed.
+	FIXME: This is almost certainly a Bad Idea, so it is encapsulated in its own method."
+
+	self isBlocking ifTrue: [queue nextPut: nil]
+! !
+
+!InternalPipe methodsFor: 'finalization' stamp: 'dtl 1/1/2002 11:38'!
+close
+
+	self closeWriter; closeReader! !
+
+!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/26/2020 12:45'!
+closeReader
+	"Protocol compatibility with OSPipe."! !
+
+!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/20/2003 20:46'!
+closeWriter
+	"Set the writerClosed flag, and add a trailing nil to the pipe to mimic the
+	behaviour of an external pipe which blocks until the writer end is closed.
+	Writing a trailing nil the the queue has the side effect of waking up any
+	process which is blocked waiting on the queue, which will receive the nil
+	as an indication that the pipe has been closed."
+
+	self writerClosed ifFalse:
+		[self writerClosed: true.
+		self addDummyNilAsEndOfFileIndicatorForBlockingPipe.
+		self notifyDataReady	"in case someone is waiting on the pipe output"]
+
+! !
+
+!InternalPipe methodsFor: 'testing' stamp: 'dtl 12/26/2002 19:09'!
+atEnd
+	"Answer whether the receiver can access any more objects. A nonblocking
+	pipe with writer end closed which answers nil is considered to be at end.
+	See InternalPipe>>closeWriter. Yes, it is ugly to have a pipe which cannot
+	pass a nil object, but this is intended to mimic the behavior of an external
+	OS pipe in nonblocking mode."
+
+	^ self writerClosed and:
+		[self isBlocking
+			ifTrue:
+				[(queue size == 0) or:
+					[(queue size == 1) and:
+						[(queue nextPut: queue next) isNil]]]
+			ifFalse:
+				[queue size == 0]]
+! !
+
+!InternalPipe methodsFor: 'testing' stamp: 'dtl 6/4/2006 16:09'!
+atEndOfFile
+	"Answer whether the receiver is at its end based on the result of
+	the last read operation. For compatibility with ExternalPipe."
+
+	^ self atEnd
+! !
+
+!InternalPipe methodsFor: 'testing' stamp: 'dtl 11/24/2001 15:03'!
+closed
+
+	^ self writerClosed! !
+
+!InternalPipe methodsFor: 'testing' stamp: 'dtl 8/7/2002 14:20'!
+isBlocking
+	"Answer true if reader end is set to blocking mode."
+
+	^ self nonBlockingMode not! !
+
+!InternalPipe methodsFor: 'testing' stamp: 'dtl 3/26/2006 15:48'!
+isPipe
+
+	^ true
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 1/25/2003 18:58'!
+basicNext
+	"Answer the next object accessible by the receiver."
+
+	self nonBlockingMode
+		ifFalse:
+			[^ queue next]
+		ifTrue:
+			[queue isEmpty ifTrue: [^ nil] ifFalse: [^ queue next]]
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 1/7/2003 20:23'!
+basicNextPut: anObject 
+	"Insert the argument, anObject, as the next object accessible by the 
+	receiver. Answer anObject."
+
+	^ queue nextPut: anObject! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
+contents
+	"Answer contents of the pipe, and return the contents to the pipe so it can still be read."
+
+	"InternalPipe new nextPutAll: 'hello'; contents"
+
+	| s |
+	s := self next: queue size.
+	self nextPutAll: s.
+	^ s! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 3/26/2006 11:23'!
+next
+	"Answer the next object accessible by the receiver."
+
+	^ self basicNext
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:24'!
+next: anInteger 
+	"Answer the next anInteger elements of my collection."
+
+	| strm c |
+	strm := WriteStream on: String new.
+	(1 to: anInteger) do: [:index |
+		self atEnd
+			ifTrue: [^ strm contents]
+			ifFalse: [(c := self basicNext) ifNil: [^ strm contents].
+					strm nextPut: c]].
+	^ strm contents
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
+nextPut: anObject 
+	"Insert the argument, anObject, as the next object accessible by the 
+	receiver. Answer anObject."
+
+	| result |
+	result := queue nextPut: anObject.
+	self notifyDataReady.
+	Processor yield.
+	^ result
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
+nextPutAll: aCollection 
+	"Append the elements of aCollection to the sequence of objects accessible 
+	by the receiver. Answer aCollection."
+
+	| result |
+	result := aCollection do: [:e | queue nextPut: e].
+	self notifyDataReady.
+	Processor yield.
+	^ result
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
+nonBlockingMode
+
+	^ nonBlockingMode ifNil: [nonBlockingMode := false]
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
+nonBlockingMode: trueOrFalse
+
+	nonBlockingMode := trueOrFalse
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 9/16/2001 22:42'!
+peek
+
+	^ queue peek
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
+queue
+
+	^ queue ifNil: [queue := SharedQueue new]
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/25/2001 19:15'!
+size
+	"An InternalPipe may contain a trailing nil if it has been closed. This should
+	not be counted as part of the pipe size, so use #contents to determine the size
+	after stripping any trailing nil."
+
+	"InternalPipe new nextPutAll: 'hello'; size"
+
+	^ self closed
+		ifTrue: [self contents size]
+		ifFalse: [self queue size]
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:24'!
+upToEnd
+	"Answer the remaining elements in the pipe"
+
+	| strm c |
+	strm := WriteStream on: String new.
+	[self atEnd] whileFalse:
+		[c := self next.
+		c isNil
+			ifTrue: [^ strm contents]
+			ifFalse: [strm nextPut: c]].
+	^ strm contents! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 5/20/2006 18:45'!
+upToEndOfFile
+	"For compatibility with external pipes"
+
+	^ self upToEnd
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
+writerClosed
+
+	^ writerClosed ifNil: [writerClosed := false]
+! !
+
+!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
+writerClosed: trueOrFalse
+
+	writerClosed := trueOrFalse
+! !
+
+!InternalPipe methodsFor: 'character writing' stamp: 'dtl 9/23/2001 16:49'!
+cr
+	"Append a return character to the receiver."
+
+	self queue nextPut: Character cr! !
+
+!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 9/16/2001 22:35'!
+initialize
+
+	self queue
+! !
+
+!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 11/25/2001 14:33'!
+setBlocking
+	"For compatibility with OSPipe"
+
+	self nonBlockingMode: false! !
+
+!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 11/24/2001 15:56'!
+setNonBlocking
+	"For compatibility with OSPipe"
+
+	self nonBlockingMode: true! !
+
+!InternalPipe methodsFor: 'event driven reader' stamp: 'dtl 1/7/2003 20:23'!
+notifyDataReady
+	"Whenever new data becomes available, notify any dependents. This method
+	exists only to document the event generation mechanism, which is intended
+	to be compatible with events generated by an OSPipe."
+
+	self changed
+! !
+
+!InternalPipe methodsFor: 'event driven reader' stamp: 'dtl 1/7/2003 20:31'!
+setBufferedReader
+	"An InternalPipe behaves like an OSPipe with a buffered reader, and is
+	capable of generating events when data is available. Answer true to
+	indicate that this is the case."
+
+	^ true
+! !
+
+!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:24'!
+blockingPipe
+
+	"InternalPipe blockingPipe"
+
+	^ super basicNew initialize setBlocking
+! !
+
+!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:25'!
+new
+
+	"InternalPipe new"
+
+	^ self blockingPipe! !
+
+!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:24'!
+nonBlockingPipe
+
+	"InternalPipe nonBlockingPipe"
+
+	^ super basicNew initialize setNonBlocking
+! !
+
+!InternalPipe class methodsFor: 'examples' stamp: 'dtl 11/8/2007 20:33'!
+testPipe
+
+	"InternalPipe testPipe inspect"
+
+	| pipe result |
+	pipe := self new.
+	pipe nextPutAll: 'string to send through an InternalPipe'.
+	pipe closeWriter.
+	result := pipe upToEnd.
+	pipe close.
+	^ result
+! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/24/2001 19:09'!
 activeController
@@ -4847,6 +5890,11 @@ exec: aString
 
 ! !
 
+!PipeableOSProcess methodsFor: 'evaluating' stamp: 'NM 10/21/2021 09:37:49'!
+exitCode
+	". Exit status in the POSIX format . "
+	^ self processProxy exitCode ! !
+
 !PipeableOSProcess methodsFor: 'evaluating' stamp: 'dtl 8/31/2019 16:35'!
 runState
 	processProxy
@@ -5474,1137 +6522,182 @@ new: executableFile arguments: arrayOfStrings environment: stringDictionary desc
 	^ pp processProxy: proc
 ! !
 
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:05'!
-atEnd
+!CuisShellWindow methodsFor: 'menu commands' stamp: 'dtl 9/15/2012 18:59'!
+accept
 
-	^ self isEmpty or: [self last atEnd]
+	self model cr; flush; processCommand: self commandLineInput asString echo: false
 ! !
 
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 9/12/2003 11:53'!
-isComplete
-	"True if all proxies are complete. The proxies may report their completion events
-	out of sequence, so test all the proxies (not just the last one in the pipeline)."
+!CuisShellWindow methodsFor: 'updating' stamp: 'dtl 1/21/2007 13:02'!
+appendEntry
 
-	^ self noneSatisfy: [:proxy | proxy isComplete not]
-! !
-
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 4/19/2003 09:16'!
-isExternalProcess
-	"Answer true if the process which I represent is an external OSProcess. For protocol
-	compatibility with PipeJunction."
-
-	^ false! !
-
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:23'!
-needsPrompt
-
-	^ self isEmpty or: [self last needsPrompt]! !
-
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 2/8/2020 17:35'!
-pipesAreEmpty
-	"True after processing is complete and all available data has been read from
-	the output pipe and the errorPipelineStream pipe."
-
-	^ self isComplete and: [self isEmpty or: [self last pipesAreEmpty]]
-! !
-
-!ProxyPipeline methodsFor: 'testing' stamp: 'dtl 7/5/2006 09:07'!
-succeeded
-	"Answer true if all proxies succeeded, otherwise false"
-
-	self detect: [:proxy | proxy succeeded not] ifNone: [^ true].
-	^ false
-! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
-background
-	"Answer true if this pipeline should be evaluated in the background."
-
-	^ background ifNil: [background := false]! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
-background: trueOrFalse
-
-	background := trueOrFalse! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2002 19:20'!
-commandLine
-	"Command line string from which this pipeline was constructed"
-
-	^ commandLine! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
-commandLine: aString
-	"Command line string from which this pipeline was constructed"
-
-	commandLine := aString! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:28'!
-completionSemaphore
-	"Answer the value of completionSemaphore. This semaphore is signaled
-	when the last proxy completes. Subsequent cleanup is preformed by a
-	process waiting on the semaphore. Completion notification is often triggered
-	by the grimReaperProcess, so the separate pipeline cleanup prevents
-	those activities from being processed in the context of the grimReaperProcess."
-
-	^ completionSemaphore ifNil: [completionSemaphore := Semaphore new]! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:21'!
-completionWatcher
-	"A process that waits for notification that the last proxy has completed,
-	and performs any necessary cleanup. Completion notification is often
-	triggered by the grimReaperProcess, so the separate pipeline cleanup
-	prevents those activities from being processed in the context of the
-	grimReaperProcess."
-
-	^ completionWatcher! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
-completionWatcher: anObject
-	"Set the value of completionWatcher"
-
-	completionWatcher := anObject! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 2/8/2020 17:37'!
-errorPipelineStream
-	"Accumulates the error output of commands in a command pipeline."
-
-	^ self isEmpty
-		ifTrue: []
-		ifFalse: [self last errorPipelineStream]! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 2/8/2020 17:34'!
-pipeFromOutput
-	"The output from the last proxy in the pipeline, if any"
-
-	^ self isEmpty
-		ifTrue: []
-		ifFalse: [self last pipeFromOutput]! !
-
-!ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 4/28/2003 20:58'!
-pipeToInput
-	"The input to the first proxy in the pipeline, if any"
-
-	self isEmpty
-		ifTrue: [^ nil]
-		ifFalse: [^ self first pipeToInput]! !
-
-!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 12/31/2002 10:57'!
-close
-	"Close input pipe to first proxy in the pipeline. The proxies are not
-	finalized, this simply closes the input stream to allow normal processing
-	to proceed to completion."
-
-	self isEmpty ifFalse: [self first close]
-! !
-
-!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 9/3/2010 17:37'!
-closePipes
-
-	| p |
-	self do: [:e | e closePipes].
-	self unregisterEvents.
-	(p := self pipeFromOutput) ifNotNil: [p close]
-! !
-
-!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 11/8/2007 20:42'!
-fromString: aCommandString shell: aCommandShell 
-	"Initialize a new instance created from aCommandString using aCommandShell. "
-
-	self commandLine: aCommandString.
-	(aCommandShell splitPipelineCommands: aCommandString)
-		inject: nil
-		into: [:prevProxy :command | 
-			| nextProxy |
-			nextProxy := aCommandShell
-				redirectedPipeableProxyFor: command
-				predecessorProxy: prevProxy.
-			prevProxy
-				ifNotNil: [prevProxy prepareOutputFor: nextProxy.
-					prevProxy canProvideOutputPipe
-						ifFalse: [nextProxy closeWriter]].
-			self add: nextProxy].
-	self isEmpty
-		ifFalse: [self last prepareOutputFor: self; addDependent: self]! !
-
-!ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 8/20/2006 19:05'!
-unregisterEvents
-
-	self isEmpty ifFalse: [self last removeDependent: self]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:07'!
-errorUpToEnd
-	"Answer all available characters from the error stream shared by my proxies."
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [ self last errorUpToEnd ]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:08'!
-errorUpToEndOfFile
-	"Answer all available characters from the error stream. Block and
-	continue reading until end of file is detected."
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [ self last errorUpToEndOfFile ]
+	| str |
+	"Append the text in the model's writeStream to the editable text. "
+	textMorph asText size > model characterLimit ifTrue:
+		["Knock off first half of text"
+		self selectInvisiblyFrom: 1 to: textMorph asText size // 2.
+		self replaceSelectionWith: Text new].
+	self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
+	str := model contents.
+	(str size > 0) ifTrue:
+		[self replaceSelectionWith: (Text
+			string: str
+			attribute: (TextFontChange fontNumber: self textStyle defaultFontIndex)).
+		self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
+		model reset]
 
 ! !
 
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:10'!
-flush
-	"Flush output to the standard input stream of my first proxy."
+!CuisShellWindow methodsFor: 'updating' stamp: 'dtl 5/2/2020 10:53'!
+update: something
 
-	^ self first flush! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:26'!
-next
-
-	^ self isEmpty
-		ifTrue: []
-		ifFalse: [self last next]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
-next: count
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [self last next: count]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
-nextFromError: count
-	"Answer up to count characters from the error pipeline stream, or an empty string
-	if no data is available. All characters are routed through the errorPipelineStream,
-	which is shared by all my proxies."
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [self last errorPipelineStream next: count]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:09'!
-nextPut: aCharacter
-	"Write aCharacter to the standard input stream of my first proxy."
-
-	^ self first nextPut: aCharacter! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:09'!
-nextPutAll: characters
-	"Write characters to the standard input stream of my first proxy."
-
-	^ self first nextPutAll: characters! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:38'!
-output
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [self last output]! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:39'!
-upToEnd
-	"Answer all available characters from the output stream."
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [self last upToEnd]
-! !
-
-!ProxyPipeline methodsFor: 'streaming' stamp: 'dtl 2/8/2020 17:39'!
-upToEndOfFile
-	"Answer all available characters from the output stream. Block and
-	continue reading until end of file is detected."
-
-	^ self isEmpty
-		ifTrue: [ '' ]
-		ifFalse: [self last upToEndOfFile]
-! !
-
-!ProxyPipeline methodsFor: 'finalization' stamp: 'dtl 4/9/2006 09:43'!
-finalize
-
-	self closePipes.
-	^ super finalize
-! !
-
-!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 2/8/2020 17:17'!
-handleCompletionWhenSignaled: aSemaphore
-	"Answer a process that will complete processing the the last proxy has
-	signaled its completion."
-
-	^ [aSemaphore wait.
-		self waitForAllToComplete.
-		self isEmpty
-			ifFalse: [ self last closeErrorPipeline.
-				self triggerEvent: #complete ] ] fork
-! !
-
-!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 2/8/2020 17:20'!
-handleRunstateChange
-
-	(self isEmpty not and: [self last isComplete])
-		ifTrue: [self completionSemaphore signal]! !
-
-!ProxyPipeline methodsFor: 'event handling' stamp: 'dtl 11/20/2006 12:43'!
-waitForAllToComplete
-	"In some cases the last proxy in a pipeline may complete before some
-	of the others. In particular, if one proxy has redirected its output to
-	a file, the next proxy will see a nil input stream, and may quickly
-	complete its processing before its predecessor proxies have finished
-	writing to the file. Time out with an error if pipeline fails to complete
-	after 10 seconds."
-
-	(1 to: 100) do: [:e |
-		self isComplete ifTrue: [^ self].
-		(Delay forMilliseconds: 100) wait].
-	self error: 'pipeline did not complete evaluation'
-
-! !
-
-!ProxyPipeline methodsFor: 'updating' stamp: 'dtl 8/22/2006 06:28'!
-update: aParameter
-
-	aParameter == self pipeFromOutput
-		ifTrue: [^ self triggerEvent: #outputDataReady].
-	aParameter == self errorPipelineStream
-		ifTrue: [^ self triggerEvent: #errorDataReady].
-	aParameter == #runState
-		ifTrue: [^ self handleRunstateChange].
-	self error: 'unexpected parameter'
-
-! !
-
-!ProxyPipeline methodsFor: 'evaluation' stamp: 'dtl 8/28/2012 07:44'!
-value
-	"Initiate evaluation of each member of the pipeline, and answer the
-	last proxy in the pipeline. Evaluation may proceed asynchronously, and
-	the sender should wait for the last proxy to complete its evalation in order
-	to obtain complete output and error contents from the pipeline."
-
-	"(ProxyPipeline command: 'ls | cat | wc' shell: CommandShell new) value"
-
-	self completionWatcher: (self handleCompletionWhenSignaled: self completionSemaphore).
-	self do: [:proxy |
-		proxy value.
-		"A proxy may have associated Smalltalk processes for stream handling.
-		Schedule a short delay to permit these processes to be started prior to
-		starting the next proxy in the pipeline."
-		(Delay forMilliseconds: 10) wait]
-! !
-
-!ProxyPipeline class methodsFor: 'command processing' stamp: 'dtl 1/24/2013 08:39'!
-command: aCommandString
-	"Evaluate a new instance created from aCommandString. Sender is responsible
-	for closing the pipes with #closePipes or #finalize."
-
-	"ProxyPipeline command: 'ls | cat | wc'"
-	"ProxyPipeline command: 'ls NOSUCHFILE * | cat | wc'"
-	"ProxyPipeline command: 'ls | copyToOutput | wc'"
-	"ProxyPipeline command: ''"
-
-	Smalltalk at: #CommandShell
-		ifPresent: [ :cls | ^ self command: aCommandString shell: cls new ].
-	self notify: 'CommandShell not found'
-! !
-
-!ProxyPipeline class methodsFor: 'command processing' stamp: 'dtl 4/27/2003 11:32'!
-command: aCommandString shell: aCommandShell
-	"Evaluate a new instance created from aCommandString using aCommandShell.
-	Sender is responsible for closing the pipes #closePipes or #finalize."
-
-	"ProxyPipeline command: 'ls | cat | wc' shell: CommandShell new"
-	"ProxyPipeline command: 'ls NOSUCHFILE * | cat | wc' shell: CommandShell new"
-	"ProxyPipeline command: 'ls | copyToOutput | wc' shell: CommandShell new "
-	"ProxyPipeline command: '' shell: CommandShell new"
-
-	^ (self fromString: aCommandString shell: aCommandShell) value
-! !
-
-!ProxyPipeline class methodsFor: 'instance creation' stamp: 'dtl 6/8/2006 06:57'!
-fromString: aCommandString shell: aCommandShell
-	"Answer a new instance created from aCommandString using aCommandShell."
-
-	"ProxyPipeline fromString: 'ls | cat | wc' shell: CommandShell new"
-	"ProxyPipeline fromString: 'ls NOSUCHFILE * | cat | wc' shell: CommandShell new"
-	"ProxyPipeline fromString: 'ls | copyToOutput | wc' shell: CommandShell new "
-	"ProxyPipeline fromString: '' shell: CommandShell new"
-
-	^ super new fromString: aCommandString shell: aCommandShell
-! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 6/24/2001 19:09'!
-activeController
-	"In Morphic, alway nil. In MVC, the controller that most recently invoked
-	a command."
-
-	^ activeController! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
-activeController: aController
-	"In Morphic, alway nil. In MVC, the controller that most recently invoked
-	a command."
-
-	activeController := aController! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/17/2007 06:28'!
-characterLimit
-	"Tell the views how much to retain on screen"
-	^ 20000! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 19:00'!
-cliShell
-	"Answer the value of cliShell"
-
-	^ cliShell ifNil: [cliShell := CommandShell new]! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
-cliShell: commandShell
-	"Set the value of cliShell"
-
-	cliShell := commandShell! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/22/2007 21:24'!
-keyboardConnector
-
-	^ self cliShell keyboardConnector! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 20:18'!
-labelStringBlock
-	"Answer a block that when evaluated answers a string to be used
-	as the window label."
-
-	^ labelStringBlock ifNil: [labelStringBlock := self defaultLabelStringBlock]! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 20:16'!
-labelStringBlock: aBlockAnsweringAString
-
-	labelStringBlock := aBlockAnsweringAString! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/20/2007 11:44'!
-lastPromptString
-	"Answer the value of lastPromptString"
-
-	^ lastPromptString ifNil: [lastPromptString := self cliShell promptString]! !
-
-!CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
-lastPromptString: anObject
-	"Set the value of lastPromptString"
-
-	lastPromptString := anObject! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-bs
-	self position > 0 ifTrue: [^ self skip: -1].
-	self changed: #bs! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-clear
-	"Clear all characters and redisplay the view"
-	self changed: #clearText.
-	self reset! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-endEntry
-	"Display all the characters since the last endEntry, and reset the stream"
-	self changed: #appendEntry.
-	self reset! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-flush
-	self endEntry! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 12/11/2007 21:35'!
-nextPut: anObject 
-
-	self scheduleToEvaluate:
-		[super nextPut: anObject]! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 12/11/2007 21:35'!
-nextPutAll: characters
-	"Convert line terminators to cr. Note that #nextPut: does not do this conversion."
-
-	self scheduleToEvaluate:
-		[characters isEmpty ifFalse:
-			[super nextPutAll: (characters copyReplaceAll: String lf with: String cr).
-			self flush]]! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-pastEndPut: anObject
-	"If the stream reaches its limit, just output the contents and reset."
-	self endEntry.
-	^ self nextPut: anObject! !
-
-!CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
-show: anObject  "TextCollector compatibility"
-	self nextPutAll: anObject asString; endEntry! !
-
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 19:38'!
-checkSttyForEvent: keyboardEvent
-	"Check for interrupt characters and such. Consume interrupt character and
-	answer nil, otherwise answer keyboardEvent."
-
-	(self isInterruptEvent: keyboardEvent)
+	(something == #doCommand)
 		ifTrue:
-			[self handleInterruptCharacterEvent.
-			^ nil].
-	(self isEndOfFileEvent: keyboardEvent)
+			[^ self accept].
+	(something == #exit)
 		ifTrue:
-			[self cliShell doEndOfFile.
-			^ nil].
-	^ keyboardEvent! !
-
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 20:29'!
-confirmBeforeKilling: externalProxies
-	"Interrupt character detected, do interrupt stuff."
-
-	| msgStrm |
-	(externalProxies size > 0)
-		ifTrue:
-			[msgStrm := WriteStream on: String new.
-			(externalProxies size > 1)
-				ifTrue: [msgStrm nextPutAll: 'kill processes']
-				ifFalse: [msgStrm nextPutAll: 'kill process'].
-			externalProxies do: [:e | msgStrm nextPutAll: ' ', e pid printString, ' (', e programName, ')'].
-			msgStrm nextPut: $?.
-			(self confirm: msgStrm contents)
-				ifTrue:
-					[externalProxies reverseDo: [:e | e terminate]]]
+			[^ self owner delete].
+	^ super update: something
 ! !
 
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 1/20/2007 09:42'!
-filterAndForward: aCharacter
-	"Filter aCharacter, taking special action if needed. If a child process is active,
-	forward aCharacter to the child and answer nil. Otherwise answer aCharacter."
+!CuisShellWindow methodsFor: 'command input' stamp: 'dtl 3/18/2001 18:17'!
+commandLineInput
 
-	^ self cliShell filterAndForward: aCharacter! !
+	^ (self text copyFrom: self positionAfterPromptString to: self text size) asString.
 
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/7/2007 06:54'!
-filterAndForwardEvent: keyboardEvent 
-	"Filter keyboardEvent, taking special action if needed. If a child process
-	is active, forward keyboardEvent to the child and answer nil. Otherwise
-	answer keyboardEvent."
-
-	^ (self checkSttyForEvent: keyboardEvent)
-		ifNotNil: [self cliShell filterAndForwardEvent: keyboardEvent]! !
-
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 11/8/2007 19:38'!
-handleInterruptCharacterEvent
-	"Interrupt character detected, do interrupt stuff."
-
-	self confirmBeforeKilling: (self cliShell foregroundProxies
-		select: [:e | e isExternalProcess]
-		thenCollect: [:r | r processProxy]).
-	self confirmBeforeKilling: (self cliShell backgroundProxies
-		select: [:e | e isExternalProcess]
-		thenCollect: [:r | r processProxy]).
 ! !
 
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 12/25/2007 16:30'!
-isEndOfFileEvent: keystrokeEvent 
-	"A <ctl>d event, represented either as character value 4, or as $d with
-	the control or meta key. The actual representation varies on different
-	versions of Squeak."
+!CuisShellWindow methodsFor: 'command input' stamp: 'dtl 4/7/2001 12:21'!
+positionAfterPromptString
+	"Answer the index of the first character after the last prompt string in my text. If
+	not found, then assume that the contents of the text are all intended to be command
+	input."
 
-	^ keystrokeEvent keyValue == 4
-		or: [keystrokeEvent keyCharacter = $d
-				and: [keystrokeEvent controlKeyPressed]]! !
+	| t loc |
+	t := self text.
+	(1 to: (t size - model promptString size))
+		reverseDo: [:i |
+			((loc := t findString: model promptString startingAt: i) ~= 0)
+				ifTrue: [^ loc + model promptString size]].
+	^ 1
+! !
 
-!CommandShellTranscript methodsFor: 'input character filtering' stamp: 'dtl 12/25/2007 16:30'!
-isInterruptEvent: keystrokeEvent 
-	"A <ctl>c event, represented either as character value 3, or as $c with
-	the control or meta key. The actual representation varies on different
-	versions of Squeak."
+!CuisShellWindow methodsFor: 'model access' stamp: 'dtl 1/21/2007 10:33'!
+setText: aText
+	scrollBar setValue: 0.0.
+	textMorph
+		ifNil: [textMorph := TtyTextMorphForEditView new
+						contents: aText wrappedTo: self innerBounds width-6.
+				textMorph setEditView: self.
+				textMorph setTextStyle: self textStyle.
+				scroller addMorph: textMorph]
+		ifNotNil: [textMorph newContents: aText].
+	self hasUnacceptedEdits: false.
+	self setScrollDeltas.! !
 
-	^ keystrokeEvent keyValue == 3
-		or: [keystrokeEvent keyCharacter = $c
-				and: [keystrokeEvent controlKeyPressed]]! !
+!CuisShellWindow methodsFor: 'model access' stamp: 'dtl 11/18/2009 22:20'!
+textStyle
+	"A fixed width font for the text morph"
 
-!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 1/20/2007 11:56'!
-close
+	^ (TextStyle named: 'DefaultFixedTextStyle')
+		ifNil: [TextStyle default]! !
 
-	super close.
-	self changed: #exit! !
-
-!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 12/11/2007 20:31'!
+!CuisShellWindow class methodsFor: 'instance creation' stamp: 'dtl 5/3/2020 12:28:03'!
 open
+	"Open a new CommandShell, and answer the instance of CuisShellWindow which it uses."
 
-	^ self openLabel: nil "invoke default label setting block"! !
+	"CuisShellWindow open"
 
-!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'dtl 12/11/2007 20:30'!
-openAsMorphLabel: labelString 
-	"Build a morph viewing this stream"
+	"TODO: label should update to CWD"
+	^ self openLabel: 'Command Shell'! !
 
-	| window textMorph |
-	window := SystemWindow new model: self.
-	textMorph := ShellWindowMorph
-					on: self
-					text: nil
-					accept: nil
-					readSelection: nil
-					menu: #codePaneMenu:shifted:.
-	textMorph acceptOnCR: true.
-	window addMorph: textMorph frame: (0@0 corner: 1@1).
-	self prompt.
-	labelString ifNotNil: [self labelStringBlock: [labelString]].
-	self changed: #relabel.
-	^ window! !
+!ShellWindowMorph methodsFor: 'menu commands' stamp: 'dtl 9/15/2012 18:59'!
+accept
 
-!CommandShellTranscript methodsFor: 'initialize-release' stamp: 'ThierryGoubier 9/20/2013 15:20'!
-openLabel: aString 
-	"Open a window on this stream. This is copied from the corresponding method in
-	TranscriptStream."
-
-	| topView controllerClass codeView |
-	CommandShell isMorphic ifTrue: [^ (self openAsMorphLabel: aString) openInWorld].
-
-	aString ifNotNil: [self labelStringBlock: [aString]].
-	topView := (Smalltalk at: #StandardSystemView) new.
-	controllerClass := Smalltalk
-		at: #DeferredActionStandardSystemController
-		ifAbsent: [(Smalltalk at: #StandardSystemController)].	
-	topView model: self;
-			controller: controllerClass new;
-			borderWidth: 1;
-			label: aString;
-			minimumSize: 100 @ 50.
-	codeView := (Smalltalk at: #ShellWindowView)
-					on: self
-					text: nil
-					accept: nil
-					readSelection: nil
-					menu: #codePaneMenu:shifted:.
-	codeView window: (0@0 extent: 200@200).
-	topView addSubView: codeView.
-	topView controller addDeferredUIMessage:
-		[self changed: #relabel.
-		self prompt].
-	topView controller open.
+	self model cr; flush; processCommand: self commandLineInput asString echo: false
 ! !
 
-!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 6/17/2015 21:22'!
-codePaneMenu: aMenu shifted: shifted
-	"Note that unless we override perform:orSendTo:, PluggableTextController will respond
-	to all menu items.
+!ShellWindowMorph methodsFor: 'updating' stamp: 'dtl 1/21/2007 13:02'!
+appendEntry
 
-	If StringHolder is not present, try to delegate to Workspace instead."
-
-	^ (Smalltalk
-		at: #StringHolder
-		ifAbsent: [Smalltalk
-				at: #Workspace
-				ifAbsent: [^ self ]]) basicNew codePaneMenu: aMenu shifted: shifted! !
-
-!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 12/11/2007 20:19'!
-defaultLabelStringBlock
-
-	^ [ | directoryString |
-	directoryString := self cliShell workingDirectory.
-	directoryString isEmpty ifTrue: [directoryString := self cliShell shellSyntax nullDirectoryString].
-	self class defaultWindowName, ': ', directoryString]
-! !
-
-!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 12/11/2007 20:20'!
-labelString
-
-	^ self labelStringBlock value
-! !
-
-!CommandShellTranscript methodsFor: 'model protocol' stamp: 'dtl 1/17/2007 06:29'!
-perform: selector orSendTo: otherTarget
-	"Selector was just chosen from a menu by a user.  If can respond, then
-	perform it on myself. If not, send it to otherTarget, presumably the
-	editPane from which the menu was invoked."
-
-	(self respondsTo: selector)
-		ifTrue: [^ self perform: selector]
-		ifFalse: [^ otherTarget perform: selector]! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 4/8/2018 12:19'!
-newLine
-
-	self scheduleToEvaluate:
-		[self show: ''.
-		self restoreSelectionMarker]! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 12/11/2007 21:36'!
-prompt
-
-	self scheduleToEvaluate:
-		[self show: self cliShell promptString.
-		self restoreSelectionMarker]! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 1/20/2007 11:46'!
-promptString
-	"Dependents call this when restoring the prompt string display"
-
-	self flag: #FIXME. "change the dependents to call #lastPromptString"
-	^ self lastPromptString! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 4/8/2018 12:17'!
-promptTwo
-
-	self scheduleToEvaluate:
-		[self show: self cliShell promptStringTwo.
-		self restoreSelectionMarker]! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 1/20/2007 11:40'!
-restorePrompt
-
-	self flag: #FIXME. "remember last prompt string and redisplay it"
-	self prompt! !
-
-!CommandShellTranscript methodsFor: 'command prompt' stamp: 'dtl 11/30/2010 07:33'!
-restoreSelectionMarker
-	"Restore selection marker in MVC"
-
-	| c |
-	CommandShell isMorphic
-		ifFalse:
-			[c := self activeController.
-			self scheduleToEvaluate: [c initializeSelection]]
-! !
-
-!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 9/15/2012 18:59'!
-processCommand: aCommandString
-	"Evaluate aCommandString in a separate Smalltalk process. This permits the
-	user interface to remain responsive."
-
-	^ self processCommand: aCommandString echo: true
-! !
-
-!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 9/15/2012 18:56'!
-processCommand: aCommandString echo: showCommand
-	"Evaluate aCommandString in a separate Smalltalk process. This permits the
-	user interface to remain responsive. If showCommand is true, update dependent
-	views in order to display the command."
-
-	^ self cliShell processCommand: aCommandString echo: showCommand
-! !
-
-!CommandShellTranscript methodsFor: 'evaluation' stamp: 'dtl 6/29/2010 22:15'!
-scheduleToEvaluate: aBlock
-	"Evaluate aBlock, typically to create a new scheduled window. Make it work in
-	both Morphic and MVC. In Morphic, just evaluate aBlock, but in MVC, put it in
-	a queue for evaluation within a control loop. This method may be sent from
-	a process running independent of MVC controller scheduling.
-	
-	Newer Squeak images implement #addDeferredUIMessage in the current
-	project, eliminating the need for an #isMorphic test. This mechanism is not
-	available for older images or for Pharo."
-
-	CommandShell isMorphic
-		ifTrue: [WorldState addDeferredUIMessage: aBlock]
-		ifFalse: [self activeController ifNotNil: [activeController addDeferredUIMessage: aBlock]]! !
-
-!CommandShellTranscript methodsFor: 'updating' stamp: 'dtl 4/8/2018 12:13'!
-update: event
-
-	event == #prompt	"display $PS1"
-		ifTrue: [^ self prompt].
-	event == #alternatePrompt	"display $PS2"
-		ifTrue: [^ self promptTwo].
-	event == #restorePrompt	"restore last prompt display"
-		ifTrue: [self flag: #FIXME. ^ self prompt].
-	event == #newLine
-		ifTrue: [^ self newLine].
-	event == #exit
-		ifTrue: [^ self close].
-	event == #clearText
-		ifTrue: [^ self clear].
-	event == #interruptCharacter
-		ifTrue: [^ self handleInterruptCharacterEvent].
-	event == #relabel
-		ifTrue: [^ self changed: event].
-	"Treat anything other than the symbols above as a string to be displayed on
-	the command line in the view"
-	self show: event asString; cr.
-! !
-
-!CommandShellTranscript methodsFor: 'preferences' stamp: 'dtl 2/15/2018 19:38'!
-windowColorToUse
-	"Recent Squeak images have user interface themes that are tied to preferences
-	in class Model. CommandShellTranscript is used as a model, but does not inherit	
-	from Model. Defer to the default window color for a model."
-
-	^ Model new windowColorToUse! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:40:32'!
-editorClass
-	^self class! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:41:30'!
-model
-	^ model! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:41:22'!
-model: aModel
-	model := aModel! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 15:40:33'!
-morph
-	^ morph! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:42:08'!
-morph: aMorph
-	morph := aMorph! !
-
-!CommandShellTranscript methodsFor: 'Cuis text model' stamp: 'dtl 5/3/2020 14:38:42'!
-refetch
-	"Nothing here. Answer true if actualContents was actually fetched."
-	^false! !
-
-!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/20/2007 10:32'!
-commandShell: cliShell
-
-	| ttyDisplay |
-	ttyDisplay := self new cliShell: cliShell.
-	cliShell outputStream: ttyDisplay; errorStream: ttyDisplay.
-	cliShell addDependent: ttyDisplay.
-	^ ttyDisplay
-! !
-
-!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
-new
-
-	^ (self on: (String new: 1000)) initialize! !
-
-!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
-open
-	"CommandShell open"
-
-	^ self new open! !
-
-!CommandShellTranscript class methodsFor: 'instance creation' stamp: 'dtl 1/17/2007 06:29'!
-openLabel: aString
-
-	"CommandShell openLabel: self defaultWindowName"
-
-	^ self new openLabel: aString
-! !
-
-!CommandShellTranscript class methodsFor: 'defaults' stamp: 'dtl 4/11/2018 21:12'!
-defaultWindowName
-
-	^ 'Command Shell'! !
-
-!CommandShellTranscript class methodsFor: 'window color' stamp: 'dtl 4/11/2018 21:12'!
-windowColorSpecification
-	"Answer a WindowColorSpec object that declares my preference"
-
-	| windowColorSpec |
-	windowColorSpec := Smalltalk
-				at: #WindowColorSpec
-				ifAbsent: [^ self error: 'this image does not support WindowColorSpec'].
-	^ windowColorSpec
-		classSymbol: self name
-		wording: 'Command Shell'
-		brightColor: (Color lightGray lighter paler)
-		pastelColor: (Color lightGray lighter lighter paler paler)
-		helpMessage: 'CommandShell window for evaluating Smalltalk and OS commands'! !
-
-!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/20/2003 20:34'!
-addDummyNilAsEndOfFileIndicatorForBlockingPipe
-	"And add a trailing nil to the pipe to mimic the behaviour of an external pipe
-	which blocks until the writer end is closed. Writing a trailing nil the the queue
-	has the side effect of waking up any process which is blocked waiting on the
-	queue, which will receive the nil as an indication that the pipe has been closed.
-	FIXME: This is almost certainly a Bad Idea, so it is encapsulated in its own method."
-
-	self isBlocking ifTrue: [queue nextPut: nil]
-! !
-
-!InternalPipe methodsFor: 'finalization' stamp: 'dtl 1/1/2002 11:38'!
-close
-
-	self closeWriter; closeReader! !
-
-!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/26/2020 12:45'!
-closeReader
-	"Protocol compatibility with OSPipe."! !
-
-!InternalPipe methodsFor: 'finalization' stamp: 'dtl 4/20/2003 20:46'!
-closeWriter
-	"Set the writerClosed flag, and add a trailing nil to the pipe to mimic the
-	behaviour of an external pipe which blocks until the writer end is closed.
-	Writing a trailing nil the the queue has the side effect of waking up any
-	process which is blocked waiting on the queue, which will receive the nil
-	as an indication that the pipe has been closed."
-
-	self writerClosed ifFalse:
-		[self writerClosed: true.
-		self addDummyNilAsEndOfFileIndicatorForBlockingPipe.
-		self notifyDataReady	"in case someone is waiting on the pipe output"]
+	| str |
+	"Append the text in the model's writeStream to the editable text. "
+	textMorph asText size > model characterLimit ifTrue:
+		["Knock off first half of text"
+		self selectInvisiblyFrom: 1 to: textMorph asText size // 2.
+		self replaceSelectionWith: Text new].
+	self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
+	str := model contents.
+	(str size > 0) ifTrue:
+		[self replaceSelectionWith: (Text
+			string: str
+			attribute: (TextFontChange fontNumber: self textStyle defaultFontIndex)).
+		self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
+		model reset]
 
 ! !
 
-!InternalPipe methodsFor: 'testing' stamp: 'dtl 12/26/2002 19:09'!
-atEnd
-	"Answer whether the receiver can access any more objects. A nonblocking
-	pipe with writer end closed which answers nil is considered to be at end.
-	See InternalPipe>>closeWriter. Yes, it is ugly to have a pipe which cannot
-	pass a nil object, but this is intended to mimic the behavior of an external
-	OS pipe in nonblocking mode."
+!ShellWindowMorph methodsFor: 'updating' stamp: 'dtl 5/2/2020 10:53'!
+update: something
 
-	^ self writerClosed and:
-		[self isBlocking
-			ifTrue:
-				[(queue size == 0) or:
-					[(queue size == 1) and:
-						[(queue nextPut: queue next) isNil]]]
-			ifFalse:
-				[queue size == 0]]
-! !
-
-!InternalPipe methodsFor: 'testing' stamp: 'dtl 6/4/2006 16:09'!
-atEndOfFile
-	"Answer whether the receiver is at its end based on the result of
-	the last read operation. For compatibility with ExternalPipe."
-
-	^ self atEnd
-! !
-
-!InternalPipe methodsFor: 'testing' stamp: 'dtl 11/24/2001 15:03'!
-closed
-
-	^ self writerClosed! !
-
-!InternalPipe methodsFor: 'testing' stamp: 'dtl 8/7/2002 14:20'!
-isBlocking
-	"Answer true if reader end is set to blocking mode."
-
-	^ self nonBlockingMode not! !
-
-!InternalPipe methodsFor: 'testing' stamp: 'dtl 3/26/2006 15:48'!
-isPipe
-
-	^ true
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 1/25/2003 18:58'!
-basicNext
-	"Answer the next object accessible by the receiver."
-
-	self nonBlockingMode
-		ifFalse:
-			[^ queue next]
+	(something == #doCommand)
 		ifTrue:
-			[queue isEmpty ifTrue: [^ nil] ifFalse: [^ queue next]]
+			[^ self accept].
+	(something == #exit)
+		ifTrue:
+			[^ self owner delete].
+	^ super update: something
 ! !
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 1/7/2003 20:23'!
-basicNextPut: anObject 
-	"Insert the argument, anObject, as the next object accessible by the 
-	receiver. Answer anObject."
+!ShellWindowMorph methodsFor: 'command input' stamp: 'dtl 3/18/2001 18:17'!
+commandLineInput
 
-	^ queue nextPut: anObject! !
+	^ (self text copyFrom: self positionAfterPromptString to: self text size) asString.
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
-contents
-	"Answer contents of the pipe, and return the contents to the pipe so it can still be read."
-
-	"InternalPipe new nextPutAll: 'hello'; contents"
-
-	| s |
-	s := self next: queue size.
-	self nextPutAll: s.
-	^ s! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 3/26/2006 11:23'!
-next
-	"Answer the next object accessible by the receiver."
-
-	^ self basicNext
 ! !
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:24'!
-next: anInteger 
-	"Answer the next anInteger elements of my collection."
+!ShellWindowMorph methodsFor: 'command input' stamp: 'dtl 4/7/2001 12:21'!
+positionAfterPromptString
+	"Answer the index of the first character after the last prompt string in my text. If
+	not found, then assume that the contents of the text are all intended to be command
+	input."
 
-	| strm c |
-	strm := WriteStream on: String new.
-	(1 to: anInteger) do: [:index |
-		self atEnd
-			ifTrue: [^ strm contents]
-			ifFalse: [(c := self basicNext) ifNil: [^ strm contents].
-					strm nextPut: c]].
-	^ strm contents
+	| t loc |
+	t := self text.
+	(1 to: (t size - model promptString size))
+		reverseDo: [:i |
+			((loc := t findString: model promptString startingAt: i) ~= 0)
+				ifTrue: [^ loc + model promptString size]].
+	^ 1
 ! !
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
-nextPut: anObject 
-	"Insert the argument, anObject, as the next object accessible by the 
-	receiver. Answer anObject."
+!ShellWindowMorph methodsFor: 'model access' stamp: 'dtl 1/21/2007 10:33'!
+setText: aText
+	scrollBar setValue: 0.0.
+	textMorph
+		ifNil: [textMorph := TtyTextMorphForEditView new
+						contents: aText wrappedTo: self innerBounds width-6.
+				textMorph setEditView: self.
+				textMorph setTextStyle: self textStyle.
+				scroller addMorph: textMorph]
+		ifNotNil: [textMorph newContents: aText].
+	self hasUnacceptedEdits: false.
+	self setScrollDeltas.! !
 
-	| result |
-	result := queue nextPut: anObject.
-	self notifyDataReady.
-	Processor yield.
-	^ result
-! !
+!ShellWindowMorph methodsFor: 'model access' stamp: 'dtl 11/18/2009 22:20'!
+textStyle
+	"A fixed width font for the text morph"
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
-nextPutAll: aCollection 
-	"Append the elements of aCollection to the sequence of objects accessible 
-	by the receiver. Answer aCollection."
+	^ (TextStyle named: 'DefaultFixedTextStyle')
+		ifNil: [TextStyle default]! !
 
-	| result |
-	result := aCollection do: [:e | queue nextPut: e].
-	self notifyDataReady.
-	Processor yield.
-	^ result
-! !
+!ShellWindowMorph class methodsFor: 'instance creation' stamp: 'dtl 1/21/2007 09:57'!
+open
+	"Open a new CommandShell, and answer the instance of ShellWindowMorph which it uses."
 
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
-nonBlockingMode
+	"ShellWindowMorph open"
 
-	^ nonBlockingMode ifNil: [nonBlockingMode := false]
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
-nonBlockingMode: trueOrFalse
-
-	nonBlockingMode := trueOrFalse
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 9/16/2001 22:42'!
-peek
-
-	^ queue peek
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
-queue
-
-	^ queue ifNil: [queue := SharedQueue new]
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/25/2001 19:15'!
-size
-	"An InternalPipe may contain a trailing nil if it has been closed. This should
-	not be counted as part of the pipe size, so use #contents to determine the size
-	after stripping any trailing nil."
-
-	"InternalPipe new nextPutAll: 'hello'; size"
-
-	^ self closed
-		ifTrue: [self contents size]
-		ifFalse: [self queue size]
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:24'!
-upToEnd
-	"Answer the remaining elements in the pipe"
-
-	| strm c |
-	strm := WriteStream on: String new.
-	[self atEnd] whileFalse:
-		[c := self next.
-		c isNil
-			ifTrue: [^ strm contents]
-			ifFalse: [strm nextPut: c]].
-	^ strm contents! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 5/20/2006 18:45'!
-upToEndOfFile
-	"For compatibility with external pipes"
-
-	^ self upToEnd
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
-writerClosed
-
-	^ writerClosed ifNil: [writerClosed := false]
-! !
-
-!InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
-writerClosed: trueOrFalse
-
-	writerClosed := trueOrFalse
-! !
-
-!InternalPipe methodsFor: 'character writing' stamp: 'dtl 9/23/2001 16:49'!
-cr
-	"Append a return character to the receiver."
-
-	self queue nextPut: Character cr! !
-
-!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 9/16/2001 22:35'!
-initialize
-
-	self queue
-! !
-
-!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 11/25/2001 14:33'!
-setBlocking
-	"For compatibility with OSPipe"
-
-	self nonBlockingMode: false! !
-
-!InternalPipe methodsFor: 'initialize-release' stamp: 'dtl 11/24/2001 15:56'!
-setNonBlocking
-	"For compatibility with OSPipe"
-
-	self nonBlockingMode: true! !
-
-!InternalPipe methodsFor: 'event driven reader' stamp: 'dtl 1/7/2003 20:23'!
-notifyDataReady
-	"Whenever new data becomes available, notify any dependents. This method
-	exists only to document the event generation mechanism, which is intended
-	to be compatible with events generated by an OSPipe."
-
-	self changed
-! !
-
-!InternalPipe methodsFor: 'event driven reader' stamp: 'dtl 1/7/2003 20:31'!
-setBufferedReader
-	"An InternalPipe behaves like an OSPipe with a buffered reader, and is
-	capable of generating events when data is available. Answer true to
-	indicate that this is the case."
-
-	^ true
-! !
-
-!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:24'!
-blockingPipe
-
-	"InternalPipe blockingPipe"
-
-	^ super basicNew initialize setBlocking
-! !
-
-!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:25'!
-new
-
-	"InternalPipe new"
-
-	^ self blockingPipe! !
-
-!InternalPipe class methodsFor: 'instance creation' stamp: 'dtl 12/2/2001 19:24'!
-nonBlockingPipe
-
-	"InternalPipe nonBlockingPipe"
-
-	^ super basicNew initialize setNonBlocking
-! !
-
-!InternalPipe class methodsFor: 'examples' stamp: 'dtl 11/8/2007 20:33'!
-testPipe
-
-	"InternalPipe testPipe inspect"
-
-	| pipe result |
-	pipe := self new.
-	pipe nextPutAll: 'string to send through an InternalPipe'.
-	pipe closeWriter.
-	result := pipe upToEnd.
-	pipe close.
-	^ result
-! !
+	^ CommandShell open dependents at: 2! !
 
 !CommandShellTestCase methodsFor: 'accessing' stamp: 'dtl 8/26/2006 17:30'!
 checkFileHandleCount
@@ -10751,94 +10844,6 @@ unix
 win32
 
 	^ ShellSyntax new platformName = 'Win32'! !
-
-!ShellWindowMorph methodsFor: 'menu commands' stamp: 'dtl 9/15/2012 18:59'!
-accept
-
-	self model cr; flush; processCommand: self commandLineInput asString echo: false
-! !
-
-!ShellWindowMorph methodsFor: 'updating' stamp: 'dtl 1/21/2007 13:02'!
-appendEntry
-
-	| str |
-	"Append the text in the model's writeStream to the editable text. "
-	textMorph asText size > model characterLimit ifTrue:
-		["Knock off first half of text"
-		self selectInvisiblyFrom: 1 to: textMorph asText size // 2.
-		self replaceSelectionWith: Text new].
-	self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
-	str := model contents.
-	(str size > 0) ifTrue:
-		[self replaceSelectionWith: (Text
-			string: str
-			attribute: (TextFontChange fontNumber: self textStyle defaultFontIndex)).
-		self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
-		model reset]
-
-! !
-
-!ShellWindowMorph methodsFor: 'updating' stamp: 'dtl 5/2/2020 10:53'!
-update: something
-
-	(something == #doCommand)
-		ifTrue:
-			[^ self accept].
-	(something == #exit)
-		ifTrue:
-			[^ self owner delete].
-	^ super update: something
-! !
-
-!ShellWindowMorph methodsFor: 'command input' stamp: 'dtl 3/18/2001 18:17'!
-commandLineInput
-
-	^ (self text copyFrom: self positionAfterPromptString to: self text size) asString.
-
-! !
-
-!ShellWindowMorph methodsFor: 'command input' stamp: 'dtl 4/7/2001 12:21'!
-positionAfterPromptString
-	"Answer the index of the first character after the last prompt string in my text. If
-	not found, then assume that the contents of the text are all intended to be command
-	input."
-
-	| t loc |
-	t := self text.
-	(1 to: (t size - model promptString size))
-		reverseDo: [:i |
-			((loc := t findString: model promptString startingAt: i) ~= 0)
-				ifTrue: [^ loc + model promptString size]].
-	^ 1
-! !
-
-!ShellWindowMorph methodsFor: 'model access' stamp: 'dtl 1/21/2007 10:33'!
-setText: aText
-	scrollBar setValue: 0.0.
-	textMorph
-		ifNil: [textMorph := TtyTextMorphForEditView new
-						contents: aText wrappedTo: self innerBounds width-6.
-				textMorph setEditView: self.
-				textMorph setTextStyle: self textStyle.
-				scroller addMorph: textMorph]
-		ifNotNil: [textMorph newContents: aText].
-	self hasUnacceptedEdits: false.
-	self setScrollDeltas.! !
-
-!ShellWindowMorph methodsFor: 'model access' stamp: 'dtl 11/18/2009 22:20'!
-textStyle
-	"A fixed width font for the text morph"
-
-	^ (TextStyle named: 'DefaultFixedTextStyle')
-		ifNil: [TextStyle default]! !
-
-!ShellWindowMorph class methodsFor: 'instance creation' stamp: 'dtl 1/21/2007 09:57'!
-open
-	"Open a new CommandShell, and answer the instance of ShellWindowMorph which it uses."
-
-	"ShellWindowMorph open"
-
-	^ CommandShell open dependents at: 2! !
 
 !ShellSyntax methodsFor: 'path name expansion' stamp: 'dtl 1/25/2013 19:12'!
 appendPath: aPathString toPath: startingPathString 
