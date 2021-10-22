@@ -1,6 +1,6 @@
-'From Cuis 5.0 [latest update: #4928] on 16 October 2021 at 12:22:27 pm'!
+'From Cuis 5.0 [latest update: #4928] on 21 October 2021 at 10:03:07 pm'!
 'Description '!
-!provides: 'CommandShell' 1 1!
+!provides: 'CommandShell' 1 2!
 !requires: 'OSProcess' 1 17 nil!
 SystemOrganization addCategory: 'CommandShell-Base'!
 SystemOrganization addCategory: 'CommandShell-Commands'!
@@ -415,7 +415,7 @@ Examples:
 
         " (RemoteTask
                 do: [ | oc |
-                        oc := OrderedCollection new.
+                        oc _ OrderedCollection new.
                         (1 to: 5000000) do: [ :e | e isPrime ifTrue: [oc add: e]].
                         oc ]
                 whenComplete: [ :result | result inspect ]
@@ -457,7 +457,7 @@ startUp: resuming
 environment
 
 	^ environment ifNil:
-		[environment := (Smalltalk at: #OSProcess ifPresent:
+		[environment _ (Smalltalk at: #OSProcess ifPresent:
 			[:osp | osp thisOSProcess environment copy]) ifNil: [Dictionary new]].
 ! !
 
@@ -556,7 +556,7 @@ shutDown: quitting
 
 	| shell |
 	quitting
-		ifTrue: [(shell := self default)
+		ifTrue: [(shell _ self default)
 			ifNotNil: [shell shutdownInOldSession]]
 ! !
 
@@ -565,7 +565,7 @@ startUp: resuming
 
 	| shell |
 	resuming ifTrue:
-		[(shell := self default)
+		[(shell _ self default)
 			ifNotNil: [shell startUpInNewSession]]! !
 
 !ExternalCommandShell methodsFor: 'printing' stamp: 'dtl 4/9/2006 11:11'!
@@ -681,7 +681,7 @@ activeController: aController
 	"In Morphic, alway nil. In MVC, the controller which most recently invoked
 	a command."
 
-	activeController := aController! !
+	activeController _ aController! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/19/2002 07:13'!
 backgroundMessageQueue
@@ -689,14 +689,14 @@ backgroundMessageQueue
 	The message will be displayed the next time the user accepts a line of
 	text (presses CR)."
 
-	^ backgroundMessageQueue ifNil: [backgroundMessageQueue := OrderedCollection new]
+	^ backgroundMessageQueue ifNil: [backgroundMessageQueue _ OrderedCollection new]
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 8/19/2006 13:14'!
 backgroundMessageQueue: anObject
 	"Set the value of backgroundMessageQueue"
 
-	backgroundMessageQueue := anObject! !
+	backgroundMessageQueue _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/15/2002 16:23'!
 backgroundPipelines
@@ -706,7 +706,7 @@ backgroundPipelines
 	this collection. New pipelines are inserted at the first available nil position
 	in the collection, and the collection is expanded as needed."
 
-	^ backgroundPipelines ifNil: [backgroundPipelines := OrderedCollection new]
+	^ backgroundPipelines ifNil: [backgroundPipelines _ OrderedCollection new]
 
 ! !
 
@@ -714,31 +714,31 @@ backgroundPipelines
 backgroundPipelines: anObject
 	"Set the value of backgroundPipelines"
 
-	backgroundPipelines := anObject! !
+	backgroundPipelines _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/9/2006 10:23'!
 backgroundProxies
 	"All of my process proxies that are being evaluated in the background."
 
-	backgroundProxies ifNil: [backgroundProxies := OrderedCollection new].
+	backgroundProxies ifNil: [backgroundProxies _ OrderedCollection new].
 	^ backgroundProxies! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/9/2006 10:23'!
 backgroundProxies: aCollection
 	"All of my process proxies that are being evaluated in the background."
 
-	backgroundProxies := aCollection
+	backgroundProxies _ aCollection
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/27/2001 12:24'!
 builtinCommands
 
-	^ builtinCommands ifNil: [builtinCommands := Dictionary new]! !
+	^ builtinCommands ifNil: [builtinCommands _ Dictionary new]! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 7/14/2002 11:54'!
 builtinCommands: aCommandDictionary
 
-	builtinCommands := aCommandDictionary! !
+	builtinCommands _ aCommandDictionary! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 3/16/2001 05:58'!
 characterLimit
@@ -750,14 +750,14 @@ commandHistory
 	"Automatically trim the history list, and answer the resulting list."
 
 	| trimIncrement |
-	trimIncrement := 1.	"Could be a larger number to copy the collection less often"
+	trimIncrement _ 1.	"Could be a larger number to copy the collection less often"
 	commandHistory isNil
 		ifTrue:
-			[commandHistory := OrderedCollection new]
+			[commandHistory _ OrderedCollection new]
 		ifFalse:
 			[(commandHistory size > (self historyDepth * 2 + (trimIncrement * 2) - 2))
 				ifTrue:
-					[commandHistory := commandHistory
+					[commandHistory _ commandHistory
 						copyFrom: (trimIncrement * 2 + 1) to: commandHistory size]].
 	^ commandHistory! !
 
@@ -767,7 +767,7 @@ commandLineProcesses
 	track of them here so that they can be conveniently terminated if something gets
 	out of whack and needs cleaning up."
 
-	commandLineProcesses ifNil: [commandLineProcesses := OrderedCollection new].
+	commandLineProcesses ifNil: [commandLineProcesses _ OrderedCollection new].
 	^ commandLineProcesses
 ! !
 
@@ -775,44 +775,44 @@ commandLineProcesses
 commandLineProcesses: anObject
 	"Set the value of commandLineProcesses"
 
-	commandLineProcesses := anObject! !
+	commandLineProcesses _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 8/19/2006 13:14'!
 environment: anObject
 	"Set the value of environment"
 
-	environment := anObject! !
+	environment _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:23'!
 errorStream
 	"Answer the value of errorStream"
 
-	^ errorStream ifNil: [errorStream := WriteStream on: String new]! !
+	^ errorStream ifNil: [errorStream _ WriteStream on: String new]! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 8/19/2006 13:14'!
 errorStream: anObject
 	"Set the value of errorStream"
 
-	errorStream := anObject! !
+	errorStream _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/9/2006 10:23'!
 foregroundProxies
 	"All of my process proxies that are being evaluated in the foreground."
 
-	^ foregroundProxies ifNil: [foregroundProxies := OrderedCollection new]
+	^ foregroundProxies ifNil: [foregroundProxies _ OrderedCollection new]
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/9/2006 10:23'!
 foregroundProxies: aCollection
 	"All of my process proxies that are being evaluated in the foreground."
 
-	foregroundProxies := aCollection
+	foregroundProxies _ aCollection
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 4/3/2001 22:48'!
 historyIndex
 
-	historyIndex ifNil: [historyIndex := 1].
+	historyIndex ifNil: [historyIndex _ 1].
 	^ historyIndex
 ! !
 
@@ -835,20 +835,20 @@ keyboardConnector: aWriteStreamOrNil
 	process, then reconnected to its normal functions when the external process
 	is complete."
 
-	keyboardConnector := aWriteStreamOrNil
+	keyboardConnector _ aWriteStreamOrNil
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:23'!
 outputStream
 	"Answer the value of outputStream"
 
-	^ outputStream ifNil: [outputStream := WriteStream on: String new]! !
+	^ outputStream ifNil: [outputStream _ WriteStream on: String new]! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 8/19/2006 13:14'!
 outputStream: anObject
 	"Set the value of outputStream"
 
-	outputStream := anObject! !
+	outputStream _ anObject! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 11/23/2002 13:31'!
 processProxies
@@ -861,42 +861,42 @@ processProxies
 promptString
 	"The primary command prompt string, equivalent to $PS1 in a Unix shell"
 
-	^ promptString ifNil: [promptString := self defaultPromptString]
+	^ promptString ifNil: [promptString _ self defaultPromptString]
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/17/2002 23:47'!
 promptString: aString
 	"The primary command prompt string, equivalent to $PS1 in a Unix shell"
 
-	promptString := aString
+	promptString _ aString
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/17/2002 23:46'!
 promptStringTwo
 	"The secondary command prompt string, equivalent to $PS2 in a Unix shell"
 
-	^ promptStringTwo ifNil: [promptStringTwo := self defaultPromptStringTwo]
+	^ promptStringTwo ifNil: [promptStringTwo _ self defaultPromptStringTwo]
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/17/2002 23:48'!
 promptStringTwo: aString
 	"The secondary command prompt string, equivalent to $PS2 in a Unix shell"
 
-	promptStringTwo := aString
+	promptStringTwo _ aString
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/25/2001 23:07'!
 readSyncSemaphore
 	"Used in MVC to pause the screen output when presenting a dialogue to the user"
 
-	readSyncSemaphore ifNil: [readSyncSemaphore := Semaphore forMutualExclusion].
+	readSyncSemaphore ifNil: [readSyncSemaphore _ Semaphore forMutualExclusion].
 	^ readSyncSemaphore! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 6/25/2001 20:34'!
 readSyncSemaphore: aSemaphore
 	"Used in MVC to pause the screen output when presenting a dialogue to the user"
 
-	readSyncSemaphore := aSemaphore! !
+	readSyncSemaphore _ aSemaphore! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 7/14/2002 15:56'!
 safeToExit
@@ -904,7 +904,7 @@ safeToExit
 	a snapshot command and an exit command. This prevents the user from entering a command
 	such as 'snapshot; exit' which would cause the image to immediately exit when next restarted."
 
-	^ safeToExit ifNil: [safeToExit := true]
+	^ safeToExit ifNil: [safeToExit _ true]
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 7/14/2002 15:56'!
@@ -913,20 +913,20 @@ safeToExit: trueOrFalse
 	a snapshot command and an exit command. This prevents the user from entering a command
 	such as 'snapshot; exit' which would cause the image to immediately exit when next restarted."
 
-	safeToExit := trueOrFalse
+	safeToExit _ trueOrFalse
 ! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 12/17/2001 11:34'!
 shellSyntax
 	"A pluggable instance of a command processing syntax"
 
-	^ shellSyntax ifNil: [shellSyntax := ShellSyntax new]! !
+	^ shellSyntax ifNil: [shellSyntax _ ShellSyntax new]! !
 
 !CommandShell methodsFor: 'accessing' stamp: 'dtl 9/8/2001 11:10'!
 shellSyntax: aSyntax
 	"A pluggable instance of a command processing syntax"
 
-	shellSyntax := aSyntax! !
+	shellSyntax _ aSyntax! !
 
 !CommandShell methodsFor: 'event handling' stamp: 'dtl 5/2/2020 10:55'!
 backgroundPipelineComplete: aPipeline commandIndex: index
@@ -954,7 +954,7 @@ copyAllErrorFrom: aProxy
 
 	| s |
 	self readSyncSemaphore critical:
-		[s := aProxy errorUpToEnd.
+		[s _ aProxy errorUpToEnd.
 		s isEmpty ifFalse:
 			[[self errorStream nextPutAll: s]
 				on: Error
@@ -972,7 +972,7 @@ copyAllOutputFrom: aProxy
 
 	| s |
 	self readSyncSemaphore critical:
-		[s := aProxy upToEnd.
+		[s _ aProxy upToEnd.
 		s isEmpty ifFalse:
 			[[self outputStream nextPutAll: s]
 				on: Error
@@ -990,7 +990,7 @@ copyErrorToEofFrom: aProxy
 
 	| s |
 	self readSyncSemaphore critical:
-		[s := aProxy errorUpToEndOfFile.
+		[s _ aProxy errorUpToEndOfFile.
 		s isEmpty ifFalse:
 			[[self errorStream nextPutAll: s]
 				on: Error
@@ -1008,7 +1008,7 @@ copyOutputToEofFrom: aProxy
 
 	| s |
 	self readSyncSemaphore critical:
-		[s := aProxy upToEndOfFile.
+		[s _ aProxy upToEndOfFile.
 		s isEmpty ifFalse:
 			[[self outputStream nextPutAll: s]
 				on: Error
@@ -1057,12 +1057,12 @@ builtinCommandProxyFor: aCommandString input: in output: out error: err
 	| args command commandAndArgs |
 	^ (self isBuiltInCommand: aCommandString)
 		ifTrue:
-			[commandAndArgs := self shellSyntax
+			[commandAndArgs _ self shellSyntax
 									programNameAndArgumentsFrom: aCommandString
 									inDirectoryPath: nil
 									findExecutable: false.
-			command := self builtinCommands at: commandAndArgs first.
-			args := commandAndArgs last.
+			command _ self builtinCommands at: commandAndArgs first.
+			args _ commandAndArgs last.
 			^ ShellBuiltinEvaluator
 				command: command
 				withArguments: args
@@ -1094,7 +1094,7 @@ evaluationProxyFor: aCommandString input: in output: out error: err
 	"CommandShell new evaluationProxyFor: 'BOGUS' input: nil output: nil error: nil"
 
 	| proxy |
-	proxy := ExpressionEvaluator
+	proxy _ ExpressionEvaluator
 				command: aCommandString
 				pipeFrom: in
 				pipeTo: out
@@ -1113,7 +1113,7 @@ pipeableProxyFor: aCommandString input: in output: out error: err predecessorPro
 	"(CommandShell new pipeableProxyFor: 'cat /etc/hosts' input: nil output: nil error: nil predecessorProxy: nil) value upToEnd"
 
 	| errorPipelineStream cmd |
-	errorPipelineStream := lastProxy ifNotNil: [lastProxy errorPipeForNextProxy].
+	errorPipelineStream _ lastProxy ifNotNil: [lastProxy errorPipeForNextProxy].
 	^ (((self doItProxyFor: aCommandString						"try entire line as a Smalltalk expression"
 			input: in
 			output: out
@@ -1127,7 +1127,7 @@ pipeableProxyFor: aCommandString input: in output: out error: err predecessorPro
 					output: out
 					error: err
 					predecessorProxy: lastProxy])
-				ifNil: [cmd := (aCommandString findTokens: ' ') first.		"otherwise create evaluator to print error message"
+				ifNil: [cmd _ (aCommandString findTokens: ' ') first.		"otherwise create evaluator to print error message"
 					self evaluationProxyFor: 'stderr nextPutAll: ''sqsh: ', cmd, ': command not found''; cr. self fail'
 						input: in
 						output: out
@@ -1147,7 +1147,7 @@ processProxyFor: aCommandString input: in output: out error: err predecessorProx
 		ifFalse:
 			["Answer a doIt proxy with an error message. Call it this way to make sure that
 			the error streams get wired up correctly"
-			p := self pipeableProxyFor: 'String new: 0 !! '
+			p _ self pipeableProxyFor: 'String new: 0 !! '
 					input: in
 					output: out
 					error: err
@@ -1157,7 +1157,7 @@ processProxyFor: aCommandString input: in output: out error: err predecessorProx
 			^ p].
 	((in isNil or: [lastProxy isNil]) or: [in isPipe not])
 		ifTrue:
-			[input := in]
+			[input _ in]
 		ifFalse:
 			["Input from a command pipeline"
 			(in isKindOf: InternalPipe)
@@ -1165,13 +1165,13 @@ processProxyFor: aCommandString input: in output: out error: err predecessorProx
 					["The input stream is not an external OS pipe. Need to create one,
 					and move the contents of the in stream into the new OSPipe prior
 					to starting the external OS process."
-					newInputPipe := PipeJunction externalPipeClass blockingPipe.
+					newInputPipe _ PipeJunction externalPipeClass blockingPipe.
 					lastProxy replaceOutputStreamWith: newInputPipe writer.
-					input := newInputPipe reader]
+					input _ newInputPipe reader]
 				ifFalse:
-					[input := in reader]].
-	errorPipelineStream := lastProxy ifNotNil: [lastProxy errorPipeForNextProxy].
-	proxy := PipeableOSProcess
+					[input _ in reader]].
+	errorPipelineStream _ lastProxy ifNotNil: [lastProxy errorPipeForNextProxy].
+	proxy _ PipeableOSProcess
 		commandNoEvaluate: aCommandString
 		environment: self environment
 		workingDir: self workingDirectory
@@ -1199,20 +1199,20 @@ redirectedPipeableProxyFor: aCommandString predecessorProxy: lastProxy
 							predecessorProxy: nil) value upToEnd"
 
 	| redirectedCommand nextProxy input |
-	redirectedCommand := self shellSyntax
+	redirectedCommand _ self shellSyntax
 								redirectIOFor: aCommandString
 								inDirectoryPath: self workingDirectory.
 	lastProxy isNil
 		ifTrue:
-			[input := redirectedCommand at: 2]
+			[input _ redirectedCommand at: 2]
 		ifFalse:
 			[(redirectedCommand at: 2) isNil
 				ifTrue:
-					[input := lastProxy outputPipeForNextProxy]
+					[input _ lastProxy outputPipeForNextProxy]
 				ifFalse:
 					[lastProxy replaceOutputStreamWith: nil.
-					input := redirectedCommand at: 2]].
-	nextProxy := self pipeableProxyFor: (redirectedCommand at: 1)
+					input _ redirectedCommand at: 2]].
+	nextProxy _ self pipeableProxyFor: (redirectedCommand at: 1)
 		input: input
 		output: (redirectedCommand at: 3)
 		error: (redirectedCommand at: 4)
@@ -1227,7 +1227,7 @@ canAccessOSProcess
 	"CommandShell new canAccessOSProcess"
 
 	| osp |
-	^ (osp := Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
+	^ (osp _ Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
 ! !
 
 !CommandShell methodsFor: 'testing' stamp: 'dtl 9/26/2009 13:15'!
@@ -1267,7 +1267,7 @@ isOneWordCommentString: aCommandString
 	"CommandShell new isOneWordCommentString: ''"
 
 	| s |
-	s := CommandShell withBlanksTrimmed: aCommandString.
+	s _ CommandShell withBlanksTrimmed: aCommandString.
 	^ s isEmpty
 		or: [(s first == self shellSyntax commentChar)
 			and: [(Scanner new scanTokens: s) size == 1]]
@@ -1293,7 +1293,7 @@ doEndOfFile
 	"EOF character detected, close stdin to pipeline."
 
 	| pipelineInput |
-	(pipelineInput := self keyboardConnector)
+	(pipelineInput _ self keyboardConnector)
 		ifNotNil: [pipelineInput closeWriter]
 ! !
 
@@ -1302,10 +1302,10 @@ doInterrupt
 	"Interrupt character detected, do interrupt stuff."
 
 	| msgStrm children answer |
-	children := self externalChildren collect: [:e | e processProxy].
+	children _ self externalChildren collect: [:e | e processProxy].
 	(children size > 0)
 		ifTrue:
-			[msgStrm := WriteStream on: String new.
+			[msgStrm _ WriteStream on: String new.
 			(children size > 1)
 				ifTrue: [msgStrm nextPutAll: 'kill processes']
 				ifFalse: [msgStrm nextPutAll: 'kill process'].
@@ -1313,7 +1313,7 @@ doInterrupt
 			msgStrm nextPut: $?.
 			self readSyncSemaphore critical:
 				[self pauseStProcesses.
-				answer := self confirm: msgStrm contents.
+				answer _ self confirm: msgStrm contents.
 				self unpauseStProcesses.
 				answer ifTrue:
 					[children reverseDo: [:e | e sigkill].
@@ -1409,7 +1409,7 @@ installCommands: aCommandArray
 open
 
 	| tty |
-	tty := CommandShellTranscript commandShell: self.
+	tty _ CommandShellTranscript commandShell: self.
 	tty open.
 	^ tty
 
@@ -1419,7 +1419,7 @@ open
 openLabel: aString 
 
 	| tty |
-	tty := CommandShellTranscript commandShell: self.
+	tty _ CommandShellTranscript commandShell: self.
 	tty openLabel: aString.
 	^ tty
 
@@ -1439,7 +1439,7 @@ startUpInNewSession
 
 	self clearSemaphore.
 	self terminateCommandLineProcesses.
-	foregroundProxies := backgroundProxies := backgroundPipelines := nil.
+	foregroundProxies _ backgroundProxies _ backgroundPipelines _ nil.
 	self keyboardConnector: nil
 ! !
 
@@ -1448,7 +1448,7 @@ terminateCommandLineProcesses
 
 	(self commandLineProcesses reject: [:e | e == Processor activeProcess])
 		do: [:p | p terminate].
-	commandLineProcesses := nil
+	commandLineProcesses _ nil
 ! !
 
 !CommandShell methodsFor: 'evaluation' stamp: 'dtl 9/15/2012 18:48'!
@@ -1489,10 +1489,10 @@ ef\ghi\' withoutEscapedLineEnds: Character cr
 	"
 
 	| rs ws |
-	rs := aCommandString readStream.
-	ws := '' writeStream.
+	rs _ aCommandString readStream.
+	ws _ '' writeStream.
 	[rs atEnd] whileFalse: [ | c |
-		c := rs next.
+		c _ rs next.
 		(c = $\ and: [
 			rs atEnd not
 				and: [rs peek = lineEndCharacter]])
@@ -1514,7 +1514,7 @@ evaluatePipeline: aPipeline
 	self registerErrorEventsFor: aPipeline.
 	aPipeline background
 		ifTrue:
-			[index := self registerBackgroundPipeline: aPipeline.
+			[index _ self registerBackgroundPipeline: aPipeline.
 			self registerBackgroundCompletionEventsFor: aPipeline
 				commandIndex: index.
 			self backgroundProxies addAll: aPipeline.
@@ -1538,14 +1538,14 @@ evaluatePipelines: aPipelineCollection
 	streams. Answer aPipelineCollection."
 
 	| lastForegroundPipeline completionSemaphore |
-	lastForegroundPipeline := nil.
+	lastForegroundPipeline _ nil.
 	aPipelineCollection isEmpty ifFalse:
-		[lastForegroundPipeline := aPipelineCollection reversed
+		[lastForegroundPipeline _ aPipelineCollection reversed
 			detect: [:p | p background not]
 			ifNone: [].
 		lastForegroundPipeline ifNotNil: [self registerPromptEventFor: lastForegroundPipeline].
 		aPipelineCollection do: [:pipeline |
-			completionSemaphore := Semaphore new.
+			completionSemaphore _ Semaphore new.
 			pipeline background
 				ifTrue: [completionSemaphore signal "no wait"]
 				ifFalse: [pipeline when: #complete send: #signal to: completionSemaphore].
@@ -1565,8 +1565,8 @@ pipeline: aCommand
 	"CommandShell new pipeline: 'ls NOSUCHFILE * | dd | cat'"
 
 	| sema pipeline |
-	sema := Semaphore new.
-	pipeline := ProxyPipeline fromString: aCommand shell: self.
+	sema _ Semaphore new.
+	pipeline _ ProxyPipeline fromString: aCommand shell: self.
 	pipeline when: #complete send: #signal to: sema.
 	pipeline value.
 	sema wait.
@@ -1592,7 +1592,7 @@ processCommand: aCommandString echo: showCommand
 		ifTrue: [ "excaped line end, more to follow"
 			^self notifyNewline].
 
-	line := self copy: aCommandString withoutEscapedLineEnds: Character cr.
+	line _ self copy: aCommandString withoutEscapedLineEnds: Character cr.
 	self commandLineProcesses add:
 		([self command: line echo: showCommand.
 		self commandLineProcesses
@@ -1608,7 +1608,7 @@ registerBackgroundPipeline: aPipeline
 	aPipeline background
 		ifTrue:
 			["Find available slot in registry, expanding if needed"
-			index := self backgroundPipelines identityIndexOf: nil.
+			index _ self backgroundPipelines identityIndexOf: nil.
 			(index > 0)
 				ifTrue:
 					[self backgroundPipelines at: index put: aPipeline.
@@ -1648,11 +1648,11 @@ waitForCommand: aCommandString
 
 	| sema pipelines lastPipeline |
 	self changed: aCommandString.
-	pipelines := self evaluateOrMakePipelinesFrom: aCommandString.
+	pipelines _ self evaluateOrMakePipelinesFrom: aCommandString.
 	pipelines isEmpty ifFalse:
-		[lastPipeline := pipelines last.
+		[lastPipeline _ pipelines last.
 		lastPipeline isComplete ifFalse:
-			[sema := Semaphore new.
+			[sema _ Semaphore new.
 			lastPipeline when: #complete
 				send: #signal
 				to: sema.
@@ -1680,7 +1680,7 @@ command: aCommandString onFailureDo: aBlockWithZeroOrOneParameter
 		onFailureDo: ['the command failed']"
 
 	| pipelines |
-	pipelines := self command: aCommandString.
+	pipelines _ self command: aCommandString.
 	(pipelines anySatisfy: [:p | p succeeded not])
 		ifTrue:
 			[(aBlockWithZeroOrOneParameter numArgs == 0)
@@ -1715,7 +1715,7 @@ if: aCommandStringOrScript then: successBlock else: failureBlock
 		else: [:p | 'the script failed ', p printString]"
 
 	| pipelines |
-	pipelines := self script: aCommandStringOrScript
+	pipelines _ self script: aCommandStringOrScript
 		onFailureDo: [:p | (failureBlock numArgs == 0)
 						ifTrue: [^ failureBlock value]
 						ifFalse: [^ failureBlock value: p]].
@@ -1768,14 +1768,14 @@ script: aScriptString onFailureDo: aBlockWithZeroOrOneParameter
 		onFailureDo: ['the pipeline collection failed']"
 
 	| commandStream pipelines |
-	commandStream := ReadStream on:
+	commandStream _ ReadStream on:
 						(aScriptString
 							copyReplaceAll: Character lf asString
 							with: Character cr asString).
-	pipelines := nil.
+	pipelines _ nil.
 	[commandStream atEnd]
 		whileFalse:
-			[pipelines := self
+			[pipelines _ self
 				command: commandStream nextLine
 				onFailureDo:
 					[:p | (aBlockWithZeroOrOneParameter numArgs == 0)
@@ -1799,13 +1799,13 @@ scriptDoAll: aScriptString
 				help'"
 
 	| commandStream lastPipelineCollection |
-	commandStream := ReadStream on:
+	commandStream _ ReadStream on:
 						(aScriptString
 							copyReplaceAll: Character lf asString
 							with: Character cr asString).
 	[commandStream atEnd]
 		whileFalse:
-			[lastPipelineCollection := self command: commandStream nextLine].
+			[lastPipelineCollection _ self command: commandStream nextLine].
 	^ lastPipelineCollection
 
 ! !
@@ -1855,12 +1855,12 @@ editCommand: aString
 historyAt: anInteger
 
 	| bufferSize index |
-	bufferSize := commandHistory size / 2.
+	bufferSize _ commandHistory size / 2.
 	(anInteger > 0)
 		ifTrue:
-			[index := bufferSize + 1 - historyIndex + anInteger * 2]
+			[index _ bufferSize + 1 - historyIndex + anInteger * 2]
 		ifFalse:
-			[index := bufferSize + anInteger * 2].
+			[index _ bufferSize + anInteger * 2].
 	((index > commandHistory size) | (index < 1))
 		ifTrue: [^ '']
 		ifFalse: [^ commandHistory at: index]
@@ -1872,7 +1872,7 @@ saveInHistoryList: aCommandString
 	((aCommandString size == 0) or: [self isExcludedFromHistory: aCommandString])
 		ifFalse:
 			[self commandHistory add: self historyIndex printString; add: aCommandString.
-			historyIndex := historyIndex + 1]
+			historyIndex _ historyIndex + 1]
 ! !
 
 !CommandShell methodsFor: 'command line parsing' stamp: 'dtl 1/22/2007 07:04'!
@@ -1889,7 +1889,7 @@ evaluateOrMakePipelinesFrom: aCommandString
 		ifTrue:
 			[^ #()]
 		ifFalse:
-			[process := self tryEvaluatingAsSmalltalk: aCommandString.
+			[process _ self tryEvaluatingAsSmalltalk: aCommandString.
 			(process exitStatus == #success)
 				ifTrue: "aCommandString was successfully evaluated as a Smalltalk expression"
 					[self outputStream nextPutAll: process upToEnd.
@@ -1908,15 +1908,15 @@ pipelineCollectionFrom: aCommandString
 	"CommandShell new pipelineCollectionFrom: 'who | cat | wc; ps -aef | cat& pwd | cat'"
 
 	| str pipelineCollection tokens strm cmd cmdWithTerm pipeline lastProxy |
-	str := CommandShell withBlanksTrimmed: aCommandString.
-	pipelineCollection := OrderedCollection new.
+	str _ CommandShell withBlanksTrimmed: aCommandString.
+	pipelineCollection _ OrderedCollection new.
 	(self shellSyntax isComment: str)
 		ifFalse:
-			[tokens := str findTokens: ';&' keep: ';&'.
-			strm := ReadStream on: tokens.
+			[tokens _ str findTokens: ';&' keep: ';&'.
+			strm _ ReadStream on: tokens.
 			[strm atEnd]
 				whileFalse:
-					[cmd := CommandShell withBlanksTrimmed: strm next.
+					[cmd _ CommandShell withBlanksTrimmed: strm next.
 					(self shellSyntax isComment: cmd)
 						ifFalse:
 							[strm atEnd
@@ -1924,18 +1924,18 @@ pipelineCollectionFrom: aCommandString
 									[((cmd size == 1) and: [((cmd at: 1) == $;) | ((cmd at: 1) == $&)])
 										ifTrue:
 											["Special case, user has entered ';<cr>' or '&<cr>'"
-											cmd := cmdWithTerm := '']
+											cmd _ cmdWithTerm _ '']
 										ifFalse:
-											[cmdWithTerm := cmd]]
+											[cmdWithTerm _ cmd]]
 								ifFalse:
-									[cmdWithTerm := cmd, strm peek].
+									[cmdWithTerm _ cmd, strm peek].
 							self saveInHistoryList: cmdWithTerm.
 							(cmdWithTerm size > 0)
 								ifTrue:
-									[pipeline := ProxyPipeline fromString: cmd shell: self.
+									[pipeline _ ProxyPipeline fromString: cmd shell: self.
 									pipeline background:
 										(strm next = self shellSyntax noWaitToken).
-									lastProxy := pipeline last.
+									lastProxy _ pipeline last.
 									lastProxy ifNil:
 										[self inform: 'cannot access system'.
 										^ nil].
@@ -1960,7 +1960,7 @@ tryEvaluatingAsSmalltalk: aCommandString
 	"CommandShell new tryEvaluatingAsSmalltalk: '#oneWordCommentShouldFail'"
 
 	| process |
-	process := self evaluationProxyFor: aCommandString input: nil output: nil error: nil.
+	process _ self evaluationProxyFor: aCommandString input: nil output: nil error: nil.
 	process value.
 	process closeErrorPipeline. "Last process in pipeline, so it can be closed."
 	^ process! !
@@ -2116,8 +2116,8 @@ command: aCommandString
 	"CommandShell command: 'ls'"
 
 	| cs w |
-	cs := self new.
-	w := cs openLabel: self defaultWindowName.
+	cs _ self new.
+	w _ cs openLabel: self defaultWindowName.
 	w scheduleToEvaluate: [w nextPutAll: aCommandString; cr].
 	w processCommand: aCommandString.
 	^ w
@@ -2378,8 +2378,8 @@ overview
 	"CommandShell new pipeline: 'CommandShell overview!! | edit'"
 
 	| rs ws |
-	rs := ReadStream on: self htmlOverview.
-	ws := WriteStream on: String new.
+	rs _ ReadStream on: self htmlOverview.
+	ws _ WriteStream on: String new.
 	[rs atEnd]
 		whileFalse:
 			[ws nextPutAll: (rs upTo: $<).
@@ -2427,8 +2427,8 @@ deleteFileNamed: fileName
 		ifTrue: [((Smalltalk at: #FileEntry) perform: #withPathName: with: fileName) delete]
 		ifFalse: [self useFileSystem
 			ifTrue: [ | file sel |
-				file := fileName perform: #asFileReference.
-				(sel := {#ensureDelete . #ensureDeleted . #delete}
+				file _ fileName perform: #asFileReference.
+				(sel _ {#ensureDelete . #ensureDeleted . #delete}
 					detect: [ :e | file respondsTo: e ]
 					ifNone: [ self error: 'do not know how to ensureDelete' ]) notNil
 						ifTrue: [ file perform: sel ].
@@ -2466,7 +2466,7 @@ fileExists: path
 fileNamed: path
 	^ self useFileMan
 		ifTrue: [ | entry |
-			entry := ((Smalltalk at: #FileEntry) perform: #withPathName: with: path) assureExistence.
+			entry _ ((Smalltalk at: #FileEntry) perform: #withPathName: with: path) assureExistence.
 			entry fileAccessor privateWriteableFile: entry]
 		ifFalse: [ FileStream fileNamed: path ]
 ! !
@@ -2475,7 +2475,7 @@ fileNamed: path
 oldFileNamed: path
 	^ self useFileMan
 		ifTrue: [ | entry |
-			entry := (Smalltalk at: #FileEntry) perform: #withPathName: with: path.
+			entry _ (Smalltalk at: #FileEntry) perform: #withPathName: with: path.
 			entry fileAccessor privateWriteableFile: entry]
 		ifFalse: [ FileStream fileNamed: path ]
 ! !
@@ -2508,7 +2508,7 @@ deleteFileNamed: fileName inDirectory: directoryOrFileReference
 
 	^ self useFileSystem
 		ifTrue: [ | f |
-			(f := directoryOrFileReference files
+			(f _ directoryOrFileReference files
 				detect: [ :e | e basename = fileName ]
 				ifNone: [  ]) notNil
 				ifTrue: [ f delete ] ]
@@ -2607,7 +2607,7 @@ fileNamed: fileName inDirectory: directoryOrFileReference
 
 	^ self useFileSystem
 		ifTrue: [ | f |
-			(f := directoryOrFileReference files
+			(f _ directoryOrFileReference files
 				detect: [ :e | e basename = fileName ]
 				ifNone: [  ]) notNil
 				ifTrue: [ f writeStream ] ]
@@ -2678,7 +2678,7 @@ initialize
 	| color |
 	(Smalltalk hasClassNamed: #WindowColorSpec)
 		ifTrue:
-			[ color := Color colorFrom: self windowColorSpecification pastelColor.
+			[ color _ Color colorFrom: self windowColorSpecification pastelColor.
 			self setWindowColorFor: self to: color].
 	ShellSyntax new isPharo5Update50558AndLater
 		ifFalse: [ Smalltalk addToStartUpList: self ]
@@ -2714,7 +2714,7 @@ setWindowColorFor: aClass to: color
 					set: #customWindowColor for: aClass to: color]
 		ifFalse: [ (Smalltalk hasClassNamed: #Preferences)
 			ifTrue: [ | preferencesClass |
-				preferencesClass := Smalltalk at: #Preferences.
+				preferencesClass _ Smalltalk at: #Preferences.
 				(preferencesClass respondsTo: #setWindowColorFor:to:)
 					ifTrue: [ (Smalltalk hasClassNamed: #WindowColorRegistry)
 						ifTrue: [ (Smalltalk at: #WindowColorRegistry)
@@ -2761,7 +2761,7 @@ makeVmIn: buildDirectoryPathName
 	"CommandShell makeVmIn: CommandShell defaultPathString, CommandShell pathSeparator, 'build'"
 
 	| shell |
-	shell := self new.
+	shell _ self new.
 	shell open.
 	^ shell makeVmIn: buildDirectoryPathName
 ! !
@@ -2801,7 +2801,7 @@ windowColorSpecification
 	"Answer a WindowColorSpec object that declares my preference"
 
 	| windowColorSpec |
-	windowColorSpec := Smalltalk
+	windowColorSpec _ Smalltalk
 				at: #WindowColorSpec
 				ifAbsent: [^ self error: 'this image does not support WindowColorSpec'].
 	^ windowColorSpec
@@ -2817,7 +2817,7 @@ bogusTruncate: fileStream
 	this system. Note that this does not preserve file permissions."
 
 	| name |
-	name := fileStream name.
+	name _ fileStream name.
 	fileStream close.
 	CommandShell deleteFileNamed: name inDirectory: directory.
 	^ (Smalltalk at: #CrLfFileStream) fileNamed: name
@@ -2830,7 +2830,7 @@ forceDirtyBuffer
 	user."
 
 	| controller |
-	controller := self dependents
+	controller _ self dependents
 			detect: [:e | e respondsTo: #hasUnacceptedEdits:]
 			ifNone:
 				[self dependents
@@ -2843,14 +2843,14 @@ forceDirtyBuffer
 getAnotherFileName: initialFileName
 
 	| choice newFileName |
-	choice := ((Smalltalk at: #PopUpMenu)
+	choice _ ((Smalltalk at: #PopUpMenu)
 		labels: 'choose another name\cancel' withCRs)
 		startUpWithCaption: initialFileName.
 	choice = 1
-		ifTrue: [newFileName := (Smalltalk at: #FillInTheBlank)
+		ifTrue: [newFileName _ (Smalltalk at: #FillInTheBlank)
 									request: 'Enter a new file name'
 									initialAnswer: initialFileName.
-				newFileName := (CommandShell fileExists: newFileName inDirectory: directory)
+				newFileName _ (CommandShell fileExists: newFileName inDirectory: directory)
 					ifTrue: [self getFileName: newFileName]
 					ifFalse: [newFileName].
 				^ newFileName].
@@ -2860,16 +2860,16 @@ getAnotherFileName: initialFileName
 getFileName: initialFileName
 
 	| choice newFileName |
-	choice := ((Smalltalk at: #PopUpMenu)
+	choice _ ((Smalltalk at: #PopUpMenu)
 		labels: 'overwrite that file\choose another name\cancel' withCRs)
 		startUpWithCaption: initialFileName, ' already exists.'.
 	choice = 1
 		ifTrue: [^ initialFileName].
 	choice = 2
-		ifTrue: [newFileName := (Smalltalk at: #FillInTheBlank)
+		ifTrue: [newFileName _ (Smalltalk at: #FillInTheBlank)
 									request: 'Enter a new file name'
 									initialAnswer: initialFileName.
-				newFileName := (CommandShell fileExists: newFileName inDirectory: directory)
+				newFileName _ (CommandShell fileExists: newFileName inDirectory: directory)
 					ifTrue: [self getFileName: newFileName]
 					ifFalse: [newFileName].
 				^ newFileName].
@@ -2881,7 +2881,7 @@ hexFormat: aString
 	"CrLfFileEditor new hexFormat: 'this is a test of the HEX string reformat method'"
 
 	| s |
-	s := WriteStream on: (String new: aString size*4).
+	s _ WriteStream on: (String new: aString size*4).
 	0 to: aString size-1 by: 16 do:
 		[:loc | s nextPutAll: loc hex; space;
 			nextPut: $(; print: loc; nextPut: $); space; tab.
@@ -2897,7 +2897,7 @@ updateFilePathWith: aPathString
 		ifTrue: [
 			self fileName: (CommandShell localNameFor: aPathString).
 			self directory: (CommandShell directoryForPath: aPathString) ]
-		ifFalse: [ | fdClass | fdClass := Smalltalk at: #FileDirectory.
+		ifFalse: [ | fdClass | fdClass _ Smalltalk at: #FileDirectory.
 			fdClass splitName: aPathString to: [ :dir :file |
 				self fileName: file.
 				self directory: (fdClass on: dir) ]].
@@ -2909,7 +2909,7 @@ browseChanges
 	"Browse in fileIn format."
 
 	| fs |
-	fs :=  CommandShell fileNamed: fileName inDirectory: directory.
+	fs _  CommandShell fileNamed: fileName inDirectory: directory.
 	ChangeList browseStream: fs.
 	fs close
 ! !
@@ -2921,10 +2921,10 @@ controllerForAccept
 	| controller view |
 	CommandShell isMorphic
 		ifTrue:
-			[controller := dependents detect: [:e | e respondsTo: #accept] ifNone: [nil]]
+			[controller _ dependents detect: [:e | e respondsTo: #accept] ifNone: [nil]]
 		ifFalse:
-			[view := dependents detect: [:e | e controller respondsTo: #accept] ifNone: [nil].
-			controller := view isNil
+			[view _ dependents detect: [:e | e controller respondsTo: #accept] ifNone: [nil].
+			controller _ view isNil
 				ifTrue: [nil]
 				ifFalse: [view controller]].
 	^ controller! !
@@ -2960,7 +2960,7 @@ save
 
 	| controller |
 	self forceDirtyBuffer.
-	controller := self controllerForAccept.
+	controller _ self controllerForAccept.
 	controller ifNotNil: [controller accept]
 ! !
 
@@ -2968,14 +2968,14 @@ save
 saveAs
 
 	| oldFilePath newFilePath controller |
-	oldFilePath := self currentFilePathName.
-	newFilePath := (Smalltalk at: #FillInTheBlank)
+	oldFilePath _ self currentFilePathName.
+	newFilePath _ (Smalltalk at: #FillInTheBlank)
 					request: 'Enter a new file name'
 					initialAnswer: oldFilePath.
 	newFilePath isEmpty
 		ifFalse:
 			[self updateFilePathWith: newFilePath.
-			controller := self controllerForAccept.
+			controller _ self controllerForAccept.
 			controller ifNotNil:
 				[self forceDirtyBuffer.
 				controller accept]]
@@ -3006,7 +3006,7 @@ contents
 contents: aString
 	viewStyle == #hex
 		ifTrue: [ self inform: 'cannot update in hex mode' ]
-		ifFalse: [ contents := aString	"asString" ]! !
+		ifFalse: [ contents _ aString	"asString" ]! !
 
 !CrLfFileEditor methodsFor: 'model access' stamp: 'dtl 10/13/2017 20:33'!
 currentFilePathName
@@ -3056,7 +3056,7 @@ doIt printIt inspectIt fileItIn
 accept cancel
 shiftedYellowButtonActivity)]
 
-	ifTrue: [shiftMenu := (Smalltalk at: #ParagraphEditor) shiftedYellowButtonMenu.
+	ifTrue: [shiftMenu _ (Smalltalk at: #ParagraphEditor) shiftedYellowButtonMenu.
 		aMenu 
 			labels: shiftMenu labelString 
 			lines: shiftMenu lineArray
@@ -3082,33 +3082,33 @@ put: aText
 	viewStyle == #hex
 		ifTrue: [self inform: 'cannot save file in hex mode'.
 				^ false].
-	str := aText asString.
+	str _ aText asString.
 	self contents: str.
 	(CommandShell fileExists: fileName inDirectory: directory)
-		ifTrue: [newFileName := self
+		ifTrue: [newFileName _ self
 					getFileName: (CommandShell pathNameForDirectory: directory),
 						CommandShell pathSeparator , fileName.]
-		ifFalse: [newFileName := (CommandShell pathNameForDirectory: directory),
+		ifFalse: [newFileName _ (CommandShell pathNameForDirectory: directory),
 						CommandShell pathSeparator , fileName].
 	newFileName ifNil: [^ false].
-	fs := (Smalltalk at: #CrLfFileStream ifAbsent: [ FileStream ]) fileNamed: newFileName.
+	fs _ (Smalltalk at: #CrLfFileStream ifAbsent: [ FileStream ]) fileNamed: newFileName.
 	[fs isNil] whileTrue:
 		[self inform: 'cannot write file'.
-		newFileName := self getAnotherFileName: newFileName.
+		newFileName _ self getAnotherFileName: newFileName.
 		newFileName isNil
 			ifTrue:
 				[self inform: 'file not written'.
 				^ false]
 			ifFalse:
-				[fs := (Smalltalk at: #CrLfFileStream )fileNamed: newFileName]].
+				[fs _ (Smalltalk at: #CrLfFileStream )fileNamed: newFileName]].
 	(str size < fs size)
 		ifTrue:
 			[(fs respondsTo: #truncate)
 				ifTrue:
 					[[fs truncate]
 						on: Error
-						do: [:ex | fs := self bogusTruncate: fs]]
-				ifFalse: [fs := self bogusTruncate: fs]].
+						do: [:ex | fs _ self bogusTruncate: fs]]
+				ifFalse: [fs _ self bogusTruncate: fs]].
 	fs nextPutAll: str.
 	fs close.
 	self updateFilePathWith: newFileName.
@@ -3123,24 +3123,24 @@ contentsSelection
 !CrLfFileEditor methodsFor: 'accessing' stamp: 'dtl 5/19/2001 17:40'!
 directory: aDirectory
 
-	directory := aDirectory! !
+	directory _ aDirectory! !
 
 !CrLfFileEditor methodsFor: 'accessing' stamp: 'dtl 5/19/2001 17:01'!
 fileName: aString
 
-	fileName := aString! !
+	fileName _ aString! !
 
 !CrLfFileEditor methodsFor: 'accessing' stamp: 'dtl 5/19/2001 17:01'!
 lineEndConvention: aSymbol
 	"See CrLfFileStream for the allowable values of aSymbol."
 
-	lineEndConvention := aSymbol! !
+	lineEndConvention _ aSymbol! !
 
 !CrLfFileEditor methodsFor: 'accessing' stamp: 'dtl 5/20/2001 12:45'!
 viewStyle: aSymbol
 	"#text or #hex"
 
-	viewStyle := aSymbol! !
+	viewStyle _ aSymbol! !
 
 !CrLfFileEditor methodsFor: 'initialize-release' stamp: 'dtl 12/13/2007 20:57'!
 defaultFont
@@ -3153,8 +3153,8 @@ mvcWithLabel: aLabelString
 	| topView controllerClass fileContentsView |
 	CommandShell isMorphic
 		ifTrue: [ ^ self error: 'this method should be used only for MVC' ].
-	topView := (Smalltalk at: #StandardSystemView) new.
-	controllerClass := Smalltalk
+	topView _ (Smalltalk at: #StandardSystemView) new.
+	controllerClass _ Smalltalk
 		at: #DeferredActionStandardSystemController
 		ifAbsent: [ Smalltalk at: #StandardSystemController ].
 	topView
@@ -3163,7 +3163,7 @@ mvcWithLabel: aLabelString
 		label: aLabelString;
 		minimumSize: 200 @ 200.
 	topView borderWidth: 1.
-	fileContentsView := (Smalltalk at: #PluggableTextView)
+	fileContentsView _ (Smalltalk at: #PluggableTextView)
 		on: self
 		text: #contents
 		accept: #put:
@@ -3177,13 +3177,13 @@ mvcWithLabel: aLabelString
 openAsMorphLabel: aLabelString
 
 	| window textMorph |
-	textMorph := PluggableTextMorph
+	textMorph _ PluggableTextMorph
 		on: self
 		text: #contents
 		accept: #put:
 		readSelection: #contentsSelection menu: #fileContentsMenu:shifted:.
 	textMorph font: self defaultFont.
-	window := (SystemWindow labelled: aLabelString) model: self.
+	window _ (SystemWindow labelled: aLabelString) model: self.
 	window
 		addMorph: textMorph
 		frame: (0@0 corner: 1@1).
@@ -3215,7 +3215,7 @@ defaultLineEndConvention
 	"FIXME: The Unix and Win32 are right, but I just guessed at the others - dtl"
 
 	| platform |
-	platform :=  ShellSyntax new platformName.
+	platform _  ShellSyntax new platformName.
 	(platform = 'unix') ifTrue: [^ #lf].
 	(platform = 'Win32') ifTrue: [^ #crlf].
 	(platform = 'Mac OS') ifTrue: [^ #cr].
@@ -3270,23 +3270,23 @@ fileNamed: pathName inDirectoryPath: dirPath
 	"CrLfFileEditor fileNamed: '/etc/NOSUCHFILE' inDirectoryPath: '/etc'"
 
 	| dir fs convention editText |
-	dir := CommandShell directoryForPath: dirPath.
+	dir _ CommandShell directoryForPath: dirPath.
 	(dir fileExists: pathName)
 		ifTrue:
-			[[fs := (Smalltalk
+			[[fs _ (Smalltalk
 						at: #MultiByteFileStream
 						ifAbsent: [Smalltalk at: #CrLfFileStream])
 							readOnlyFileNamed: dirPath, CommandShell pathSeparator, pathName.
-			convention := fs detectLineEndConvention.
-			editText := fs contentsOfEntireFile.
+			convention _ fs detectLineEndConvention.
+			editText _ fs contentsOfEntireFile.
 			fs close]
 				on: Error
 				do: [:ex |
-					convention := #lf.	"Default for Unix text files"
-					editText := '']]
+					convention _ #lf.	"Default for Unix text files"
+					editText _ '']]
 		ifFalse:
-			[convention := #lf.	"Default for Unix text files"
-			editText := ''].
+			[convention _ #lf.	"Default for Unix text files"
+			editText _ ''].
 	^ self on: editText
 		withLabel: pathName
 		inDirectory: dir
@@ -3301,25 +3301,25 @@ fileNamed: pathName withLabel: windowLabel
 	"CrLfFileEditor fileNamed: '/etc/hosts' withLabel: 'an editor on /etc/hosts'"
 
 	| dirPath dir fs convention editText localName |
-	dirPath := CommandShell dirPathFor: pathName.
-	dir := CommandShell directoryForPath: dirPath..
-	localName := CommandShell localNameFor: pathName.
+	dirPath _ CommandShell dirPathFor: pathName.
+	dir _ CommandShell directoryForPath: dirPath..
+	localName _ CommandShell localNameFor: pathName.
 	(CommandShell fileExists: localName inDirectory: dir)
 		ifTrue:
-			[[fs := (Smalltalk
+			[[fs _ (Smalltalk
 						at: #MultiByteFileStream
 						ifAbsent: [Smalltalk at: #CrLfFileStream])
 							readOnlyFileNamed: pathName.
-			convention := fs detectLineEndConvention.
-			editText := fs contentsOfEntireFile.
+			convention _ fs detectLineEndConvention.
+			editText _ fs contentsOfEntireFile.
 			fs close]
 				on: Error
 				do: [:ex |
-					convention := #lf.	"Default for Unix text files"
-					editText := '']]
+					convention _ #lf.	"Default for Unix text files"
+					editText _ '']]
 		ifFalse:
-			[convention := #lf.	"Default for Unix text files"
-			editText := ''].
+			[convention _ #lf.	"Default for Unix text files"
+			editText _ ''].
 	^ self on: editText
 		withLabel: windowLabel
 		inDirectory: dir
@@ -3342,7 +3342,7 @@ on: aString withLabel: aLabelString inDirectory: aDirectory defaultFileName: nam
 	"(CrLfFileEditor on: 'this is the string to edit' withLabel: 'this is the window label' inDirectory: FileDirectory default defaultFileName: 'buffer.txt' lineEndConvention: #lf) openInWorld"
 
 	| model |
-	model := self new contents: aString.
+	model _ self new contents: aString.
 	model directory: aDirectory.
 	model fileName: nameString.
 	model lineEndConvention: convention.
@@ -3363,7 +3363,7 @@ openOn: aString withLabel: aLabelString inDirectory: aDirectory defaultFileName:
 	"CrLfFileEditor openOn: 'this is the string to edit' withLabel: 'this is the window label' inDirectory: FileDirectory default defaultFileName: 'buffer.txt' lineEndConvention: #lf"
 
 	| model |
-	model := self new contents: aString.
+	model _ self new contents: aString.
 	model directory: aDirectory.
 	model fileName: nameString.
 	model lineEndConvention: convention.
@@ -3376,7 +3376,7 @@ initialize
 
 	(Smalltalk hasClassNamed: #WindowColorSpec)
 		ifTrue: [ | color |
-			color := Color colorFrom: self windowColorSpecification pastelColor.
+			color _ Color colorFrom: self windowColorSpecification pastelColor.
 			CommandShell setWindowColorFor: self to: color ]! !
 
 !CrLfFileEditor class methodsFor: 'window color' stamp: 'dtl 4/11/2018 21:12'!
@@ -3384,7 +3384,7 @@ windowColorSpecification
 	"Answer a WindowColorSpec object that declares my preference"
 
 	| windowColorSpec |
-	windowColorSpec := Smalltalk
+	windowColorSpec _ Smalltalk
 				at: #WindowColorSpec
 				ifAbsent: [^self error: 'this image does not support WindowColorSpec'].
 	^ windowColorSpec
@@ -3667,10 +3667,10 @@ outputAndError
 	"((PipeableOSProcess command: 'ps') | 'NoSuchCommand; grep squeak' | 'cut -c16-100') outputAndError"
 
 	| out err |
-	out := self output.
+	out _ self output.
 	(self errorHasBeenRedirected)
-		ifTrue: [err := '']
-		ifFalse: [err := errorPipelineStream contents].
+		ifTrue: [err _ '']
+		ifFalse: [err _ errorPipelineStream contents].
 	^ Array with: out with: err! !
 
 !PipeJunction methodsFor: 'command pipelines' stamp: 'dtl 11/8/2007 20:35'!
@@ -3678,9 +3678,9 @@ outputOn: aStream
 	"Wait for process completion, writing all available output on aStream"
 
 	| d |
-	d := nil.
+	d _ nil.
 	[self isComplete] whileFalse:
-		[(d ifNil: [d := Delay forMilliseconds: 50]) wait.
+		[(d ifNil: [d _ Delay forMilliseconds: 50]) wait.
 		aStream nextPutAll: self upToEnd].
 	aStream nextPutAll: self upToEndOfFile.
 	^ aStream
@@ -3701,7 +3701,7 @@ replaceOutputStreamWith: anotherStream
 	to the new stream."
 
 	| oldOutputStream |
-	oldOutputStream := self pipeFromOutput.
+	oldOutputStream _ self pipeFromOutput.
 	oldOutputStream removeDependent: self. "Break old dependency"
 	self pipeFromOutput: anotherStream. "Restores the dependency automatically"
 	oldOutputStream ifNotNil:
@@ -3714,7 +3714,7 @@ replaceOutputStreamWith: anotherStream
 errorPipelineStream
 	"Accumulates the error output of commands in a command pipeline."
 
-	errorPipelineStream isNil ifTrue: [errorPipelineStream := InternalPipe nonBlockingPipe].
+	errorPipelineStream isNil ifTrue: [errorPipelineStream _ InternalPipe nonBlockingPipe].
 	^ errorPipelineStream
 ! !
 
@@ -3722,7 +3722,7 @@ errorPipelineStream
 errorPipelineStream: aStream
 	"Accumulates the error output of commands in a command pipeline."
 
-	errorPipelineStream := aStream
+	errorPipelineStream _ aStream
 ! !
 
 !PipeJunction methodsFor: 'accessing' stamp: 'dtl 3/4/2002 21:46'!
@@ -3733,7 +3733,7 @@ pipeFromOutput
 !PipeJunction methodsFor: 'accessing' stamp: 'dtl 9/3/2010 17:18'!
 pipeFromOutput: aPipeStream
 
-	(pipeFromOutput := aPipeStream)
+	(pipeFromOutput _ aPipeStream)
 		ifNotNil: [pipeFromOutput addDependent: self]
 ! !
 
@@ -3745,7 +3745,7 @@ pipeToInput
 !PipeJunction methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:36'!
 pipeToInput: aPipeStream
 
-	pipeToInput := aPipeStream! !
+	pipeToInput _ aPipeStream! !
 
 !PipeJunction methodsFor: 'streaming' stamp: 'dtl 6/3/2006 10:40'!
 errorUpToEnd
@@ -3874,7 +3874,7 @@ argumentArray
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:36'!
 argumentArray: anArrayOfStrings
 
-	argumentArray := anArrayOfStrings
+	argumentArray _ anArrayOfStrings
 ! !
 
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:36'!
@@ -3883,7 +3883,7 @@ errorPipelineStream
 
 	errorPipelineStream isNil
 		ifTrue:
-			[errorPipelineStream := InternalPipe nonBlockingPipe.
+			[errorPipelineStream _ InternalPipe nonBlockingPipe.
 			errorPipelineStream addDependent: self].
 	^ errorPipelineStream
 ! !
@@ -3893,7 +3893,7 @@ errorPipelineStream: aStream
 	"Accumulates the error output of commands in a command pipeline."
 
 	errorPipelineStream ifNotNil: [errorPipelineStream removeDependent: self].
-	errorPipelineStream := aStream.
+	errorPipelineStream _ aStream.
 	errorPipelineStream ifNotNil: [errorPipelineStream addDependent: self]
 ! !
 
@@ -3905,19 +3905,19 @@ exitStatus
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:36'!
 exitStatus: aSymbol
 
-	exitStatus := aSymbol! !
+	exitStatus _ aSymbol! !
 
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:37'!
 outputHasBeenRedirected
 	"True if pipeFromOutput has been redirected to a FileStream"
 
-	^ outputHasBeenRedirected ifNil: [outputHasBeenRedirected := false]! !
+	^ outputHasBeenRedirected ifNil: [outputHasBeenRedirected _ false]! !
 
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:37'!
 outputHasBeenRedirected: trueOrFalse
 	"True if pipeFromOutput has been redirected to a FileStream"
 
-	outputHasBeenRedirected := trueOrFalse! !
+	outputHasBeenRedirected _ trueOrFalse! !
 
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/29/2006 06:29'!
 pipeFromError
@@ -3928,13 +3928,13 @@ pipeFromError
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:37'!
 runState
 
-	^ runState ifNil: [runState := #notYetRunning]
+	^ runState ifNil: [runState _ #notYetRunning]
 ! !
 
 !PipeableEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:37'!
 runState: aSymbol
 
-	runState := aSymbol.
+	runState _ aSymbol.
 	self changed: #runState
 ! !
 
@@ -4038,7 +4038,7 @@ nextPut: aCharacter
 	"Write aCharacter to the standard input stream of my process."
 
 	| readPosition |
-	readPosition := pipeToInput position.
+	readPosition _ pipeToInput position.
 	pipeToInput setToEnd nextPut: aCharacter.
 	pipeToInput position: readPosition.
 	^ pipeToInput
@@ -4049,7 +4049,7 @@ nextPutAll: aCollection
 	"Write aCollection to the standard input stream of my process."
 
 	| readPosition |
-	readPosition := pipeToInput position.
+	readPosition _ pipeToInput position.
 	pipeToInput setToEnd nextPutAll: aCollection.
 	pipeToInput position: readPosition.
 	^ pipeToInput
@@ -4059,7 +4059,7 @@ nextPutAll: aCollection
 notify: aString at: aPosition in: aStream
 
 	| s |
-	s := aStream contents.
+	s _ aStream contents.
 	self errorPipelineStream
 		nextPutAll: (s copyFrom: 1 to: (aPosition - 1));
 		nextPutAll: aString;
@@ -4103,7 +4103,7 @@ text
 		| 'stdout nextPutAll: stdin upToEnd') upToEnd"
 
 	| new |
-	new := self species
+	new _ self species
 			command: anotherCommandString
 			pipeFrom: self pipeFromOutput
 			errorPipelineStream: self errorPipelineStream.
@@ -4138,24 +4138,24 @@ blockString
 		ifTrue:
 			[^ '[]']
 		ifFalse:
-			[tokens := self addTreeLeaves: (self tokensFrom: expression) to: OrderedCollection new.
+			[tokens _ self addTreeLeaves: (self tokensFrom: expression) to: OrderedCollection new.
 			(tokens includes: #args)
 				ifTrue:
-					[prefix := '[:stdin :stdout :stderr :args | ']
+					[prefix _ '[:stdin :stdout :stderr :args | ']
 				ifFalse:
 					[(tokens includes: #stderr)
 						ifTrue:
-							[prefix := '[:stdin :stdout :stderr | ']
+							[prefix _ '[:stdin :stdout :stderr | ']
 						ifFalse:
 							[(tokens includes: #stdout)
 								ifTrue:
-									[prefix := '[:stdin :stdout | ']
+									[prefix _ '[:stdin :stdout | ']
 								ifFalse:
 									[(tokens includes: #stdin)
 										ifTrue:
-											[prefix := '[:stdin | ']
+											[prefix _ '[:stdin | ']
 										ifFalse:
-											[prefix := '[']]]].
+											[prefix _ '[']]]].
 			^ prefix, self expression, ']']
 ! !
 
@@ -4168,7 +4168,7 @@ blockValue
 
 	| nArgs |
 	self evaluationBlock ifNil: [^ nil].
-	nArgs := evaluationBlock numArgs.
+	nArgs _ evaluationBlock numArgs.
 	(nArgs == 0)
 		ifTrue: "dumb block"
 			[^ evaluationBlock value]
@@ -4214,7 +4214,7 @@ compile
 	which evaluates to a null string."
 
 	evaluationBlock ifNil:
-		[evaluationBlock :=
+		[evaluationBlock _
 			[self compilerClass evaluate: self blockString
 					for: self
 					notifying: self
@@ -4257,14 +4257,14 @@ value
 		self running.
 		self evaluationBlock notNil
 			ifTrue:
-				[result := [self blockValue]
+				[result _ [self blockValue]
 					on: Error
 					do: [:e |
 						self errorPipelineStream nextPutAll: e description; nextPut: Character lf.
 						self fail].
 				(result == self)
 					ifFalse:
-						[resultString := result asString.
+						[resultString _ result asString.
 						pipeFromOutput nextPutAll: resultString.
 						(resultString isEmpty not and:
 							[(resultString last ~= Character cr) and:
@@ -4302,7 +4302,7 @@ evaluationBlock
 evaluationBlock: aBlock
 	"The block to be evaluated, possibly compiled from the expression string."
 
-	evaluationBlock := aBlock! !
+	evaluationBlock _ aBlock! !
 
 !ExpressionEvaluator methodsFor: 'accessing' stamp: 'dtl 2/1/2003 16:34'!
 expression
@@ -4312,7 +4312,7 @@ expression
 !ExpressionEvaluator methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:32'!
 expression: aString
 
-	expression := aString! !
+	expression _ aString! !
 
 !ExpressionEvaluator class methodsFor: 'instance creation' stamp: 'dtl 3/26/2006 12:10'!
 block: aBlock
@@ -4366,7 +4366,7 @@ commandShell
 !ShellBuiltinEvaluator methodsFor: 'accessing' stamp: 'dtl 2/1/2003 15:12'!
 commandShell: aCommandShell
 
-	commandShell := aCommandShell
+	commandShell _ aCommandShell
 ! !
 
 !ShellBuiltinEvaluator methodsFor: 'accessing' stamp: 'dtl 2/1/2003 15:12'!
@@ -4377,7 +4377,7 @@ shellBuiltin
 !ShellBuiltinEvaluator methodsFor: 'accessing' stamp: 'dtl 2/1/2003 15:12'!
 shellBuiltin: aShellBuiltin
 
-	shellBuiltin := aShellBuiltin! !
+	shellBuiltin _ aShellBuiltin! !
 
 !ShellBuiltinEvaluator methodsFor: 'testing' stamp: 'dtl 2/1/2003 16:08'!
 needsPrompt
@@ -4428,7 +4428,7 @@ prepareOutputForInternalReader
 	| err |
 	super prepareOutputForInternalReader.
 	self setKeepInitialStdOutOpen.
-	(err := self pipeFromError) ifNotNil: [err setNonBlocking]
+	(err _ self pipeFromError) ifNotNil: [err setNonBlocking]
 ! !
 
 !PipeableOSProcess methodsFor: 'command pipelines - private' stamp: 'dtl 1/18/2003 10:06'!
@@ -4511,7 +4511,7 @@ close
 closeOutput
 
 	| p |
-	(p := self pipeFromOutput)
+	(p _ self pipeFromOutput)
 		ifNotNil: [p removeDependent: self; close]
 ! !
 
@@ -4532,13 +4532,13 @@ closePipes
 	self keepInitialStdOutOpen
 		ifTrue:
 			["The pipe stream will be closed by the next process in the command pipeline"
-			(p := pipeFromOutput) ifNotNil: [p triggerDataReady]]
+			(p _ pipeFromOutput) ifNotNil: [p triggerDataReady]]
 		ifFalse:
-			[(output := self pipeFromOutput)
+			[(output _ self pipeFromOutput)
 				ifNotNil:
 					[accessProtect critical:
 						[self pipeFromOutput: InternalPipe new.
-						out := output upToEnd.
+						out _ output upToEnd.
 						out isEmpty ifFalse:
 							[self pipeFromOutput nextPutAll: out.
 							self triggerOutputDataReady].
@@ -4546,7 +4546,7 @@ closePipes
 						output removeDependent: self; close]]].
 	(pipeFromError) ifNotNil:
 		[accessProtect critical:
-			[err := pipeFromError upToEnd.
+			[err _ pipeFromError upToEnd.
 			err isEmpty ifFalse:
 				[self addToErrorPipeline: err.
 				self triggerEvent: #errorDataReady].
@@ -4598,7 +4598,7 @@ handlePrecedingError
 	kludgy, but it works."
 
 	| d |
-	d := Delay forMilliseconds: 200.
+	d _ Delay forMilliseconds: 200.
 	self setKeepInitialStdErrOpen.
 	Processor yield.	"A chance to clean up predecessor proxies in command pipeline"
 	errorPipelineStream ifNotNil:
@@ -4615,7 +4615,7 @@ initialize
 	"Semaphore to protect against finalizing the output and error streams
 	while they are being read."
 
-	accessProtect := Semaphore forMutualExclusion.
+	accessProtect _ Semaphore forMutualExclusion.
 	^ super initialize
 ! !
 
@@ -4640,7 +4640,7 @@ update: aParameter
 		ifTrue:
 			[processProxy isComplete
 				ifTrue:
-					[(err := self pipeFromError)
+					[(err _ self pipeFromError)
 						ifNotNil: [self addToErrorPipeline: err upToEnd].
 					self complete.
 					self changed: aParameter]
@@ -4656,7 +4656,7 @@ enableErrorStreamTriggers
 	if event driven output is supported, otherwise false."
 
 	| err |
-	(err := pipeFromError)
+	(err _ pipeFromError)
 		ifNotNil: [^ err setBufferedReader].
 	^ false! !
 
@@ -4673,8 +4673,8 @@ updateErrorPipelineStream
 	"Ensure that all available error output is placed into errorPipelineStream."
 
 	| p |
-	(p := self pipeFromError) ifNotNil: [ | s |
-		s := p upToEnd. "must be outside the critical block, race condition on #update:"
+	(p _ self pipeFromError) ifNotNil: [ | s |
+		s _ p upToEnd. "must be outside the critical block, race condition on #update:"
 		accessProtect critical: [errorPipelineStream nextPutAll: s]]
 
 ! !
@@ -4684,8 +4684,8 @@ updateErrorPipelineStreamToEndOfFile
 	"Move all error output up to end of file to the errorPipelineStream."
 
 	| p |
-	(p := self pipeFromError) ifNotNil: [ | s |
-		s := p upToEndOfFile. "must be outside the critical block, race condition on #update:"
+	(p _ self pipeFromError) ifNotNil: [ | s |
+		s _ p upToEndOfFile. "must be outside the critical block, race condition on #update:"
 		accessProtect critical: [errorPipelineStream nextPutAll: s].
 		p close]
 ! !
@@ -4695,7 +4695,7 @@ errorPipelineStream: aStream
 	"Accumulates the error output of commands in a command pipeline. Overridden
 	to eliminate setting self as a dependent of the error pipeline stream."
 
-	errorPipelineStream := aStream
+	errorPipelineStream _ aStream
 ! !
 
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:39'!
@@ -4704,7 +4704,7 @@ keepInitialStdErrOpen
 	a predecessor in a command pipeline might have more error messages to write
 	to the redirected error stream."
 
-	^ keepInitialStdErrOpen ifNil: [keepInitialStdErrOpen := false]! !
+	^ keepInitialStdErrOpen ifNil: [keepInitialStdErrOpen _ false]! !
 
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:39'!
 keepInitialStdErrOpen: trueOrFalse
@@ -4712,7 +4712,7 @@ keepInitialStdErrOpen: trueOrFalse
 	a predecessor in a command pipeline might have more error messages to write
 	to the redirected error stream."
 
-	keepInitialStdErrOpen := trueOrFalse! !
+	keepInitialStdErrOpen _ trueOrFalse! !
 
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:39'!
 keepInitialStdOutOpen
@@ -4722,7 +4722,7 @@ keepInitialStdOutOpen
 	from it. Otherwise, the default behavior is to close the output pipe after transferring its
 	contents to a Smalltalk stream."
 
-	^ keepInitialStdOutOpen ifNil: [keepInitialStdOutOpen := false]
+	^ keepInitialStdOutOpen ifNil: [keepInitialStdOutOpen _ false]
 ! !
 
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:39'!
@@ -4733,7 +4733,7 @@ keepInitialStdOutOpen: trueOrFalse
 	from it. Otherwise, the default behavior is to close the output pipe after transfering its
 	contents to a Smalltalk stream."
 
-	keepInitialStdOutOpen := trueOrFalse
+	keepInitialStdOutOpen _ trueOrFalse
 ! !
 
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 1/20/2001 17:14'!
@@ -4744,7 +4744,7 @@ pipeFromError
 !PipeableOSProcess methodsFor: 'accessing' stamp: 'dtl 9/3/2010 17:22'!
 pipeFromError: aPipeStream
 
-	(pipeFromError := aPipeStream)
+	(pipeFromError _ aPipeStream)
 		ifNotNil: [pipeFromError addDependent: self]
 ! !
 
@@ -4761,7 +4761,7 @@ processProxy: aProxy
 	state changes."
 
 	aProxy addDependent: self.
-	processProxy := aProxy! !
+	processProxy _ aProxy! !
 
 !PipeableOSProcess methodsFor: 'streaming' stamp: 'dtl 6/3/2006 10:41'!
 errorUpToEnd
@@ -4784,7 +4784,7 @@ flush
 	"Flush output to the standard input stream of my external process."
 
 	| p |
-	(p := pipeToInput) ifNotNil: [p flush]! !
+	(p _ pipeToInput) ifNotNil: [p flush]! !
 
 !PipeableOSProcess methodsFor: 'streaming' stamp: 'dtl 11/8/2007 20:40'!
 next
@@ -4792,7 +4792,7 @@ next
 	or nil if no data is available."
 
 	| s |
-	s := accessProtect critical: [pipeFromOutput ifNotNil: [pipeFromOutput next]].
+	s _ accessProtect critical: [pipeFromOutput ifNotNil: [pipeFromOutput next]].
 	^ s! !
 
 !PipeableOSProcess methodsFor: 'streaming' stamp: 'dtl 11/8/2007 20:40'!
@@ -4801,7 +4801,7 @@ next: count
 	or an empty string if no data is available."
 
 	| s |
-	s := accessProtect critical: [pipeFromOutput ifNotNil: [pipeFromOutput next: count]].
+	s _ accessProtect critical: [pipeFromOutput ifNotNil: [pipeFromOutput next: count]].
 	^ s! !
 
 !PipeableOSProcess methodsFor: 'streaming' stamp: 'dtl 11/21/2002 18:37'!
@@ -4847,6 +4847,11 @@ exec: aString
 
 ! !
 
+!PipeableOSProcess methodsFor: 'evaluating' stamp: 'NM 10/21/2021 09:37:49'!
+exitCode
+	". Exit status in the POSIX format . "
+	^ self processProxy exitCode ! !
+
 !PipeableOSProcess methodsFor: 'evaluating' stamp: 'dtl 8/31/2019 16:35'!
 runState
 	processProxy
@@ -4860,7 +4865,7 @@ value
 	| p |
 	self errorHasBeenRedirected ifTrue: [self handlePrecedingError].
 	accessProtect critical:
-		[p := processProxy ifNotNil: [processProxy value].
+		[p _ processProxy ifNotNil: [processProxy value].
 		"The external child process now owns its own copy of the pipe handles. We no
 		longer need our copies of these handles, so close the ones that are not needed."
 		p ifNotNil:
@@ -4969,7 +4974,7 @@ unixFileNumbers
 	| d |
 	Smalltalk at: #OSProcess ifPresent:
 		[:osp |
-		d := Dictionary new.
+		d _ Dictionary new.
 		d at: #initialStdIn put: (osp accessor unixFileNumber: processProxy initialStdIn ioHandle).
 		d at: #initialStdOut put: (osp accessor unixFileNumber: processProxy initialStdOut ioHandle).
 		d at: #initialStdErr put: (osp accessor unixFileNumber: processProxy initialStdErr ioHandle).
@@ -4992,37 +4997,37 @@ addTwoPlusTwoInChildSqueak
 	"PipeableOSProcess addTwoPlusTwoInChildSqueak"
 
 	| serializerClass childBlock in out rcv op param result childProxy writer sum s inputStream |
-	(serializerClass := Smalltalk at: #ReferenceStream ifPresent: [:cls | cls ])
+	(serializerClass _ Smalltalk at: #ReferenceStream ifPresent: [:cls | cls ])
 		ifNil: [^ self notify: 'ReferenceStream not found'].
 	"Create block to be evaluated in a Squeak child process."
-	childBlock := ["First set standard input to blocking. This avoids a delay to wait for
+	childBlock _ ["First set standard input to blocking. This avoids a delay to wait for
 		data to be available, but note that it is dangerous to do this unless you
 		are certain that you know in advance that the correct number of characters
 		will be available on the input. If this is not the case, then the VM will block
 		on the read and lock up the child squeak process."
 		OSProcess thisOSProcess stdIn setBlocking.
-		in := serializerClass on: OSProcess thisOSProcess stdIn.
-		out := serializerClass on: OSProcess thisOSProcess stdOut.
+		in _ serializerClass on: OSProcess thisOSProcess stdIn.
+		out _ serializerClass on: OSProcess thisOSProcess stdOut.
 		"read three objects"
-		rcv := in next.
-		op := in next.
-		param := in next.
+		rcv _ in next.
+		op _ in next.
+		param _ in next.
 		"add two plus two"
-		result := rcv perform: op with: param.
+		result _ rcv perform: op with: param.
 		"answer the result"
 		out nextPut: result].
 	"Fork a child Squeak that will evaluate the childBlock then exit"
-	childProxy := PipeableOSProcess forkHeadlessSqueakAndDoThenQuit: childBlock.
+	childProxy _ PipeableOSProcess forkHeadlessSqueakAndDoThenQuit: childBlock.
 	"Write three objects to the child Squeak process"
-	writer := serializerClass on: childProxy pipeToInput writer.
+	writer _ serializerClass on: childProxy pipeToInput writer.
 	writer nextPut: 2.
 	writer nextPut: #+.
 	writer nextPut: 2.
 	"Read the result object from the child Squeak process"
-	s := RWBinaryOrTextStream with: childProxy pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: childProxy pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := serializerClass on: s.
-	sum := inputStream next.
+	inputStream _ serializerClass on: s.
+	sum _ inputStream next.
 	"show result of 2 + 2 evaluated in the child Squeak"
 	self inform: '2 + 2 equals ', sum asString.
 	^ sum
@@ -5039,11 +5044,11 @@ remoteShellExample: remoteUnixHostName
 	"PipeableOSProcess remoteShellExample: 'localhost'"
 
 	| rsh output |
-	rsh :=  self remoteShell: remoteUnixHostName.
+	rsh _  self remoteShell: remoteUnixHostName.
 	rsh exec: 'echo remote host name is '.
 	rsh exec: 'hostname'.
 	rsh exec: 'exit'.
-	output := rsh output.
+	output _ rsh output.
 	rsh close.
 	rsh succeeded
 		ifTrue: [self notify: output]
@@ -5058,7 +5063,7 @@ tkExample
 	"PipeableOSProcess tkExample"
 
 	| wish |
-	wish :=  self wish.
+	wish _  self wish.
 	[wish
 		exec: 'button .b1 -text "This is button b1"';
 		exec: 'button .b2 -text "This is button b2"';
@@ -5093,7 +5098,7 @@ bash
 	"self bash exec: 'ls'; exec: 'who'; close; upToEnd"
 
 	| proxyClass |
-	(proxyClass := self externalProxyClass) ifNotNil:
+	(proxyClass _ self externalProxyClass) ifNotNil:
 		[^ self command: proxyClass bashShellPath].
 	^ self notify: 'OSProcess not available'
 ! !
@@ -5105,7 +5110,7 @@ canAccessOSProcess
 	"self canAccessOSProcess"
 
 	| osp |
-	^ (osp := Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
+	^ (osp _ Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
 ! !
 
 !PipeableOSProcess class methodsFor: 'utility' stamp: 'dtl 9/3/2010 17:35'!
@@ -5115,7 +5120,7 @@ remoteShell: remoteSystemName
 	"self remoteShell: 'localhost'"
 
 	| proxyClass |
-	(proxyClass := self externalProxyClass) ifNotNil:
+	(proxyClass _ self externalProxyClass) ifNotNil:
 		[^ self
 			forkAndExec: proxyClass remoteShellPath
 			arguments: (Array with: remoteSystemName with: 'sh')
@@ -5136,7 +5141,7 @@ shell
 	"self shell exec: 'ls'; exec: 'who'; close; upToEnd"
 
 	| proxyClass |
-	(proxyClass := self externalProxyClass) ifNotNil:
+	(proxyClass _ self externalProxyClass) ifNotNil:
 		[^ self command: proxyClass defaultShellPath].
 	^ self notify: 'OSProcess not available'
 ! !
@@ -5150,8 +5155,8 @@ waitForCommand: aCommandString
 	"self waitForCommand: 'echo sleeping...; sleep 3; echo I just slept for three seconds'"
 
 	| proc d |
-	d := Delay forMilliseconds: 50.
-	proc := self command: aCommandString.
+	d _ Delay forMilliseconds: 50.
+	proc _ self command: aCommandString.
 	proc ifNil: [self class noAccessorAvailable].
 	[proc isComplete] whileFalse: [d wait].
 	^ proc
@@ -5164,7 +5169,7 @@ wish
 	"self wish"
 
 	| proxyClass |
-	(proxyClass := self externalProxyClass) ifNotNil:
+	(proxyClass _ self externalProxyClass) ifNotNil:
 		[^ self command: proxyClass tkShellPath].
 	^ self notify: 'OSProcess not available'
 ! !
@@ -5209,8 +5214,8 @@ command: aString
 command: aString environment: anEnvironmentDictionary
 
 	"| env path |
-	env := OSProcess thisOSProcess environment copy.
-	path := (env at: #PATH), ':/opt/local/bin/'.
+	env _ OSProcess thisOSProcess environment copy.
+	path _ (env at: #PATH), ':/opt/local/bin/'.
 	env at: #PATH put: path.
 	(PipeableOSProcess command: 'echo $PATH' environment: env) output"
 
@@ -5244,7 +5249,7 @@ command: aString environment: anEnvironmentDictionary workingDir: pathString inp
 	"(PipeableOSProcess command: 'ls -l hosts NOSUCHFILE' environment: nil workingDir: '/etc' input: nil output: nil error: nil errorPipelineStream: (InternalPipe nonBlockingPipe nextPutAll: 'this is the error stream '; yourself) shellSyntax: nil) output"
 
 	| p |
-	p := self
+	p _ self
 		commandNoEvaluate: aString
 		environment: anEnvironmentDictionary
 		workingDir: pathString
@@ -5280,9 +5285,9 @@ commandNoEvaluate: aString environment: anEnvironmentDictionary workingDir: path
 	"PipeableOSProcess commandNoEvaluate: 'ls -l hosts NOSUCHFILE' environment: nil workingDir: '/etc' input: nil output: nil error: nil errorPipelineStream: (InternalPipe nonBlockingPipe nextPutAll: 'this is the error stream '; yourself) shellSyntax: nil"
 
 	| nameAndArgs proxyClass |
-	nameAndArgs := aSyntaxProcessor isNil
+	nameAndArgs _ aSyntaxProcessor isNil
 		ifTrue:
-			[(proxyClass := self externalProxyClass) isNil
+			[(proxyClass _ self externalProxyClass) isNil
 				ifTrue:
 					[Array with: aString with: Array new]
 				ifFalse:
@@ -5338,7 +5343,7 @@ forkHeadlessSqueakAndDoThenQuit: aBlock
 	image file from disk. The child image evaluates aBlock."
 
 	"| child |
-	child := PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
+	child _ PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
 		[OSProcess thisOSProcess stdOut
 			nextPutAll: 'hello from headless Squeak child ',
 				OSProcess thisOSProcess pid asString].
@@ -5396,13 +5401,13 @@ forkSqueakAndDoThenQuit: aBlock errorPipelineStream: anErrorStream headless: hea
 	image file from disk. The child image evaluates aBlock."
 
 	| pp proc parentVmProcess blockWithRedirection |
-	pp := super new.
+	pp _ super new.
 	pp createPipes.
 	buffered ifTrue: [pp pipeFromOutput setBufferedReader].
 	aioEventHandler ifNotNil: [ buffered
 		ifTrue: [self error: 'buffered reader already has AIO handler']
 		ifFalse: [aioEventHandler forFileStream: pp pipeFromOutput reader]].
-	blockWithRedirection := [
+	blockWithRedirection _ [
 		pp pipeToInput reader setNonBlocking.
 		OSProcess thisOSProcess redirectStdInTo: pp pipeToInput reader.
 		OSProcess thisOSProcess redirectStdOutTo: pp pipeFromOutput writer.
@@ -5411,8 +5416,8 @@ forkSqueakAndDoThenQuit: aBlock errorPipelineStream: anErrorStream headless: hea
 		pp pipeFromOutput reader close.
 		pp pipeFromError reader close.
 		aBlock value].	
-	parentVmProcess := OSProcess thisOSProcess.
-	proc := headless
+	parentVmProcess _ OSProcess thisOSProcess.
+	proc _ headless
 				ifTrue: [parentVmProcess forkHeadlessSqueakAndDoThenQuit: blockWithRedirection]
 				ifFalse: [parentVmProcess forkSqueakAndDoThenQuit: blockWithRedirection].
 	proc pid = parentVmProcess pid
@@ -5435,9 +5440,9 @@ new: executableFile arguments: arrayOfStrings environment: stringDictionary desc
 	"PipeableOSProcess new: 'sol' arguments: nil environment: nil descriptors: nil workingDir: nil errorPipelineStream: (InternalPipe nonBlockingPipe nextPutAll: 'this is the error stream '; yourself)"
 
 	| pp proc proxyClass s |
-	pp := super new.
-	(proxyClass := self externalProxyClass) ifNotNil:
-		[proc := proxyClass
+	pp _ super new.
+	(proxyClass _ self externalProxyClass) ifNotNil:
+		[proc _ proxyClass
 			programName: executableFile
 			arguments: arrayOfStrings
 			initialEnvironment: stringDictionary].
@@ -5449,19 +5454,19 @@ new: executableFile arguments: arrayOfStrings environment: stringDictionary desc
 			proc initialStdOut: pp pipeFromOutput writer.
 			proc initialStdErr: pp pipeFromError writer]
 		ifFalse:
-			[(s := (arrayOf3Streams at: 1)) isNil
+			[(s _ (arrayOf3Streams at: 1)) isNil
 				ifTrue:
 					[pp createInputPipe.
 					proc initialStdIn: pp pipeToInput reader]
 				ifFalse:
 					[proc initialStdIn: s].
-			(s := (arrayOf3Streams at: 2)) isNil
+			(s _ (arrayOf3Streams at: 2)) isNil
 				ifTrue:
 					[pp createOutputPipe.
 					proc initialStdOut: pp pipeFromOutput writer]
 				ifFalse:
 					[proc initialStdOut: s].
-			(s := (arrayOf3Streams at: 3)) isNil
+			(s _ (arrayOf3Streams at: 3)) isNil
 				ifTrue:
 					[pp createErrorPipe.
 					proc initialStdErr: pp pipeFromError writer]
@@ -5520,12 +5525,12 @@ succeeded
 background
 	"Answer true if this pipeline should be evaluated in the background."
 
-	^ background ifNil: [background := false]! !
+	^ background ifNil: [background _ false]! !
 
 !ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:42'!
 background: trueOrFalse
 
-	background := trueOrFalse! !
+	background _ trueOrFalse! !
 
 !ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2002 19:20'!
 commandLine
@@ -5537,7 +5542,7 @@ commandLine
 commandLine: aString
 	"Command line string from which this pipeline was constructed"
 
-	commandLine := aString! !
+	commandLine _ aString! !
 
 !ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:28'!
 completionSemaphore
@@ -5547,7 +5552,7 @@ completionSemaphore
 	by the grimReaperProcess, so the separate pipeline cleanup prevents
 	those activities from being processed in the context of the grimReaperProcess."
 
-	^ completionSemaphore ifNil: [completionSemaphore := Semaphore new]! !
+	^ completionSemaphore ifNil: [completionSemaphore _ Semaphore new]! !
 
 !ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 11/20/2006 13:21'!
 completionWatcher
@@ -5563,7 +5568,7 @@ completionWatcher
 completionWatcher: anObject
 	"Set the value of completionWatcher"
 
-	completionWatcher := anObject! !
+	completionWatcher _ anObject! !
 
 !ProxyPipeline methodsFor: 'accessing' stamp: 'dtl 2/8/2020 17:37'!
 errorPipelineStream
@@ -5604,7 +5609,7 @@ closePipes
 	| p |
 	self do: [:e | e closePipes].
 	self unregisterEvents.
-	(p := self pipeFromOutput) ifNotNil: [p close]
+	(p _ self pipeFromOutput) ifNotNil: [p close]
 ! !
 
 !ProxyPipeline methodsFor: 'initialize - release' stamp: 'dtl 11/8/2007 20:42'!
@@ -5616,7 +5621,7 @@ fromString: aCommandString shell: aCommandShell
 		inject: nil
 		into: [:prevProxy :command | 
 			| nextProxy |
-			nextProxy := aCommandShell
+			nextProxy _ aCommandShell
 				redirectedPipeableProxyFor: command
 				predecessorProxy: prevProxy.
 			prevProxy
@@ -5848,7 +5853,7 @@ activeController: aController
 	"In Morphic, alway nil. In MVC, the controller that most recently invoked
 	a command."
 
-	activeController := aController! !
+	activeController _ aController! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/17/2007 06:28'!
 characterLimit
@@ -5859,13 +5864,13 @@ characterLimit
 cliShell
 	"Answer the value of cliShell"
 
-	^ cliShell ifNil: [cliShell := CommandShell new]! !
+	^ cliShell ifNil: [cliShell _ CommandShell new]! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
 cliShell: commandShell
 	"Set the value of cliShell"
 
-	cliShell := commandShell! !
+	cliShell _ commandShell! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/22/2007 21:24'!
 keyboardConnector
@@ -5877,24 +5882,24 @@ labelStringBlock
 	"Answer a block that when evaluated answers a string to be used
 	as the window label."
 
-	^ labelStringBlock ifNil: [labelStringBlock := self defaultLabelStringBlock]! !
+	^ labelStringBlock ifNil: [labelStringBlock _ self defaultLabelStringBlock]! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 12/11/2007 20:16'!
 labelStringBlock: aBlockAnsweringAString
 
-	labelStringBlock := aBlockAnsweringAString! !
+	labelStringBlock _ aBlockAnsweringAString! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 1/20/2007 11:44'!
 lastPromptString
 	"Answer the value of lastPromptString"
 
-	^ lastPromptString ifNil: [lastPromptString := self cliShell promptString]! !
+	^ lastPromptString ifNil: [lastPromptString _ self cliShell promptString]! !
 
 !CommandShellTranscript methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:28'!
 lastPromptString: anObject
 	"Set the value of lastPromptString"
 
-	lastPromptString := anObject! !
+	lastPromptString _ anObject! !
 
 !CommandShellTranscript methodsFor: 'stream extensions' stamp: 'dtl 1/17/2007 06:29'!
 bs
@@ -5964,7 +5969,7 @@ confirmBeforeKilling: externalProxies
 	| msgStrm |
 	(externalProxies size > 0)
 		ifTrue:
-			[msgStrm := WriteStream on: String new.
+			[msgStrm _ WriteStream on: String new.
 			(externalProxies size > 1)
 				ifTrue: [msgStrm nextPutAll: 'kill processes']
 				ifFalse: [msgStrm nextPutAll: 'kill process'].
@@ -6039,8 +6044,8 @@ openAsMorphLabel: labelString
 	"Build a morph viewing this stream"
 
 	| window textMorph |
-	window := SystemWindow new model: self.
-	textMorph := ShellWindowMorph
+	window _ SystemWindow new model: self.
+	textMorph _ ShellWindowMorph
 					on: self
 					text: nil
 					accept: nil
@@ -6062,8 +6067,8 @@ openLabel: aString
 	CommandShell isMorphic ifTrue: [^ (self openAsMorphLabel: aString) openInWorld].
 
 	aString ifNotNil: [self labelStringBlock: [aString]].
-	topView := (Smalltalk at: #StandardSystemView) new.
-	controllerClass := Smalltalk
+	topView _ (Smalltalk at: #StandardSystemView) new.
+	controllerClass _ Smalltalk
 		at: #DeferredActionStandardSystemController
 		ifAbsent: [(Smalltalk at: #StandardSystemController)].	
 	topView model: self;
@@ -6071,7 +6076,7 @@ openLabel: aString
 			borderWidth: 1;
 			label: aString;
 			minimumSize: 100 @ 50.
-	codeView := (Smalltalk at: #ShellWindowView)
+	codeView _ (Smalltalk at: #ShellWindowView)
 					on: self
 					text: nil
 					accept: nil
@@ -6102,8 +6107,8 @@ codePaneMenu: aMenu shifted: shifted
 defaultLabelStringBlock
 
 	^ [ | directoryString |
-	directoryString := self cliShell workingDirectory.
-	directoryString isEmpty ifTrue: [directoryString := self cliShell shellSyntax nullDirectoryString].
+	directoryString _ self cliShell workingDirectory.
+	directoryString isEmpty ifTrue: [directoryString _ self cliShell shellSyntax nullDirectoryString].
 	self class defaultWindowName, ': ', directoryString]
 ! !
 
@@ -6164,7 +6169,7 @@ restoreSelectionMarker
 	| c |
 	CommandShell isMorphic
 		ifFalse:
-			[c := self activeController.
+			[c _ self activeController.
 			self scheduleToEvaluate: [c initializeSelection]]
 ! !
 
@@ -6261,7 +6266,7 @@ refetch
 commandShell: cliShell
 
 	| ttyDisplay |
-	ttyDisplay := self new cliShell: cliShell.
+	ttyDisplay _ self new cliShell: cliShell.
 	cliShell outputStream: ttyDisplay; errorStream: ttyDisplay.
 	cliShell addDependent: ttyDisplay.
 	^ ttyDisplay
@@ -6296,7 +6301,7 @@ windowColorSpecification
 	"Answer a WindowColorSpec object that declares my preference"
 
 	| windowColorSpec |
-	windowColorSpec := Smalltalk
+	windowColorSpec _ Smalltalk
 				at: #WindowColorSpec
 				ifAbsent: [^ self error: 'this image does not support WindowColorSpec'].
 	^ windowColorSpec
@@ -6409,7 +6414,7 @@ contents
 	"InternalPipe new nextPutAll: 'hello'; contents"
 
 	| s |
-	s := self next: queue size.
+	s _ self next: queue size.
 	self nextPutAll: s.
 	^ s! !
 
@@ -6425,11 +6430,11 @@ next: anInteger
 	"Answer the next anInteger elements of my collection."
 
 	| strm c |
-	strm := WriteStream on: String new.
+	strm _ WriteStream on: String new.
 	(1 to: anInteger) do: [:index |
 		self atEnd
 			ifTrue: [^ strm contents]
-			ifFalse: [(c := self basicNext) ifNil: [^ strm contents].
+			ifFalse: [(c _ self basicNext) ifNil: [^ strm contents].
 					strm nextPut: c]].
 	^ strm contents
 ! !
@@ -6440,7 +6445,7 @@ nextPut: anObject
 	receiver. Answer anObject."
 
 	| result |
-	result := queue nextPut: anObject.
+	result _ queue nextPut: anObject.
 	self notifyDataReady.
 	Processor yield.
 	^ result
@@ -6452,7 +6457,7 @@ nextPutAll: aCollection
 	by the receiver. Answer aCollection."
 
 	| result |
-	result := aCollection do: [:e | queue nextPut: e].
+	result _ aCollection do: [:e | queue nextPut: e].
 	self notifyDataReady.
 	Processor yield.
 	^ result
@@ -6461,13 +6466,13 @@ nextPutAll: aCollection
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
 nonBlockingMode
 
-	^ nonBlockingMode ifNil: [nonBlockingMode := false]
+	^ nonBlockingMode ifNil: [nonBlockingMode _ false]
 ! !
 
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:33'!
 nonBlockingMode: trueOrFalse
 
-	nonBlockingMode := trueOrFalse
+	nonBlockingMode _ trueOrFalse
 ! !
 
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 9/16/2001 22:42'!
@@ -6479,7 +6484,7 @@ peek
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
 queue
 
-	^ queue ifNil: [queue := SharedQueue new]
+	^ queue ifNil: [queue _ SharedQueue new]
 ! !
 
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/25/2001 19:15'!
@@ -6500,9 +6505,9 @@ upToEnd
 	"Answer the remaining elements in the pipe"
 
 	| strm c |
-	strm := WriteStream on: String new.
+	strm _ WriteStream on: String new.
 	[self atEnd] whileFalse:
-		[c := self next.
+		[c _ self next.
 		c isNil
 			ifTrue: [^ strm contents]
 			ifFalse: [strm nextPut: c]].
@@ -6518,13 +6523,13 @@ upToEndOfFile
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
 writerClosed
 
-	^ writerClosed ifNil: [writerClosed := false]
+	^ writerClosed ifNil: [writerClosed _ false]
 ! !
 
 !InternalPipe methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:34'!
 writerClosed: trueOrFalse
 
-	writerClosed := trueOrFalse
+	writerClosed _ trueOrFalse
 ! !
 
 !InternalPipe methodsFor: 'character writing' stamp: 'dtl 9/23/2001 16:49'!
@@ -6598,10 +6603,10 @@ testPipe
 	"InternalPipe testPipe inspect"
 
 	| pipe result |
-	pipe := self new.
+	pipe _ self new.
 	pipe nextPutAll: 'string to send through an InternalPipe'.
 	pipe closeWriter.
-	result := pipe upToEnd.
+	result _ pipe upToEnd.
 	pipe close.
 	^ result
 ! !
@@ -6620,8 +6625,8 @@ procDir
 
 	| path |
 	^ procDir ifNil:
-		[path := '/proc/' , OSProcess thisOSProcess pid printString, '/fd'.
-		(CommandShell directoryExists: path) ifTrue: [procDir := path]]
+		[path _ '/proc/' , OSProcess thisOSProcess pid printString, '/fd'.
+		(CommandShell directoryExists: path) ifTrue: [procDir _ path]]
 ! !
 
 !CommandShellTestCase methodsFor: 'private' stamp: 'dtl 12/20/2007 14:54'!
@@ -6631,8 +6636,8 @@ isNumberOfOpenFiles: anInteger
 
 	| loops milliseconds |
 	self checkFileHandleCount ifFalse: [^ true]. "Bypass the test"
-	loops := 10.
-	milliseconds := 50.
+	loops _ 10.
+	milliseconds _ 50.
 	(1 to: loops)
 		detect:
 			[:i | (self numberOfOpenFiles == anInteger)
@@ -6660,7 +6665,7 @@ numberOfOpenFiles
 
 	| d |
 	self checkFileHandleCount ifFalse: [^ 0]. "Bypass the test"
-	^ (d := self procDir) isNil
+	^ (d _ self procDir) isNil
 		ifTrue: [0]
 		ifFalse: [(CommandShell directoryEntryNames: d) size]! !
 
@@ -6676,8 +6681,8 @@ runAll
 	"CommandShellTestCase new checkFileHandleCount: false; runAll"
 
 	| result suite openFileCount |
-	suite := TestSuite new.
-	openFileCount := self numberOfOpenFiles.
+	suite _ TestSuite new.
+	openFileCount _ self numberOfOpenFiles.
 	suite addTest: (CommandShellTestCase selector: #testPipeline01).
 	suite addTest: (CommandShellTestCase selector: #testPipeline02).
 	suite addTest: (CommandShellTestCase selector: #testPipeline03).
@@ -6738,7 +6743,7 @@ runAll
 	suite addTest: (CommandShellTestCase selector: #testPipeline93).
 	suite addTest: (CommandShellTestCase selector: #testPipeline94).
 	suite addTest: (CommandShellTestCase selector: #testPipeline95).
-	result := suite run.
+	result _ suite run.
 	self should: [result defects size == 0].
 	self should: [self isNumberOfOpenFiles: openFileCount].
 	^ result
@@ -6749,7 +6754,7 @@ setUp
 
 	(self respondsTo: #timeout: ) "Recent Squeak images with test case timeout"
 		ifTrue: [self perform: #timeout: with: 10].
-	shell := CommandShell new! !
+	shell _ CommandShell new! !
 
 !CommandShellTestCase methodsFor: 'testing-expression evaluator' stamp: 'dtl 6/16/2019 10:43'!
 testBangExpression
@@ -6758,19 +6763,19 @@ testBangExpression
 	"(CommandShellTestCase selector: #testBangExpression) debug"
 
 	| pipelines procs openFileCount p o |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self assert: shell outputStream contents isEmpty.
 	self assert: shell outputStream isEmpty.
-	pipelines := shell evaluateOrMakePipelinesFrom: 'Object new printString!!'.
+	pipelines _ shell evaluateOrMakePipelinesFrom: 'Object new printString!!'.
 	self assert: 1 equals: pipelines size.
-	procs := pipelines last.
-	p := procs last.
+	procs _ pipelines last.
+	p _ procs last.
 	self assert: p class == ExpressionEvaluator.
-	o := procs output.
+	o _ procs output.
 	self assert: (o isKindOf: String).
 	self assert: o isEmpty.
 	procs value.
-	o := procs output.
+	o _ procs output.
 	self deny: o isEmpty.
 	self assert: shell outputStream isEmpty.
 	self assert: (self isNumberOfOpenFiles: openFileCount)
@@ -6784,19 +6789,19 @@ testBangExpressionInPipeline
 	"(CommandShellTestCase selector: #testBangExpressionInPipeline) debug"
 
 	| pipelines procs openFileCount p o |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self assert: shell outputStream contents isEmpty.
 	self assert: shell outputStream isEmpty.
-	pipelines := shell evaluateOrMakePipelinesFrom: 'who | Object new printString!!'.
+	pipelines _ shell evaluateOrMakePipelinesFrom: 'who | Object new printString!!'.
 	self assert: 1 equals: pipelines size.
-	procs := pipelines last.
-	p := procs last.
+	procs _ pipelines last.
+	p _ procs last.
 	self assert: p class == ExpressionEvaluator.
-	o := procs output.
+	o _ procs output.
 	self assert: (o isKindOf: String).
 	self assert: o isEmpty.
 	procs value.
-	o := procs output.
+	o _ procs output.
 	self deny: o isEmpty.
 	self assert: shell outputStream isEmpty.
 	self assert: (self isNumberOfOpenFiles: openFileCount)
@@ -6809,17 +6814,17 @@ testEvaluateOrMakePipelinesFrom
 
 	| command result firstPipeline secondPipeline thirdPipeline firstErrorMessage firstOutput openFileCount |
 
-	openFileCount := self numberOfOpenFiles.
-	command := 'ls NOSUCHFILE * | cat | dd | cat | wc; ps | cat& pwd | cat'.
-	result := shell evaluateOrMakePipelinesFrom: command.
+	openFileCount _ self numberOfOpenFiles.
+	command _ 'ls NOSUCHFILE * | cat | dd | cat | wc; ps | cat& pwd | cat'.
+	result _ shell evaluateOrMakePipelinesFrom: command.
 	result do: [:e | e value].
 	self assert: result size == 3.
-	firstPipeline := result at: 1.
-	secondPipeline := result at: 2.
-	thirdPipeline := result at: 3.
-	firstOutput := firstPipeline output.
+	firstPipeline _ result at: 1.
+	secondPipeline _ result at: 2.
+	thirdPipeline _ result at: 3.
+	firstOutput _ firstPipeline output.
 	self assert: ('   *' match: firstOutput).
-	firstErrorMessage := firstPipeline errorUpToEnd.
+	firstErrorMessage _ firstPipeline errorUpToEnd.
 	self assert: ('*NOSUCHFILE*' match: firstErrorMessage).
 	self deny: secondPipeline output isEmpty.
 	self assert: secondPipeline errorUpToEnd isEmpty.
@@ -6835,21 +6840,21 @@ testInvalidBangExpression
 	"(CommandShellTestCase selector: #testInvalidBangExpression) debug"
 
 	| pipelines procs openFileCount p o e |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self should: [shell outputStream contents isEmpty].
 	self should: shell outputStream isEmpty.
-	pipelines := shell evaluateOrMakePipelinesFrom: 'foobar !!'.
+	pipelines _ shell evaluateOrMakePipelinesFrom: 'foobar !!'.
 	self assert: pipelines size = 1.
-	procs := pipelines last.
-	p := procs last.
+	procs _ pipelines last.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	procs value.
-	o := procs output.
+	o _ procs output.
 	self should: [o isEmpty].
-	e := procs errorUpToEnd.
+	e _ procs errorUpToEnd.
 	self should: ['Compiler: invalid Smalltalk expression [foobar ]*' match: e].
 	self shouldnt: [e isEmpty].
 	self should: shell outputStream isEmpty.
@@ -6864,9 +6869,9 @@ testSimpleExpression
 	"(CommandShellTestCase selector: #testSimpleExpression) debug"
 
 	| procs openFileCount |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self assert: shell outputStream contents isEmpty.
-	procs := shell evaluateOrMakePipelinesFrom: 'Object new printString'.
+	procs _ shell evaluateOrMakePipelinesFrom: 'Object new printString'.
 	self assert: #() equals: procs.
 	self deny: shell outputStream contents isEmpty.
 	self assert: (self isNumberOfOpenFiles: openFileCount)
@@ -6878,11 +6883,11 @@ testStdinPseudoVariable
 	"(CommandShellTestCase selector: #testStdinPseudoVariable) debug"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help help | stdin upToEnd !!'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help help | stdin upToEnd !!'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -6894,11 +6899,11 @@ testStdinPseudoVariableFromExternalProcess
 	"(CommandShellTestCase selector: #testStdinPseudoVariableFromExternalProcess) debug"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'who | stdin upToEndOfFile !!'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'who | stdin upToEndOfFile !!'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -6910,11 +6915,11 @@ testStdinPseudoVariableUpToEndOfFile
 	"(CommandShellTestCase selector: #testStdinPseudoVariableUpToEndOfFile) debug"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help help | stdin upToEndOfFile !!'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help help | stdin upToEndOfFile !!'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -6926,8 +6931,8 @@ testCommandOnFailure01
 	"(CommandShellTestCase selector: #testCommandOnFailure01) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell command: 'ls NO/SUCH/FILE' onFailureDo: ['the command failed'].
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell command: 'ls NO/SUCH/FILE' onFailureDo: ['the command failed'].
 	self should: [result = 'the command failed'].
 	self should: [self isNumberOfOpenFiles: openFileCount]
 ! !
@@ -6938,8 +6943,8 @@ testCommandOnFailure02
 	"(CommandShellTestCase selector: #testCommandOnFailure02) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell command: 'ls' onFailureDo: ['the command failed'].
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell command: 'ls' onFailureDo: ['the command failed'].
 	self should: [result isKindOf: OrderedCollection].
 	self should: [self isNumberOfOpenFiles: openFileCount]
 ! !
@@ -6950,8 +6955,8 @@ testCommandOnFailure03
 	"(CommandShellTestCase selector: #testCommandOnFailure03) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell command: 'ls NO/SUCH/FILE'
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell command: 'ls NO/SUCH/FILE'
 				onFailureDo: [:p | 'the command failed ', p printString].
 	self should: ['the command failed*' match: result].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -6963,8 +6968,8 @@ testIfThenElse01
 	"(CommandShellTestCase selector: #testIfThenElse01) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		if: 'who'
 		then: ['the command succeeded']
 		else: ['the command failed'].
@@ -6978,8 +6983,8 @@ testIfThenElse02
 	"(CommandShellTestCase selector: #testIfThenElse02) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		if: 'ls NO/SUCH/FILE'
 		then: ['the command succeeded']
 		else: ['the command failed'].
@@ -6993,8 +6998,8 @@ testIfThenElse03
 	"(CommandShellTestCase selector: #testIfThenElse03) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		if: 'who
 			ls NO/SUCH/FILE
 			who'
@@ -7017,8 +7022,8 @@ testIfThenElse04
 	"(CommandShellTestCase selector: #testIfThenElse04) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		if: 'who'
 		then: [:p |
 			self should: [p isKindOf: OrderedCollection].
@@ -7036,8 +7041,8 @@ testScriptOnFailure01
 	"(CommandShellTestCase selector: #testScriptOnFailure01) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		script: 'who
 				help
 				ls -l NOSUCHFILE
@@ -7053,8 +7058,8 @@ testScriptOnFailure02
 	"(CommandShellTestCase selector: #testScriptOnFailure02) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		script: 'who
 				help
 				ls
@@ -7070,8 +7075,8 @@ testScriptOnFailure03
 	"(CommandShellTestCase selector: #testScriptOnFailure03) run"
 
 	| openFileCount result |
-	openFileCount := self numberOfOpenFiles.
-	result := shell
+	openFileCount _ self numberOfOpenFiles.
+	result _ shell
 		script: 'who
 				help
 				ls -l NOSUCHFILE
@@ -7088,14 +7093,14 @@ testDoCommandsInString1
 
 	| command procs expectedResult savedResult |
 
-	command := 'help help | CommandShellTestCase tempResult: stdin upToEndOfFile !!'.
-	procs := shell pipeline: 'help help'.
-	expectedResult := procs last output.
+	command _ 'help help | CommandShellTestCase tempResult: stdin upToEndOfFile !!'.
+	procs _ shell pipeline: 'help help'.
+	expectedResult _ procs last output.
 	self should: [expectedResult size > 10].
 	self class tempResult: nil.
 	shell command: command.
 	(Delay forSeconds: 1) wait.	"Allow the command to run"
-	savedResult := self class tempResult.
+	savedResult _ self class tempResult.
 	self assert: expectedResult size > 10. "not empty"
 	self assert: expectedResult = savedResult
 ! !
@@ -7108,14 +7113,14 @@ testDoCommandsInString2
 
 	| command procs expectedResult savedResult |
 
-	command := 'who | CommandShellTestCase tempResult: stdin upToEndOfFile !!'.
-	procs := shell pipeline: 'who'.
-	expectedResult := procs last output.
+	command _ 'who | CommandShellTestCase tempResult: stdin upToEndOfFile !!'.
+	procs _ shell pipeline: 'who'.
+	expectedResult _ procs last output.
 	self should: [expectedResult size > 10].
 	self class tempResult: nil.
 	shell command: command.
 	(Delay forSeconds: 1) wait.	"Allow the command to run"
-	savedResult := self class tempResult.
+	savedResult _ self class tempResult.
 	self assert: expectedResult size > 10. "not empty"
 	self assert: expectedResult = savedResult
 ! !
@@ -7126,11 +7131,11 @@ testPipeline01
 	"(CommandShellTestCase selector: #testPipeline01) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7142,11 +7147,11 @@ testPipeline02
 	"(CommandShellTestCase selector: #testPipeline02) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'echo hello world'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'echo hello world'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: ['hello world*' match: o].
@@ -7160,11 +7165,11 @@ testPipeline03
 	"(CommandShellTestCase selector: #testPipeline03) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7176,11 +7181,11 @@ testPipeline04
 	"(CommandShellTestCase selector: #testPipeline04) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7192,10 +7197,10 @@ testPipeline05
 	"(CommandShellTestCase selector: #testPipeline05) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | cat | od | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | cat | od | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7207,10 +7212,10 @@ testPipeline06
 	"(CommandShellTestCase selector: #testPipeline06) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps > /tmp/delete.me | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps > /tmp/delete.me | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
@@ -7223,10 +7228,10 @@ testPipeline07
 	"(CommandShellTestCase selector: #testPipeline07) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps > /dev/null | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps > /dev/null | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
@@ -7239,10 +7244,10 @@ testPipeline08
 	"(CommandShellTestCase selector: #testPipeline08) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'cat < /etc/passwd | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'cat < /etc/passwd | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
@@ -7255,10 +7260,10 @@ testPipeline09
 	"(CommandShellTestCase selector: #testPipeline09) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /etc/hosts /etc/NOSUCHFILE 2> /tmp/delete.me | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /etc/hosts /etc/NOSUCHFILE 2> /tmp/delete.me | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
@@ -7271,10 +7276,10 @@ testPipeline10
 	"(CommandShellTestCase selector: #testPipeline10) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | cat > /tmp/delete.me | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | cat > /tmp/delete.me | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
@@ -7287,10 +7292,10 @@ testPipeline11
 	"(CommandShellTestCase selector: #testPipeline11) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | cat > /dev/null | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | cat > /dev/null | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
@@ -7303,10 +7308,10 @@ testPipeline12
 	"(CommandShellTestCase selector: #testPipeline12) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ps | cat < /etc/passwd | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ps | cat < /etc/passwd | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
@@ -7320,10 +7325,10 @@ testPipeline13
 	"(CommandShellTestCase selector: #testPipeline13) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'who | ls /etc/hosts /etc/NOSUCHFILE 2> /tmp/delete.me | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'who | ls /etc/hosts /etc/NOSUCHFILE 2> /tmp/delete.me | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
@@ -7336,10 +7341,10 @@ testPipeline14
 	"(CommandShellTestCase selector: #testPipeline14) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | cat < /etc/passwd | cat'.
-	p := procs last.
-	o := procs output.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | cat < /etc/passwd | cat'.
+	p _ procs last.
+	o _ procs output.
 	self should: [p class == PipeableOSProcess].
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
@@ -7352,11 +7357,11 @@ testPipeline20
 	"(CommandShellTestCase selector: #testPipeline20) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7368,11 +7373,11 @@ testPipeline21
 	"(CommandShellTestCase selector: #testPipeline21) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput > /tmp/delete.me | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput > /tmp/delete.me | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7384,11 +7389,11 @@ testPipeline22
 	"(CommandShellTestCase selector: #testPipeline22) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7400,11 +7405,11 @@ testPipeline23
 	"(CommandShellTestCase selector: #testPipeline23) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2 > /dev/null | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2 > /dev/null | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7416,11 +7421,11 @@ testPipeline24
 	"(CommandShellTestCase selector: #testPipeline24) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput>/tmp/delete.me | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput>/tmp/delete.me | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7432,11 +7437,11 @@ testPipeline25
 	"(CommandShellTestCase selector: #testPipeline25) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput2>/tmp/delete.me | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput2>/tmp/delete.me | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7448,11 +7453,11 @@ testPipeline26
 	"(CommandShellTestCase selector: #testPipeline26) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput < /etc/hosts | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput < /etc/hosts | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7464,11 +7469,11 @@ testPipeline27
 	"(CommandShellTestCase selector: #testPipeline27) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput < /etc/hosts | copyToError'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput < /etc/hosts | copyToError'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7480,11 +7485,11 @@ testPipeline28
 	"(CommandShellTestCase selector: #testPipeline28) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls -l | copyToOutput < /etc/hosts | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls -l | copyToOutput < /etc/hosts | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7496,11 +7501,11 @@ testPipeline30
 	"(CommandShellTestCase selector: #testPipeline30) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7512,11 +7517,11 @@ testPipeline31
 	"(CommandShellTestCase selector: #testPipeline31) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput > /tmp/delete.me | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput > /tmp/delete.me | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7528,11 +7533,11 @@ testPipeline32
 	"(CommandShellTestCase selector: #testPipeline32) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7544,11 +7549,11 @@ testPipeline33
 	"(CommandShellTestCase selector: #testPipeline33) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2> /dev/null | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2> /dev/null | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7560,11 +7565,11 @@ testPipeline34
 	"(CommandShellTestCase selector: #testPipeline34) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput>/tmp/delete.me | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput>/tmp/delete.me | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7576,11 +7581,11 @@ testPipeline35
 	"(CommandShellTestCase selector: #testPipeline35) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput2>/tmp/delete.me | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput2>/tmp/delete.me | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7592,11 +7597,11 @@ testPipeline36
 	"(CommandShellTestCase selector: #testPipeline36) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput < /etc/hosts | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput < /etc/hosts | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7608,11 +7613,11 @@ testPipeline37
 	"(CommandShellTestCase selector: #testPipeline37) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls -l | copyToOutput < /etc/hosts | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls -l | copyToOutput < /etc/hosts | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty not].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7624,11 +7629,11 @@ testPipeline38
 	"(CommandShellTestCase selector: #testPipeline38) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7640,11 +7645,11 @@ testPipeline39
 	"(CommandShellTestCase selector: #testPipeline39) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help > /tmp/delete.me | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help > /tmp/delete.me | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7656,15 +7661,15 @@ testPipeline40
 	"(CommandShellTestCase selector: #testPipeline40) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'ps > /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'ps > /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7676,15 +7681,15 @@ testPipeline41
 	"(CommandShellTestCase selector: #testPipeline41) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE 2> /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE 2> /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7696,11 +7701,11 @@ testPipeline42
 	"(CommandShellTestCase selector: #testPipeline42) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'cat < /etc/hosts'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'cat < /etc/hosts'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7712,17 +7717,17 @@ testPipeline43
 	"(CommandShellTestCase selector: #testPipeline43) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | noSuchCommand'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | noSuchCommand'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
 
 	self shouldnt: [p succeeded].
 
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self shouldnt: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7735,15 +7740,15 @@ testPipeline44
 	"(CommandShellTestCase selector: #testPipeline44) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'copyToOutput | noSuchCommand'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'copyToOutput | noSuchCommand'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
 	self shouldnt: [p succeeded].
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self shouldnt: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7756,17 +7761,17 @@ testPipeline45
 	"(CommandShellTestCase selector: #testPipeline45) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | noSuchCommand'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | noSuchCommand'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
 
 	self shouldnt: [p succeeded].
 
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self shouldnt: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7779,14 +7784,14 @@ testPipeline46
 	"(CommandShellTestCase selector: #testPipeline46) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | who'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | who'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs upToEndOfFile. "wait for output, otherwise may be lost when in polling mode"
+	o _ procs upToEndOfFile. "wait for output, otherwise may be lost when in polling mode"
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self should: [e isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7798,14 +7803,14 @@ testPipeline47
 	"(CommandShellTestCase selector: #testPipeline47) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | sleep 1'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | sleep 1'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self should: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7818,17 +7823,17 @@ testPipeline48
 	"(CommandShellTestCase selector: #testPipeline48) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'who | noSuchCommand'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'who | noSuchCommand'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
 
 	self shouldnt: [p succeeded].
 
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self shouldnt: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7841,17 +7846,17 @@ testPipeline49
 	"(CommandShellTestCase selector: #testPipeline49) run"
 
 	| procs p o e openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'help | copyToOutput 2> /tmp/delete.me | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
 
 	self should: [p succeeded].
 
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	e := p errorUpToEnd.
+	e _ p errorUpToEnd.
 	self should: [e isKindOf: String].
 	self should: [e isEmpty].
 	self should: [procs output isEmpty]. "Force read to EOF, closes output pipe"
@@ -7864,18 +7869,18 @@ testPipeline50
 	"(CommandShellTestCase selector: #testPipeline50) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'help > /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'help > /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	procs finalize.
-	procs := CommandShell new pipeline: 'cat /tmp/delete.me'.
+	procs _ CommandShell new pipeline: 'cat /tmp/delete.me'.
 	self shouldnt: [procs last output isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7887,15 +7892,15 @@ testPipeline51
 	"(CommandShellTestCase selector: #testPipeline51) run"
 
 	| openFileCount procs p o fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'copyToError /etc/hosts 2> /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'copyToError /etc/hosts 2> /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7907,15 +7912,15 @@ testPipeline52
 	"(CommandShellTestCase selector: #testPipeline52) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'copyToError < /etc/hosts 2> /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'copyToError < /etc/hosts 2> /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7927,11 +7932,11 @@ testPipeline53
 	"(CommandShellTestCase selector: #testPipeline53) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'copyToOutput < /etc/hosts'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'copyToOutput < /etc/hosts'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7943,16 +7948,16 @@ testPipeline60
 	"(CommandShellTestCase selector: #testPipeline60) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'Smalltalk!! > /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'Smalltalk!! > /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	procs finalize.
-	procs := CommandShell new pipeline: 'cat /tmp/delete.me'.
+	procs _ CommandShell new pipeline: 'cat /tmp/delete.me'.
 	self shouldnt: [procs last output isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
 ! !
@@ -7963,15 +7968,15 @@ testPipeline61
 	"(CommandShellTestCase selector: #testPipeline61) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'stdout nextPutAll: ''Hello world!!'' !! > /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'stdout nextPutAll: ''Hello world!!'' !! > /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -7983,15 +7988,15 @@ testPipeline62
 	"(CommandShellTestCase selector: #testPipeline62) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'stderr nextPutAll: ''Hello stderr'' !! 2> /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'stderr nextPutAll: ''Hello stderr'' !! 2> /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -8003,11 +8008,11 @@ testPipeline63
 	"(CommandShellTestCase selector: #testPipeline63) run"
 
 	| procs p o openFileCount |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'stdin upToEnd !! < /etc/hosts'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'stdin upToEnd !! < /etc/hosts'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -8019,15 +8024,15 @@ testPipeline64
 	"(CommandShellTestCase selector: #testPipeline64) run"
 
 	| procs p o openFileCount fs |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	CommandShell deleteFileNamed: '/tmp/delete.me'.	
-	procs := shell pipeline: 'stdout nextPutAll: stdin upToEnd !! < /etc/hosts > /tmp/delete.me'.
-	p := procs last.
+	procs _ shell pipeline: 'stdout nextPutAll: stdin upToEnd !! < /etc/hosts > /tmp/delete.me'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	fs := CommandShell fileNamed: '/tmp/delete.me'.
+	fs _ CommandShell fileNamed: '/tmp/delete.me'.
 	self should: [fs upToEnd isEmpty not].
 	fs close.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -8043,16 +8048,16 @@ testPipeline65
 	| procs p o last |
 	(Smalltalk respondsTo: #asArray)
 		ifTrue: ["traditional system dictionary"
-			last := (Smalltalk asArray first: 300) printString last: 20.
-			procs := shell pipeline: 'Smalltalk asArray first: 300!! | copyToOutput']
+			last _ (Smalltalk asArray first: 300) printString last: 20.
+			procs _ shell pipeline: 'Smalltalk asArray first: 300!! | copyToOutput']
 		ifFalse: ["newer image with refactored system dictionary"
 			(Smalltalk respondsTo: #globals)
 				ifFalse: [self error: 'unknown system dictionary organization'].
-			last := (Smalltalk globals keys first: 300) printString last: 20.
-			procs := shell pipeline: 'Smalltalk globals keys first: 300!! | copyToOutput'].
-	p := procs last.
+			last _ (Smalltalk globals keys first: 300) printString last: 20.
+			procs _ shell pipeline: 'Smalltalk globals keys first: 300!! | copyToOutput'].
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	"n.b. remove trailing line terminator from command output"
@@ -8070,19 +8075,19 @@ testPipeline66
 	"(CommandShellTestCase selector: #testPipeline66) run"
 
 	| procs p o last count |
-	count := 150. "<== Make this smaller if you get a deadlock"
+	count _ 150. "<== Make this smaller if you get a deadlock"
 	(Smalltalk respondsTo: #asArray)
 		ifTrue: ["traditional system dictionary"
-			last := (Smalltalk asArray first: count) last printString.
-			procs := shell pipeline: 'Smalltalk asArray first: ', count printString, '!! | cat']
+			last _ (Smalltalk asArray first: count) last printString.
+			procs _ shell pipeline: 'Smalltalk asArray first: ', count printString, '!! | cat']
 		ifFalse: ["newer image with refactored system dictionary"
 			(Smalltalk respondsTo: #globals)
 				ifFalse: [self error: 'unknown system dictionary organization'].
-			last := (Smalltalk globals keys first: count) last printString.
-			procs := shell pipeline: 'Smalltalk globals keys first: ', count printString, '!! | cat'].
-	p := procs last.
+			last _ (Smalltalk globals keys first: count) last printString.
+			procs _ shell pipeline: 'Smalltalk globals keys first: ', count printString, '!! | cat'].
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [((o copyFrom: (o size - (last size + 1)) to: o size) allButLast allButLast) = last]
@@ -8094,14 +8099,14 @@ testPipeline67
 	"(CommandShellTestCase selector: #testPipeline67) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'bogusExpression !!'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'bogusExpression !!'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs output.
+	o _ procs output.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
-	e := procs errorUpToEnd.
+	e _ procs errorUpToEnd.
 	self assert: (('Compiler: invalid Smalltalk expression [bogusExpression ]', String lf) = e).
 	procs finalize.
 	self should: [self isNumberOfOpenFiles: openFileCount]
@@ -8113,12 +8118,12 @@ testPipeline70
 	"(CommandShellTestCase selector: #testPipeline70) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
-	e := procs errorUpToEnd.
+	o _ procs output.
+	e _ procs errorUpToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8132,12 +8137,12 @@ testPipeline71
 	"(CommandShellTestCase selector: #testPipeline71) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file | cat'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file | cat'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs output.
-	e := p errorPipelineStream contents.
+	o _ procs output.
+	e _ p errorPipelineStream contents.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8151,12 +8156,12 @@ testPipeline72
 	"(CommandShellTestCase selector: #testPipeline72) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
-	e := p errorPipelineStream contents.
+	o _ procs output.
+	e _ p errorPipelineStream contents.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8170,12 +8175,12 @@ testPipeline73
 	"(CommandShellTestCase selector: #testPipeline73) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !!'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !!'.
+	p _ procs last.
 	self should: [p class == ExpressionEvaluator].
-	o := procs upToEnd.
-	e := p errorPipelineStream contents.
+	o _ procs upToEnd.
+	e _ p errorPipelineStream contents.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8189,12 +8194,12 @@ testPipeline74
 	"(CommandShellTestCase selector: #testPipeline74) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !! | cat | copyToOutput | cat | cat | copyToOutput | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !! | cat | copyToOutput | cat | cat | copyToOutput | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
-	e := p errorPipelineStream contents.
+	o _ procs output.
+	e _ p errorPipelineStream contents.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8208,12 +8213,12 @@ testPipeline75
 	"(CommandShellTestCase selector: #testPipeline75) run"
 
 	| procs p o openFileCount e |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !! | cat | copyToOutput | cat | cat | copyToOutput | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /no/such/file | stdout nextPutAll: stdin upToEnd !! | cat | copyToOutput | cat | cat | copyToOutput | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs output.
-	e := procs errorUpToEnd.
+	o _ procs output.
+	e _ procs errorUpToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty].
 	self should: [e isKindOf: String].
@@ -8228,16 +8233,16 @@ testPipeline80
 	"(CommandShellTestCase selector: #testPipeline80) run"
 
 	| procs p o openFileCount errorLength e1 e2 |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE'.
+	p _ procs last.
 	self should: [p class == PipeableOSProcess].
-	o := procs upToEndOfFile. "wait for output, otherwise may be lost when in polling mode"
+	o _ procs upToEndOfFile. "wait for output, otherwise may be lost when in polling mode"
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	errorLength := p errorPipelineStream size.
-	e1 := procs nextFromError: 15.
-	e2 := procs errorUpToEnd.
+	errorLength _ p errorPipelineStream size.
+	e1 _ procs nextFromError: 15.
+	e2 _ procs errorUpToEnd.
 	self should: [errorLength == (e1 size + (e2 size))].
 	self should: [procs errorUpToEnd isEmpty].
 	self should: [p errorPipelineStream upToEnd size = 0].
@@ -8251,16 +8256,16 @@ testPipeline81
 	"(CommandShellTestCase selector: #testPipeline81) run"
 
 	| procs p o openFileCount errorLength e1 e2 |
-	openFileCount := self numberOfOpenFiles.
-	procs := shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE | copyToOutput'.
-	p := procs last.
+	openFileCount _ self numberOfOpenFiles.
+	procs _ shell pipeline: 'ls /etc/hosts /NO/SUCH/FILE | copyToOutput'.
+	p _ procs last.
 	self should: [p class == ShellBuiltinEvaluator].
-	o := procs upToEnd.
+	o _ procs upToEnd.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	errorLength := p errorPipelineStream size.
-	e1 := procs nextFromError: 15.
-	e2 := procs errorUpToEnd.
+	errorLength _ p errorPipelineStream size.
+	e1 _ procs nextFromError: 15.
+	e2 _ procs errorUpToEnd.
 	self should: [errorLength == (e1 size + (e2 size))].
 	self should: [procs errorUpToEnd isEmpty].
 	self should: [p errorPipelineStream size == 0].
@@ -8276,7 +8281,7 @@ testPipeline90
 
 	| o |
 	shell command: 'Smalltalk classNames size'.
-	o := shell outputStream contents.
+	o _ shell outputStream contents.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
 	self should: [o size > 3]
@@ -8289,14 +8294,14 @@ testPipeline91
 	"(CommandShellTestCase selector: #testPipeline91) run"
 
 	| numberOfClasses p o numberCounted |
-	numberOfClasses := Smalltalk classNames size.
-	p := shell tryEvaluatingAsSmalltalk: 'Smalltalk classNames size'.
+	numberOfClasses _ Smalltalk classNames size.
+	p _ shell tryEvaluatingAsSmalltalk: 'Smalltalk classNames size'.
 	self should: [p class == ExpressionEvaluator].
 	self should: [p isComplete].
-	o := p upToEnd.
+	o _ p upToEnd.
 	self should: [o isKindOf: String].
 	self shouldnt: [o isEmpty].
-	numberCounted := o asInteger.
+	numberCounted _ o asInteger.
 	self should: [numberCounted == numberOfClasses]
 ! !
 
@@ -8307,11 +8312,11 @@ testPipeline92
 	"(CommandShellTestCase selector: #testPipeline92) run"
 
 	| p o |
-	p := shell tryEvaluatingAsSmalltalk: '#Smalltalk classNames size'.
+	p _ shell tryEvaluatingAsSmalltalk: '#Smalltalk classNames size'.
 	self should: [p class == ExpressionEvaluator].
 	self should: [p isComplete].
 	self should: [p exitStatus == #fail].
-	o := p upToEnd.
+	o _ p upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty]
 ! !
@@ -8323,11 +8328,11 @@ testPipeline93
 	"(CommandShellTestCase selector: #testPipeline93) run"
 
 	| p o |
-	p := shell tryEvaluatingAsSmalltalk: 'Smalltalk classNames size!!'.
+	p _ shell tryEvaluatingAsSmalltalk: 'Smalltalk classNames size!!'.
 	self should: [p class == ExpressionEvaluator].
 	self should: [p isComplete].
 	self should: [p exitStatus == #fail].
-	o := p upToEnd.
+	o _ p upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty]
 ! !
@@ -8339,11 +8344,11 @@ testPipeline94
 	"(CommandShellTestCase selector: #testPipeline94) run"
 
 	| p o |
-	p := shell tryEvaluatingAsSmalltalk: 'Smalltalk noSuchSelector'.
+	p _ shell tryEvaluatingAsSmalltalk: 'Smalltalk noSuchSelector'.
 	self should: [p class == ExpressionEvaluator].
 	self should: [p isComplete].
 	self should: [p exitStatus == #fail].
-	o := p upToEnd.
+	o _ p upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty]
 ! !
@@ -8355,11 +8360,11 @@ testPipeline95
 	"(CommandShellTestCase selector: #testPipeline95) run"
 
 	| p o |
-	p := shell tryEvaluatingAsSmalltalk: '(Smalltalk classNames size'.
+	p _ shell tryEvaluatingAsSmalltalk: '(Smalltalk classNames size'.
 	self should: [p class == ExpressionEvaluator].
 	self should: [p isComplete].
 	self should: [p exitStatus == #fail].
-	o := p upToEnd.
+	o _ p upToEnd.
 	self should: [o isKindOf: String].
 	self should: [o isEmpty]
 ! !
@@ -8367,10 +8372,10 @@ testPipeline95
 !CommandShellTestCase class methodsFor: 'class initialization' stamp: 'dtl 9/2/2006 10:02'!
 initialize
 	"CommandShellTestCase initialize"
-	"CheckFileHandleCount := true"
-	"CheckFileHandleCount := false"
+	"CheckFileHandleCount _ true"
+	"CheckFileHandleCount _ false"
 
-	CheckFileHandleCount := true! !
+	CheckFileHandleCount _ true! !
 
 !CommandShellTestCase class methodsFor: 'accessing' stamp: 'dtl 9/15/2001 12:49'!
 tempResult
@@ -8384,7 +8389,7 @@ tempResult: anObject
 	"A global variable for holding the result of an internal process proxy evaluation.
 	This is an ugly kludge."
 
-	TempResult := anObject! !
+	TempResult _ anObject! !
 
 !ExpressionEvaluatorTestCase methodsFor: 'Running' stamp: 'dtl 4/19/2003 16:13'!
 runAll
@@ -8392,7 +8397,7 @@ runAll
 	"self new runAll"
 
 	| result suite |
-	suite := TestSuite new.
+	suite _ TestSuite new.
 	suite addTest: (self class selector: #testCommand01).
 	suite addTest: (self class selector: #testCommand02).
 	suite addTest: (self class selector: #testCommand03).
@@ -8402,7 +8407,7 @@ runAll
 	suite addTest: (self class selector: #testBlock01).
 	suite addTest: (self class selector: #testBlock02).
 	suite addTest: (self class selector: #testBlock03).
-	result := suite run.
+	result _ suite run.
 	self should: [result defects size == 0].
 	^ result
 ! !
@@ -8413,7 +8418,7 @@ testBlock01
 
 	"(self selector: #testBlock01) run"
 
-	pipeJunction := ExpressionEvaluator block: ['Hello world!!'].
+	pipeJunction _ ExpressionEvaluator block: ['Hello world!!'].
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8437,7 +8442,7 @@ testBlock02
 
 	"(self selector: #testBlock02) run"
 
-	pipeJunction := ExpressionEvaluator block: [Smalltalk noSuchMessage].
+	pipeJunction _ ExpressionEvaluator block: [Smalltalk noSuchMessage].
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8461,7 +8466,7 @@ testBlock03
 
 	"(self selector: #testBlock03) run"
 
-	pipeJunction := ExpressionEvaluator block: [Array with: #foo with: #bar].
+	pipeJunction _ ExpressionEvaluator block: [Array with: #foo with: #bar].
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8485,7 +8490,7 @@ testCommand01
 
 	"(self selector: #testCommand01) run"
 
-	pipeJunction := ExpressionEvaluator command: '''Hello world!!'''.
+	pipeJunction _ ExpressionEvaluator command: '''Hello world!!'''.
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8509,7 +8514,7 @@ testCommand02
 
 	"(self selector: #testCommand02) run"
 
-	pipeJunction := ExpressionEvaluator command: 'Smalltalk noSuchMessage'.
+	pipeJunction _ ExpressionEvaluator command: 'Smalltalk noSuchMessage'.
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8535,7 +8540,7 @@ testCommand03
 
 	"(self selector: #testCommand03) run"
 
-	pipeJunction := ExpressionEvaluator command: 'Array with: #foo with: #bar'.
+	pipeJunction _ ExpressionEvaluator command: 'Array with: #foo with: #bar'.
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8559,7 +8564,7 @@ testCommand04
 
 	"(self selector: #testCommand04) run"
 
-	pipeJunction := ExpressionEvaluator command: 'NoSuchClass new'.
+	pipeJunction _ ExpressionEvaluator command: 'NoSuchClass new'.
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8583,7 +8588,7 @@ testCommand05
 
 	"(self selector: #testCommand05) run"
 
-	pipeJunction := ExpressionEvaluator command: 'lowerCaseClassName new'.
+	pipeJunction _ ExpressionEvaluator command: 'lowerCaseClassName new'.
 	self should: [pipeJunction runState == #notYetRunning].
 	self shouldnt: [pipeJunction isComplete].
 	self should: [pipeJunction pipeToInput isNil].
@@ -8608,7 +8613,7 @@ testCommand06
 	"(self selector: #testCommand06) run"
 
 	| errorString |
-	pipeJunction := ExpressionEvaluator command: 'Smalltalk | | bogusSyntax'.
+	pipeJunction _ ExpressionEvaluator command: 'Smalltalk | | bogusSyntax'.
 	self assert: pipeJunction runState == #notYetRunning.
 	self deny: pipeJunction isComplete.
 	self assert: pipeJunction pipeToInput isNil.
@@ -8624,7 +8629,7 @@ testCommand06
 	self deny: pipeJunction succeeded.
 	self assert: pipeJunction upToEnd isEmpty.
 	"Compiler and OpalCompiler yield similar but different error messages"
-	errorString := pipeJunction errorUpToEnd.
+	errorString _ pipeJunction errorUpToEnd.
 	self assert: ( '*[Smalltalk | * expected ->*| bogusSyntax]*' match: errorString)! !
 
 !InternalPipeTestCase methodsFor: 'private' stamp: 'dtl 11/25/2001 00:42'!
@@ -8632,7 +8637,7 @@ readFromAndClose: aPipe writingTo: aStream
 
 	| s |
 	[aPipe atEnd] whileFalse:
-		[s := aPipe next: 10000.
+		[s _ aPipe next: 10000.
 		aStream nextPutAll: s asString.
 		(Delay forMilliseconds: 100) wait].
 	(aPipe respondsTo: #reader) ifTrue: [aPipe reader close].
@@ -8656,10 +8661,10 @@ runAll
 	"InternalPipeTestCase new runAll"
 
 	| result suite |
-	suite := TestSuite new.
+	suite _ TestSuite new.
 	suite addTest: (InternalPipeTestCase selector: #testBlocking).
 	suite addTest: (InternalPipeTestCase selector: #testNonBlocking).
-	result := suite run.
+	result _ suite run.
 	self should: [result defects size == 0].
 	^ result
 ! !
@@ -8667,7 +8672,7 @@ runAll
 !InternalPipeTestCase methodsFor: 'running' stamp: 'dtl 11/25/2001 00:14'!
 setUp
 
-		pipe := InternalPipe new
+		pipe _ InternalPipe new
 ! !
 
 !InternalPipeTestCase methodsFor: 'testing' stamp: 'dtl 11/25/2001 18:15'!
@@ -8679,7 +8684,7 @@ testBlocking
 	pipe setBlocking.
 	self writeStuffOnThenClose: pipe.
 	Processor yield.
-	resultString := pipe upToEnd last: 16.
+	resultString _ pipe upToEnd last: 16.
 	self should: [resultString notNil].
 	self should: ['this is line 10*' match: resultString]
 ! !
@@ -8692,8 +8697,8 @@ testNonBlocking
 	| ws str |
 	pipe setNonBlocking.
 	self writeStuffOnThenClose: pipe.
-	ws := self readFromAndClose: pipe writingTo: (WriteStream on: String new).
-	str := (ws contents last: 16).
+	ws _ self readFromAndClose: pipe writingTo: (WriteStream on: String new).
+	str _ (ws contents last: 16).
 	self should: ['this is line 10*' match: str]
 ! !
 
@@ -8703,8 +8708,8 @@ isNumberOfOpenFiles: anInteger
 	bit if necessary to clean up stale references, but give up after a few tries."
 
 	| loops milliseconds |
-	loops := 10.
-	milliseconds := 50.
+	loops _ 10.
+	milliseconds _ 50.
 	(1 to: loops)
 		detect:
 			[:i | (self numberOfOpenFiles == anInteger)
@@ -8731,7 +8736,7 @@ numberOfOpenFiles
 	"PipeableOSProcessTestCase new numberOfOpenFiles"
 
 	| d |
-	^ (d := self procDir) isNil
+	^ (d _ self procDir) isNil
 		ifTrue: [0]
 		ifFalse: [(CommandShell directoryEntryNames: d) size]! !
 
@@ -8741,8 +8746,8 @@ procDir
 
 	| path |
 	^ procDir ifNil:
-		[path := '/proc/' , OSProcess thisOSProcess pid printString, '/fd'.
-		(CommandShell directoryExists: path) ifTrue: [procDir := path]]
+		[path _ '/proc/' , OSProcess thisOSProcess pid printString, '/fd'.
+		(CommandShell directoryExists: path) ifTrue: [procDir _ path]]
 ! !
 
 !PipeableOSProcessTestCase methodsFor: 'testing-process proxy' stamp: 'dtl 4/24/2012 20:21'!
@@ -8751,9 +8756,9 @@ testCommandEcho
 	"(PipeableOSProcessTestCase selector: #testCommandEcho) debug"
 
 	| p result |
-	self shouldnt: [p := PipeableOSProcess command: '/bin/echo this is a test']
+	self shouldnt: [p _ PipeableOSProcess command: '/bin/echo this is a test']
 		raise: Warning.
-	result := p output.
+	result _ p output.
 	p closePipes.
 	self assert: ('this is a test*' match: result)! !
 
@@ -8763,9 +8768,9 @@ testForkHeadlessSqueak
 	"(PipeableOSProcessTestCase selector: #testForkHeadlessSqueak) debug"
 
 	| openFileCount child |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self shouldnt:
-			[child := PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
+			[child _ PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
 				[OSProcess thisOSProcess stdOut
 					nextPutAll: 'hello from headless Squeak child']]
 		raise: Warning.
@@ -8779,16 +8784,16 @@ testForkHeadlessSqueak2
 	"(PipeableOSProcessTestCase selector: #testForkHeadlessSqueak2) debug"
 
 	| openFileCount child response in |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self shouldnt:
-			[child := PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
+			[child _ PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
 				[(Delay forMilliseconds: 100) wait. "wait for data to arrive"
-				in := OSProcess thisOSProcess stdIn upToEnd.
+				in _ OSProcess thisOSProcess stdIn upToEnd.
 				OSProcess thisOSProcess stdOut nextPutAll: in]]
 		raise: Warning.
 	child nextPutAll: 'hello'.
 	child pipeToInput close.
-	response := child upToEndOfFile.
+	response _ child upToEndOfFile.
 	self should: response = 'hello'.
 	self should: [self isNumberOfOpenFiles: openFileCount]
 ! !
@@ -8803,31 +8808,31 @@ testForkHeadlessSqueakReadAndWriteReferenceStream
 	"(PipeableOSProcessTestCase selector: #testForkHeadlessSqueakReadAndWriteReferenceStream) debug"
 
 	| openFileCount child refStream inputStream result s anObject objectStreamToChild rs |
-	rs := Smalltalk at: #ReferenceStream.
-	openFileCount := self numberOfOpenFiles.
-	anObject := { 1 . 'two' . #three . { 4 } }.
+	rs _ Smalltalk at: #ReferenceStream.
+	openFileCount _ self numberOfOpenFiles.
+	anObject _ { 1 . 'two' . #three . { 4 } }.
 	self shouldnt:
 			[ | obj |
-				child := PipeableOSProcess forkSqueakAndDoThenQuit:
+				child _ PipeableOSProcess forkSqueakAndDoThenQuit:
 				["First set standard input to blocking. This avoids a delay to wait for
 				data to be available, but note that it is dangerous to do this unless you
 				are certain that you know in advance that the correct number of characters
 				will be available on the input. If this is not the case, then the VM will block
 				on the read and lock up the child squeak process."
 				OSProcess thisOSProcess stdIn setBlocking.
-				inputStream := rs on: OSProcess thisOSProcess stdIn.
-				[ obj := inputStream next. "read one object expected to have been sent by parent" ]
+				inputStream _ rs on: OSProcess thisOSProcess stdIn.
+				[ obj _ inputStream next. "read one object expected to have been sent by parent" ]
 					on: Error
-					do: [ :ex | obj := ex printString "copy back to parent process for debugging" ].
-				refStream := rs on: OSProcess thisOSProcess stdOut.
+					do: [ :ex | obj _ ex printString "copy back to parent process for debugging" ].
+				refStream _ rs on: OSProcess thisOSProcess stdOut.
 				refStream nextPut: obj "echo the object back to the parent Squeak"]]
 		raise: Warning.
-	objectStreamToChild := rs on: child pipeToInput writer.
+	objectStreamToChild _ rs on: child pipeToInput writer.
 	objectStreamToChild nextPut: anObject; flush. "send a complex object to the child"
-	s := RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := rs on: s.
-	result := inputStream next.
+	inputStream _ rs on: s.
+	result _ inputStream next.
 	self assert: anObject equals: result. "n.b. see method comment in testCheckStdinWorksCorrectlyForReferenceStreams"
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -8841,17 +8846,17 @@ testForkHeadlessSqueakReferenceStream
 	"(PipeableOSProcessTestCase selector: #testForkHeadlessSqueakReferenceStream) debug"
 
 	| openFileCount anObject child refStream inputStream result s |
-	openFileCount := self numberOfOpenFiles.
-	anObject := { 1 . 'two' . #three . { 4 } }.
+	openFileCount _ self numberOfOpenFiles.
+	anObject _ { 1 . 'two' . #three . { 4 } }.
 	self shouldnt:
-			[child := PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
-				[refStream := (Smalltalk at: #ReferenceStream) on: OSProcess thisOSProcess stdOut.
+			[child _ PipeableOSProcess forkHeadlessSqueakAndDoThenQuit:
+				[refStream _ (Smalltalk at: #ReferenceStream) on: OSProcess thisOSProcess stdOut.
 				refStream nextPut: anObject]]
 		raise: Warning.
-	s := RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := (Smalltalk at: #ReferenceStream) on: s.
-	result := inputStream next.
+	inputStream _ (Smalltalk at: #ReferenceStream) on: s.
+	result _ inputStream next.
 	self assert: anObject equals: result.
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -8862,15 +8867,15 @@ testForkSqueak
 	"(PipeableOSProcessTestCase selector: #testForkSqueak) debug"
 
 	| openFileCount child response in |
-	openFileCount := self numberOfOpenFiles.
+	openFileCount _ self numberOfOpenFiles.
 	self shouldnt:
-			[child := PipeableOSProcess forkSqueakAndDoThenQuit:
-				[in := OSProcess thisOSProcess stdIn upToEnd.
+			[child _ PipeableOSProcess forkSqueakAndDoThenQuit:
+				[in _ OSProcess thisOSProcess stdIn upToEnd.
 				OSProcess thisOSProcess stdOut nextPutAll: in]]
 		raise: Warning.
 	child nextPutAll: 'hello'.
 	child pipeToInput close.
-	response := child upToEndOfFile.
+	response _ child upToEndOfFile.
 	self should: response = 'hello'.
 	self should: [self isNumberOfOpenFiles: openFileCount]
 ! !
@@ -8885,31 +8890,31 @@ testForkSqueakReadAndWriteReferenceStream
 	"(PipeableOSProcessTestCase selector: #testForkSqueakReadAndWriteReferenceStream) debug"
 
 	| openFileCount child refStream inputStream result s anObject objectStreamToChild rs |
-	rs := Smalltalk at: #ReferenceStream.
-	openFileCount := self numberOfOpenFiles.
-	anObject := { 1 . 'two' . #three . { 4 } }.
+	rs _ Smalltalk at: #ReferenceStream.
+	openFileCount _ self numberOfOpenFiles.
+	anObject _ { 1 . 'two' . #three . { 4 } }.
 	self shouldnt:
 			[ | obj |
-				child := PipeableOSProcess forkSqueakAndDoThenQuit:
+				child _ PipeableOSProcess forkSqueakAndDoThenQuit:
 				["First set standard input to blocking. This avoids a delay to wait for
 				data to be available, but note that it is dangerous to do this unless you
 				are certain that you know in advance that the correct number of characters
 				will be available on the input. If this is not the case, then the VM will block
 				on the read and lock up the child squeak process."
 				OSProcess thisOSProcess stdIn setBlocking.
-				inputStream := rs on: OSProcess thisOSProcess stdIn.
-				[ obj := inputStream next. "read one object expected to have been sent by parent" ]
+				inputStream _ rs on: OSProcess thisOSProcess stdIn.
+				[ obj _ inputStream next. "read one object expected to have been sent by parent" ]
 					on: Error
-					do: [ :ex | obj := ex printString "copy back to parent process for debugging" ].
-				refStream := rs on: OSProcess thisOSProcess stdOut.
+					do: [ :ex | obj _ ex printString "copy back to parent process for debugging" ].
+				refStream _ rs on: OSProcess thisOSProcess stdOut.
 				refStream nextPut: obj "echo the object back to the parent Squeak"]]
 		raise: Warning.
-	objectStreamToChild := rs on: child pipeToInput writer.
+	objectStreamToChild _ rs on: child pipeToInput writer.
 	objectStreamToChild nextPut: anObject; flush. "send a complex object to the child"
-	s := RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := rs on: s.
-	result := inputStream next.
+	inputStream _ rs on: s.
+	result _ inputStream next.
 	self assert: anObject equals: result. "n.b. see method comment in testCheckStdinWorksCorrectlyForReferenceStreams"
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -8923,17 +8928,17 @@ testForkSqueakReferenceStream
 	"(PipeableOSProcessTestCase selector: #testForkSqueakReferenceStream) debug"
 
 	| openFileCount anObject child refStream inputStream result s |
-	openFileCount := self numberOfOpenFiles.
-	anObject := { 1 . 'two' . #three . { 4 } }.
+	openFileCount _ self numberOfOpenFiles.
+	anObject _ { 1 . 'two' . #three . { 4 } }.
 	self shouldnt:
-			[child := PipeableOSProcess forkSqueakAndDoThenQuit:
-				[refStream := (Smalltalk at: #ReferenceStream) on: OSProcess thisOSProcess stdOut.
+			[child _ PipeableOSProcess forkSqueakAndDoThenQuit:
+				[refStream _ (Smalltalk at: #ReferenceStream) on: OSProcess thisOSProcess stdOut.
 				refStream nextPut: anObject]]
 		raise: Warning.
-	s := RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := (Smalltalk at: #ReferenceStream) on: s.
-	result := inputStream next.
+	inputStream _ (Smalltalk at: #ReferenceStream) on: s.
+	result _ inputStream next.
 	self assert: anObject equals: result.
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -8953,26 +8958,26 @@ testStdinReadingReferenceStream
 	"(PipeableOSProcessTestCase selector: #testStdinReadingReferenceStream) debug"
 
 	| openFileCount child refStream inputStream result s anObject objectStreamToChild rs |
-	rs := Smalltalk at: #ReferenceStream.
-	openFileCount := self numberOfOpenFiles.
-	anObject := 'ABCDEFG'.
+	rs _ Smalltalk at: #ReferenceStream.
+	openFileCount _ self numberOfOpenFiles.
+	anObject _ 'ABCDEFG'.
 	self shouldnt:
 			[ | obj |
-				child := PipeableOSProcess forkSqueakAndDoThenQuit:
+				child _ PipeableOSProcess forkSqueakAndDoThenQuit:
 					[OSProcess thisOSProcess stdIn setBlocking.
-					inputStream := rs on: OSProcess thisOSProcess stdIn.
-					[ obj := inputStream next. "read one object expected to have been sent by parent" ]
+					inputStream _ rs on: OSProcess thisOSProcess stdIn.
+					[ obj _ inputStream next. "read one object expected to have been sent by parent" ]
 						on: Error
-						do: [ :ex | obj := ex printString "copy back to parent process for debugging" ].
-					refStream := rs on: OSProcess thisOSProcess stdOut.
+						do: [ :ex | obj _ ex printString "copy back to parent process for debugging" ].
+					refStream _ rs on: OSProcess thisOSProcess stdOut.
 					refStream nextPut: obj "echo the object back to the parent Squeak"] ]
 		raise: Warning.
-	objectStreamToChild := rs on: child pipeToInput writer.
+	objectStreamToChild _ rs on: child pipeToInput writer.
 	objectStreamToChild nextPut: anObject; flush. "send a complex object to the child"
-	s := RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
+	s _ RWBinaryOrTextStream with: child pipeFromOutput upToEndOfFile.
 	s reset.
-	inputStream := rs on: s.
-	result := inputStream next.
+	inputStream _ rs on: s.
+	result _ inputStream next.
 	self assert: anObject equals: result. "see comment above, may fail with all but first character set to null"
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -8988,19 +8993,19 @@ testStdinReadingString
 	"(PipeableOSProcessTestCase selector: #testStdinReadingString) debug"
 
 	| openFileCount child result aString|
-	openFileCount := self numberOfOpenFiles.
-	aString := 'ABCDEFG'.
+	openFileCount _ self numberOfOpenFiles.
+	aString _ 'ABCDEFG'.
 	self shouldnt:
 			[ | obj |
-				child := PipeableOSProcess forkSqueakAndDoThenQuit:
+				child _ PipeableOSProcess forkSqueakAndDoThenQuit:
 					[ OSProcess thisOSProcess stdIn setBlocking.
-					[ obj := OSProcess thisOSProcess stdIn next: aString size ]
+					[ obj _ OSProcess thisOSProcess stdIn next: aString size ]
 						on: Error
-						do: [ :ex | obj := ex printString "copy back to parent process for debugging" ].
+						do: [ :ex | obj _ ex printString "copy back to parent process for debugging" ].
 					OSProcess thisOSProcess stdOut nextPutAll: obj asString "echo back to the parent Squeak"] ]
 		raise: Warning.
 	child pipeToInput writer nextPutAll: aString; flush.
-	result := child pipeFromOutput upToEndOfFile.
+	result _ child pipeFromOutput upToEndOfFile.
 	self assert: aString equals: result. "see comment above, may fail with truncated string"
 	self assert: (self isNumberOfOpenFiles: openFileCount).
 ! !
@@ -9011,7 +9016,7 @@ runAll
 	"self new runAll"
 
 	| result suite |
-	suite := TestSuite new.
+	suite _ TestSuite new.
 
 	"testing - external proxy events"
 	suite addTest: (self class selector: #testExternalPipelineEvents01).
@@ -9031,7 +9036,7 @@ runAll
 	suite addTest: (self class selector: #testInternalProxyEvents04).
 	suite addTest: (self class selector: #testInternalProxyErrorPipelineEvents).
 
-	result := suite run.
+	result _ suite run.
 	self should: [result defects size == 0].
 	^ result
 ! !
@@ -9043,7 +9048,7 @@ testExternalPipelineEvents01
 	"(self selector: #testExternalPipelineEvents01) run"
 
 	| pipeline |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 	self assert: pipeline dependents isEmpty.
 	pipeline value upToEndOfFile "evaluate and allow pipes to be closed"
 ! !
@@ -9055,7 +9060,7 @@ testExternalPipelineEvents02
 	"(self selector: #testExternalPipelineEvents02) run"
 
 	| pipeline |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 	self assert: pipeline actionMap isEmpty.
 	pipeline value upToEndOfFile "evaluate and allow pipes to be closed"
 ! !
@@ -9066,7 +9071,7 @@ testExternalProxyErrorPipelineEvents
 	"(self selector: #testExternalProxyErrorPipelineEvents) run"
 
 	| pipeline |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 
 	"The proxies share an errorPipelineStream."
 	self assert: pipeline errorPipelineStream == pipeline first errorPipelineStream.
@@ -9091,7 +9096,7 @@ testExternalProxyEvents01
 	"(self selector: #testExternalProxyEvents01) run"
 
 	| pipeline |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 	self assert: pipeline first dependents isEmpty.
 	self assert: pipeline second dependents isEmpty.
 	self assert: pipeline third dependents size = 1.
@@ -9108,7 +9113,7 @@ testExternalProxyEvents02
 	"(self selector: #testExternalProxyEvents02) run"
 
 	| pipeline |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 	self assert: pipeline first actionMap isEmpty.
 	self assert: pipeline second actionMap isEmpty.
 	self assert: pipeline third actionMap isEmpty.
@@ -9122,19 +9127,19 @@ testExternalProxyEvents03
 	"(self selector: #testExternalProxyEvents03) run"
 
 	| pipeline proxyOne proxyTwo proxyThree |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 
-	proxyOne := pipeline first.
+	proxyOne _ pipeline first.
 	self assert: proxyOne pipeFromError dependents size = 1.
 	self assert: proxyOne pipeFromError dependents first == proxyOne.
 	self assert: proxyOne pipeFromError actionMap isEmpty.
 
-	proxyTwo := pipeline second.
+	proxyTwo _ pipeline second.
 	self assert: proxyTwo pipeFromError dependents size = 1.
 	self assert: proxyTwo pipeFromError dependents first == proxyTwo.
 	self assert: proxyTwo pipeFromError actionMap isEmpty.
 
-	proxyThree := pipeline third.
+	proxyThree _ pipeline third.
 	self assert: proxyThree pipeFromError dependents size = 1.
 	self assert: proxyThree pipeFromError dependents first == proxyThree.
 	self assert: proxyThree pipeFromError actionMap isEmpty.
@@ -9148,19 +9153,19 @@ testExternalProxyEvents04
 	"(self selector: #testExternalProxyEvents04) run"
 
 	| pipeline proxyOne proxyTwo proxyThree |
-	pipeline := self threeExternalProxies.
+	pipeline _ self threeExternalProxies.
 
-	proxyOne := pipeline first.
+	proxyOne _ pipeline first.
 	self assert: proxyOne pipeFromOutput dependents size = 1.
 	self assert: proxyOne pipeFromOutput dependents first == proxyOne.
 	self assert: proxyOne pipeFromOutput actionMap isEmpty.
 
-	proxyTwo := pipeline second.
+	proxyTwo _ pipeline second.
 	self assert: proxyTwo pipeFromOutput dependents size = 1.
 	self assert: proxyTwo pipeFromOutput dependents first == proxyTwo.
 	self assert: proxyTwo pipeFromOutput actionMap isEmpty.
 
-	proxyThree := pipeline third.
+	proxyThree _ pipeline third.
 	self assert: proxyThree pipeFromOutput dependents size = 1.
 	self assert: proxyThree pipeFromOutput dependents first == proxyThree.
 	self assert: proxyThree pipeFromOutput actionMap isEmpty.
@@ -9174,7 +9179,7 @@ testInternalPipelineEvents01
 	"(self selector: #testInternalPipelineEvents01) run"
 
 	| pipeline |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 	self assert: pipeline dependents isEmpty.
 ! !
 
@@ -9185,7 +9190,7 @@ testInternalPipelineEvents02
 	"(self selector: #testInternalPipelineEvents02) run"
 
 	| pipeline |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 	self assert: pipeline actionMap isEmpty
 ! !
 
@@ -9195,7 +9200,7 @@ testInternalProxyErrorPipelineEvents
 	"(self selector: #testInternalProxyErrorPipelineEvents) run"
 
 	| pipeline |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 
 	"The proxies share an errorPipelineStream."
 	self assert: pipeline errorPipelineStream == pipeline first errorPipelineStream.
@@ -9220,7 +9225,7 @@ testInternalProxyEvents01
 	"(self selector: #testInternalProxyEvents01) run"
 
 	| pipeline |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 	self assert: pipeline first dependents isEmpty.
 	self assert: pipeline second dependents isEmpty.
 	self assert: pipeline third dependents size = 1.
@@ -9236,7 +9241,7 @@ testInternalProxyEvents02
 	"(self selector: #testInternalProxyEvents02) run"
 
 	| pipeline |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 	self assert: pipeline first actionMap isEmpty.
 	self assert: pipeline second actionMap isEmpty.
 	self assert: pipeline third actionMap isEmpty.
@@ -9251,19 +9256,19 @@ testInternalProxyEvents03
 	"(self selector: #testInternalProxyEvents03) run"
 
 	| pipeline proxyOne proxyTwo proxyThree |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 
-	proxyOne := pipeline first.
+	proxyOne _ pipeline first.
 	self assert: proxyOne pipeFromError dependents size = 3.
 	self assert: (proxyOne pipeFromError dependents includes: proxyOne).
 	self assert: proxyOne pipeFromError actionMap isEmpty.
 
-	proxyTwo := pipeline second.
+	proxyTwo _ pipeline second.
 	self assert: proxyTwo pipeFromError dependents size = 3.
 	self assert: (proxyOne pipeFromError dependents includes: proxyTwo).
 	self assert: proxyTwo pipeFromError actionMap isEmpty.
 
-	proxyThree := pipeline third.
+	proxyThree _ pipeline third.
 	self assert: proxyThree pipeFromError dependents size = 3.
 	self assert: (proxyOne pipeFromError dependents includes: proxyThree).
 	self assert: proxyThree pipeFromError actionMap isEmpty.
@@ -9276,19 +9281,19 @@ testInternalProxyEvents04
 	"(self selector: #testInternalProxyEvents04) run"
 
 	| pipeline proxyOne proxyTwo proxyThree |
-	pipeline := self threeInternalProxies.
+	pipeline _ self threeInternalProxies.
 
-	proxyOne := pipeline first.
+	proxyOne _ pipeline first.
 	self assert: proxyOne pipeFromOutput dependents size = 1.
 	self assert: proxyOne pipeFromOutput dependents first == proxyOne.
 	self assert: proxyOne pipeFromOutput actionMap isEmpty.
 
-	proxyTwo := pipeline second.
+	proxyTwo _ pipeline second.
 	self assert: proxyTwo pipeFromOutput dependents size = 1.
 	self assert: proxyTwo pipeFromOutput dependents first == proxyTwo.
 	self assert: proxyTwo pipeFromOutput actionMap isEmpty.
 
-	proxyThree := pipeline third.
+	proxyThree _ pipeline third.
 	self assert: proxyThree pipeFromOutput dependents size = 1.
 	self assert: proxyThree pipeFromOutput dependents first == proxyThree.
 	self assert: proxyThree pipeFromOutput actionMap isEmpty.
@@ -9317,7 +9322,7 @@ tempResult: anObject
 	"A global variable for holding the result of an internal process proxy evaluation.
 	This is an ugly kludge."
 
-	TempResult := anObject! !
+	TempResult _ anObject! !
 
 !ShellSyntaxTestCase methodsFor: 'running' stamp: 'dtl 4/20/2003 11:42'!
 runAll
@@ -9325,7 +9330,7 @@ runAll
 	"ShellSyntaxTestCase new runAll"
 
 	| result suite |
-	suite := TestSuite new.
+	suite _ TestSuite new.
 
 	suite addTest: (ShellSyntaxTestCase selector: #testUpOneDirectoryLevel01).
 	suite addTest: (ShellSyntaxTestCase selector: #testUpOneDirectoryLevel02).
@@ -9426,7 +9431,7 @@ runAll
 	suite addTest: (ShellSyntaxTestCase selector: #testAppendPathToPath13).
 	suite addTest: (ShellSyntaxTestCase selector: #testAppendPathToPath14).
 
-	result := suite run.
+	result _ suite run.
 	self should: [result defects size == 0].
 	^ result
 ! !
@@ -9434,7 +9439,7 @@ runAll
 !ShellSyntaxTestCase methodsFor: 'running' stamp: 'dtl 4/27/2002 18:39'!
 setUp
 
-	shellSyntax := ShellSyntax new
+	shellSyntax _ ShellSyntax new
 ! !
 
 !ShellSyntaxTestCase methodsFor: 'testing - path navigation' stamp: 'dtl 5/1/2002 23:46'!
@@ -9444,7 +9449,7 @@ testAppendPathToPath01
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: 'hosts' toPath: '/etc'.
+		[path _ shellSyntax appendPath: 'hosts' toPath: '/etc'.
 		self should: [path = '/etc/hosts']]
 ! !
 
@@ -9455,7 +9460,7 @@ testAppendPathToPath02
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: 'etc' toPath: '/'.
+		[path _ shellSyntax appendPath: 'etc' toPath: '/'.
 		self should: [path = '/etc']]
 ! !
 
@@ -9466,7 +9471,7 @@ testAppendPathToPath03
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: 'vi' toPath: '/usr/bin'.
+		[path _ shellSyntax appendPath: 'vi' toPath: '/usr/bin'.
 		self should: [path = '/usr/bin/vi']]
 ! !
 
@@ -9477,7 +9482,7 @@ testAppendPathToPath04
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: '../bin/vi' toPath: '/usr/bin'.
+		[path _ shellSyntax appendPath: '../bin/vi' toPath: '/usr/bin'.
 		self should: [path = '/usr/bin/vi']]
 ! !
 
@@ -9488,7 +9493,7 @@ testAppendPathToPath05
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: './vi' toPath: '/usr/bin'.
+		[path _ shellSyntax appendPath: './vi' toPath: '/usr/bin'.
 		self should: [path = '/usr/bin/vi']]
 ! !
 
@@ -9499,7 +9504,7 @@ testAppendPathToPath06
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: '../bin/./../bin/vi' toPath: '/usr/bin'.
+		[path _ shellSyntax appendPath: '../bin/./../bin/vi' toPath: '/usr/bin'.
 		self should: [path = '/usr/bin/vi']]
 ! !
 
@@ -9510,7 +9515,7 @@ testAppendPathToPath10
 
 	| path |
 	self win32 ifTrue:
-		[path := shellSyntax appendPath: 'WINDOWS' toPath: 'C:\'.
+		[path _ shellSyntax appendPath: 'WINDOWS' toPath: 'C:\'.
 		self should: [path = 'C:\WINDOWS']]
 ! !
 
@@ -9521,7 +9526,7 @@ testAppendPathToPath11
 
 	| path |
 	self win32 ifTrue:
-		[path := shellSyntax appendPath: 'someFileName' toPath: 'C:\WINDOWS'.
+		[path _ shellSyntax appendPath: 'someFileName' toPath: 'C:\WINDOWS'.
 		self should: [path = 'C:\WINDOWS\someFileName']]
 ! !
 
@@ -9532,7 +9537,7 @@ testAppendPathToPath12
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: '..' toPath: '/usr'.
+		[path _ shellSyntax appendPath: '..' toPath: '/usr'.
 		self should: [path = '/']]
 ! !
 
@@ -9543,7 +9548,7 @@ testAppendPathToPath13
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: '..' toPath: 'usr/bin'.
+		[path _ shellSyntax appendPath: '..' toPath: 'usr/bin'.
 		self should: [path = 'usr']]
 ! !
 
@@ -9554,7 +9559,7 @@ testAppendPathToPath14
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax appendPath: '..' toPath: 'usr'.
+		[path _ shellSyntax appendPath: '..' toPath: 'usr'.
 		self should: [path = '']]
 ! !
 
@@ -9581,7 +9586,7 @@ testArgsFromCommand01
 	"(ShellSyntaxTestCase selector: #testArgsFromCommand01) run"
 
 	| args |
-	args := shellSyntax argsFromCommand: 'sleep 6'.
+	args _ shellSyntax argsFromCommand: 'sleep 6'.
 	self should: [args size == 2].
 	self should: [args first = 'sleep'].
 	self should: [args last = '6']
@@ -9593,7 +9598,7 @@ testArgsFromCommand02
 	"(ShellSyntaxTestCase selector: #testArgsFromCommand02) run"
 
 	| args |
-	args := shellSyntax argsFromCommand: 'ls -l h?s*'.
+	args _ shellSyntax argsFromCommand: 'ls -l h?s*'.
 	self should: [args size == 3].
 	self should: [args last = 'h?s*']
 ! !
@@ -9604,7 +9609,7 @@ testArgsFromCommand03
 	"(ShellSyntaxTestCase selector: #testArgsFromCommand03) run"
 
 	| args |
-	args := shellSyntax argsFromCommand: 'This string contains a ''quoted token'' in the middle'.
+	args _ shellSyntax argsFromCommand: 'This string contains a ''quoted token'' in the middle'.
 	self should: [args size == 8].
 	self should: [(args at: 5) = 'quoted token']
 ! !
@@ -9615,7 +9620,7 @@ testArgsFromCommand04
 	"(ShellSyntaxTestCase selector: #testArgsFromCommand04) run"
 
 	| args |
-	args := shellSyntax argsFromCommand: '''quoted token'' is first'.
+	args _ shellSyntax argsFromCommand: '''quoted token'' is first'.
 	self should: [args size == 3].
 	self should: [args first = 'quoted token']
 ! !
@@ -9626,7 +9631,7 @@ testArgsFromCommand05
 	"(ShellSyntaxTestCase selector: #testArgsFromCommand05) run"
 
 	| args |
-	args := shellSyntax argsFromCommand: 'the last token is ''a quoted token'''.
+	args _ shellSyntax argsFromCommand: 'the last token is ''a quoted token'''.
 	self should: [args size == 5].
 	self should: [args last = 'a quoted token']
 ! !
@@ -9683,7 +9688,7 @@ testIsRedirectIOFor
 	"(ShellSyntaxTestCase selector: #testIsRedirectIOFor) run"
 
 	| r1 r2 |
-	r1 := shellSyntax
+	r1 _ shellSyntax
 		redirectIOFor: 'ls /tmp /NOSUCHFILE > /tmp/sqTempOut.tmp 2> /tmp/sqTempErr.tmp'
 		inDirectoryPath: nil.
 	self should: r1 first = 'ls /tmp /NOSUCHFILE '.
@@ -9694,7 +9699,7 @@ testIsRedirectIOFor
 	self should: (r1 fourth isKindOf: FileStream).
 	self should: r1 fourth name =  '/tmp/sqTempErr.tmp'.
 	r1 fourth close.
-	r2 :=shellSyntax
+	r2 _shellSyntax
 		redirectIOFor: 'cat < /etc/hosts > /tmp/sqHosts.tmp'
 		inDirectoryPath: nil.
 	self should: r2 first = 'cat '.
@@ -9713,42 +9718,42 @@ testStringTokensFrom
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom) debug"
 
 	| r |
-	r := shellSyntax stringTokensFrom: 'this is 	a	test of 	 the string tokenizer'.
+	r _ shellSyntax stringTokensFrom: 'this is 	a	test of 	 the string tokenizer'.
 	self should: r second isNil.
 	self should: r first size = 8.
 	self should: r first last = 'tokenizer'.
 
-	r := shellSyntax stringTokensFrom: 'this is 	a	test of 	 ''the string'' tokenizer'"
+	r _ shellSyntax stringTokensFrom: 'this is 	a	test of 	 ''the string'' tokenizer'"
 	self should: r second isNil.
 	self should: r first size = 7.
 	self should: r first last = 'tokenizer'.
 	self should: r first sixth = 'the tokenizer'.
 
-	r := shellSyntax stringTokensFrom: 'this is 	a	test of'' the string'' tokenizer'".
+	r _ shellSyntax stringTokensFrom: 'this is 	a	test of'' the string'' tokenizer'".
 	self should: r second isNil.
 	self should: r first size = 7.
 	self should: r first sixth = 'the string'.
 
-	r := shellSyntax stringTokensFrom: 'this is 	a	test of ''the string ''tokenizer'.
+	r _ shellSyntax stringTokensFrom: 'this is 	a	test of ''the string ''tokenizer'.
 	self should: r second isNil.
 	self should: r first size = 6.
 	self should: r first sixth = 'the string tokenizer'.
 
-	r := shellSyntax stringTokensFrom: 'this is 	a	test of 	 \''the string\'' tokenizer'.
+	r _ shellSyntax stringTokensFrom: 'this is 	a	test of 	 \''the string\'' tokenizer'.
 	self should: r second isNil.
 	self should: r first size = 8.
 	self should: r first sixth = '''the'.
 	self should: r first seventh = 'string'''.
 	self should: r first eighth = 'tokenizer'.
 
-	r := shellSyntax stringTokensFrom: '''this is'' 	a	test'.
+	r _ shellSyntax stringTokensFrom: '''this is'' 	a	test'.
 	self should: r second isNil.
 	self should: r first size = 3.
 	self should: r first first = 'this is'.
 	self should: r first second = 'a'.
 	self should: r first third = 'test'.
 
-	r := shellSyntax stringTokensFrom: 'this is ''a	test'''.
+	r _ shellSyntax stringTokensFrom: 'this is ''a	test'''.
 	self should: r second isNil.
 	self should: r first size = 3.
 	self should: r first first = 'this'.
@@ -9756,7 +9761,7 @@ testStringTokensFrom
 	self should: r first third = 'a	test'.
 	self should: r first third second = Character tab.
 
-	r := shellSyntax stringTokensFrom: '''this is'' 	a	test of 	 \''the string\'' tokenizer '.
+	r _ shellSyntax stringTokensFrom: '''this is'' 	a	test of 	 \''the string\'' tokenizer '.
 	self should: r second isNil.
 	self should: r first size = 7.
 	self should: r first first = 'this is'.
@@ -9768,7 +9773,7 @@ testStringTokensFrom
 	self should: r first seventh = 'tokenizer'.
 
 
-	r := shellSyntax stringTokensFrom: 'this is ''a	test'.
+	r _ shellSyntax stringTokensFrom: 'this is ''a	test'.
 	self should: r second = 'unbalanced quotes'.
 	self should: r first size = 3.
 	self should: r first first = 'this'.
@@ -9783,7 +9788,7 @@ testTokenizeForRedirect
 	"(ShellSyntaxTestCase selector: #testTokenizeForRedirect) debug"
 
 	| r |
-	r := shellSyntax tokenizeForRedirect: 'one > two < three 2> four five six 2>> seven eight > nine ten >> eleven twelve 2 > thirteen'.
+	r _ shellSyntax tokenizeForRedirect: 'one > two < three 2> four five six 2>> seven eight > nine ten >> eleven twelve 2 > thirteen'.
 	self should: r size = 15.
 	self should: (r at: 1) = 'one '.
 	self should: (r at: 2) = #outputRedirect.
@@ -9810,7 +9815,7 @@ testExpandArgument01
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: 'ho?ts' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: 'ho?ts' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'hosts']]
 ! !
@@ -9822,7 +9827,7 @@ testExpandArgument02
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: '/b?n/s?' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: '/b?n/s?' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: '/bin/sh']]
 ! !
@@ -9834,7 +9839,7 @@ testExpandArgument03
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: 'fs*' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: 'fs*' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'fstab']]
 ! !
@@ -9847,7 +9852,7 @@ testExpandArgument04
 	"(ShellSyntaxTestCase selector: #testExpandArgument04) run"
 
 	| args |
-	args := shellSyntax expandArgument: 'NOSUCHFILE' inDirectoryPath: '/etc'.
+	args _ shellSyntax expandArgument: 'NOSUCHFILE' inDirectoryPath: '/etc'.
 	self shouldnt: [args isEmpty].
 	self should: [args includes: 'NOSUCHFILE'].
 ! !
@@ -9861,7 +9866,7 @@ testExpandArgument05
 	"(ShellSyntaxTestCase selector: #testExpandArgument05) run"
 
 	| args |
-	args := shellSyntax expandArgument: 'NO?SUCH*FILE' inDirectoryPath: '/etc'.
+	args _ shellSyntax expandArgument: 'NO?SUCH*FILE' inDirectoryPath: '/etc'.
 	self shouldnt: [args isEmpty].
 	self should: [args includes: 'NO?SUCH*FILE'].
 ! !
@@ -9874,7 +9879,7 @@ testExpandArgument06
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: '/us*/b?n/v?' inDirectoryPath: '/NO/SUCH/PATH'.
+		[args _ shellSyntax expandArgument: '/us*/b?n/v?' inDirectoryPath: '/NO/SUCH/PATH'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -9886,7 +9891,7 @@ testExpandArgument07
 	"(ShellSyntaxTestCase selector: #testExpandArgument07) run"
 
 	| args |
-	args := shellSyntax expandArgument: 'ho?ts' inDirectoryPath: '/NO/SUCH/DIRECTORY'.
+	args _ shellSyntax expandArgument: 'ho?ts' inDirectoryPath: '/NO/SUCH/DIRECTORY'.
 	self shouldnt: [args isEmpty].
 	self should: [args includes: 'ho?ts'].
 ! !
@@ -9898,7 +9903,7 @@ testExpandArgument08
 	"(ShellSyntaxTestCase selector: #testExpandArgument08) run"
 
 	| args |
-	args := shellSyntax expandArgument: 'ho?ts' inDirectoryPath: nil.
+	args _ shellSyntax expandArgument: 'ho?ts' inDirectoryPath: nil.
 	self shouldnt: [args isEmpty].
 	self should: [args includes: 'ho?ts'].
 ! !
@@ -9911,7 +9916,7 @@ testExpandArgument09
 	"(ShellSyntaxTestCase selector: #testExpandArgument09) run"
 
 	| args |
-	args := shellSyntax expandArgument: '-flag' inDirectoryPath: '/etc'.
+	args _ shellSyntax expandArgument: '-flag' inDirectoryPath: '/etc'.
 	self should: [args size == 1].
 	self should: [args includes: '-flag'].
 ! !
@@ -9924,7 +9929,7 @@ testExpandArgument10
 	"(ShellSyntaxTestCase selector: #testExpandArgument10) run"
 
 	| args |
-	args := shellSyntax expandArgument: 'no*such*file???' inDirectoryPath: '/etc'.
+	args _ shellSyntax expandArgument: 'no*such*file???' inDirectoryPath: '/etc'.
 	self shouldnt: [args isEmpty].
 	self should: [args includes: 'no*such*file???'].
 ! !
@@ -9937,7 +9942,7 @@ testExpandArgument11
 	"(ShellSyntaxTestCase selector: #testExpandArgument11) run"
 
 	| args |
-	args := shellSyntax expandArgument: nil inDirectoryPath: '/etc'.
+	args _ shellSyntax expandArgument: nil inDirectoryPath: '/etc'.
 	self should: [args isEmpty].
 ! !
 
@@ -9949,7 +9954,7 @@ testExpandArgument12
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: 'ho[r-t]ts' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: 'ho[r-t]ts' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'hosts']]
 ! !
@@ -9962,7 +9967,7 @@ testExpandArgument13
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: 'ho[tsr]ts' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: 'ho[tsr]ts' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'hosts']]
 ! !
@@ -9975,7 +9980,7 @@ testExpandArgument14
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandArgument: 'ho[s]ts' inDirectoryPath: '/etc'.
+		[args _ shellSyntax expandArgument: 'ho[s]ts' inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'hosts']]
 ! !
@@ -9987,7 +9992,7 @@ testExpandArgumentFrom01
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandArgumentsFrom: #('-help' '/b?n/s?' 'ho?ts' 'fs*' 'NOSUCHFILE')
 			inDirectoryPath: '/etc'.
 		self shouldnt: [args isEmpty].
@@ -10007,7 +10012,7 @@ testExpandArgumentFrom02
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandArgumentsFrom: #('this' 'is' 'a' 'test' '*.image' '/us*/b?n/v?')
 			inDirectoryPath: CommandShell defaultPathString.
 		self shouldnt: [args isEmpty].
@@ -10028,7 +10033,7 @@ testExpandArgumentFrom03
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandArgumentsFrom: #('this' 'is' 'a' 'test' '*.image' '/us*/b?n/v?')
 			inDirectoryPath: nil.
 		self shouldnt: [args isEmpty].
@@ -10049,7 +10054,7 @@ testExpandedPaths01
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/e*c/h*s' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '/e*c/h*s' beginningAt: nil.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: '/etc/hosts']]
 ! !
@@ -10061,7 +10066,7 @@ testExpandedPaths02
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'e*c/h*s' beginningAt: '/'.
+		[args _ shellSyntax expandedPathsFrom: 'e*c/h*s' beginningAt: '/'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: '/etc/hosts']]
 ! !
@@ -10073,7 +10078,7 @@ testExpandedPaths03
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/usr/bin/vi' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '/usr/bin/vi' beginningAt: nil.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10085,7 +10090,7 @@ testExpandedPaths04
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'bin/vi' beginningAt: '/usr'.
+		[args _ shellSyntax expandedPathsFrom: 'bin/vi' beginningAt: '/usr'.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10097,7 +10102,7 @@ testExpandedPaths05
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/usr/*/vi' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '/usr/*/vi' beginningAt: nil.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10109,7 +10114,7 @@ testExpandedPaths06
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/usr/bin/../bin/./../bin/../../usr/bin/vi' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '/usr/bin/../bin/./../bin/../../usr/bin/vi' beginningAt: nil.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10121,7 +10126,7 @@ testExpandedPaths07
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/bin/../bin/./../bin/../../usr/bin/vi' beginningAt: '/usr'.
+		[args _ shellSyntax expandedPathsFrom: '/bin/../bin/./../bin/../../usr/bin/vi' beginningAt: '/usr'.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10133,7 +10138,7 @@ testExpandedPaths08
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandedPathsFrom: '/usr/bin/../bin/./../bin/../../../../../usr/bin/vi'
 			beginningAt: nil.
 		self should: [args size == 1].
@@ -10147,7 +10152,7 @@ testExpandedPaths09
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '../../../../../../../../../../usr/bin/vi' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '../../../../../../../../../../usr/bin/vi' beginningAt: nil.
 		self should: [args size == 1].
 		self should: [args includes: '/usr/bin/vi']]
 ! !
@@ -10159,7 +10164,7 @@ testExpandedPaths10
 
 	| args |
 	self unix ifTrue:
-		[args := shellSyntax expandedPathsFrom: '/' beginningAt: '/'.
+		[args _ shellSyntax expandedPathsFrom: '/' beginningAt: '/'.
 		self should: [args size == 1].
 		self should: [args includes: '/']]
 ! !
@@ -10170,7 +10175,7 @@ testExpandedPaths11
 	"(ShellSyntaxTestCase selector: #testExpandedPaths11) run"
 
 	| args |
-	args := shellSyntax expandedPathsFrom: '*.image' beginningAt: nil.
+	args _ shellSyntax expandedPathsFrom: '*.image' beginningAt: nil.
 	self shouldnt: [args isEmpty].
 	self should: ['*.image' match: args first].
 ! !
@@ -10182,7 +10187,7 @@ testExpandedPaths20
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'C:\WINDOWS\*.*' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: 'C:\WINDOWS\*.*' beginningAt: nil.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\WINDOWS\WRITE.EXE']]
 ! !
@@ -10194,7 +10199,7 @@ testExpandedPaths21
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: '*.*' beginningAt: 'C:\WINDOWS'.
+		[args _ shellSyntax expandedPathsFrom: '*.*' beginningAt: 'C:\WINDOWS'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\WINDOWS\WRITE.EXE']]
 ! !
@@ -10206,7 +10211,7 @@ testExpandedPaths22
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'C:\*.*' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: 'C:\*.*' beginningAt: nil.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\AUTOEXEC.BAT']]
 ! !
@@ -10218,7 +10223,7 @@ testExpandedPaths23
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'C:\CONFIG.*' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: 'C:\CONFIG.*' beginningAt: nil.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\CONFIG.SYS']]
 ! !
@@ -10230,7 +10235,7 @@ testExpandedPaths24
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: 'C:\CONFIG.*' beginningAt: '\'.
+		[args _ shellSyntax expandedPathsFrom: 'C:\CONFIG.*' beginningAt: '\'.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\CONFIG.SYS']]
 ! !
@@ -10242,7 +10247,7 @@ testExpandedPaths25
 	"(ShellSyntaxTestCase selector: #testExpandedPaths25) run"
 
 	| args |
-	args := shellSyntax expandedPathsFrom: 'CONFIG.*' beginningAt: nil.
+	args _ shellSyntax expandedPathsFrom: 'CONFIG.*' beginningAt: nil.
 	self should: [args isEmpty].
 ! !
 
@@ -10253,7 +10258,7 @@ testExpandedPaths26
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax expandedPathsFrom: '..\..\..\..\..\..\..\..\..\WINDOWS\*.*' beginningAt: nil.
+		[args _ shellSyntax expandedPathsFrom: '..\..\..\..\..\..\..\..\..\WINDOWS\*.*' beginningAt: nil.
 		self shouldnt: [args isEmpty].
 		self should: [args includes: 'C:\WINDOWS\WRITE.EXE']]
 ! !
@@ -10265,7 +10270,7 @@ testExpandedPaths27
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandedPathsFrom: '..\..\..\..\..\..\..\..\..\WINDOWS\*.*'
 			beginningAt: 'C:\WINDOWS'.
 		self shouldnt: [args isEmpty].
@@ -10279,7 +10284,7 @@ testExpandedPaths28
 
 	| args |
 	self win32 ifTrue:
-		[args := shellSyntax
+		[args _ shellSyntax
 			expandedPathsFrom: '..\..\..\..\..\..\..\..\..\WINDOWS\.\*.*'
 			beginningAt: 'C:\WINDOWS'.
 		self shouldnt: [args isEmpty].
@@ -10293,7 +10298,7 @@ testFirstExpandedArgument01
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: 'm?*l' inDirectoryPath: '/usr/bin'.
+		[arg _ shellSyntax firstExpandedArgument: 'm?*l' inDirectoryPath: '/usr/bin'.
 		self shouldnt: [arg isEmpty].
 		self should: ['/usr/bin/m*l' match: arg].
 		self shouldnt: [arg = '/usr/bin/m?*l']]
@@ -10305,7 +10310,7 @@ testFirstExpandedArgument02
 	"(ShellSyntaxTestCase selector: #testFirstExpandedArgument02) run"
 
 	|  arg |
-	arg := shellSyntax firstExpandedArgument: 'm?*l' inDirectoryPath: '/no/such/directory'.
+	arg _ shellSyntax firstExpandedArgument: 'm?*l' inDirectoryPath: '/no/such/directory'.
 	self shouldnt: [arg isEmpty].
 	self should: [arg = '/no/such/directory/m?*l']
 ! !
@@ -10316,7 +10321,7 @@ testFirstExpandedArgument03
 	"(ShellSyntaxTestCase selector: #testFirstExpandedArgument03) run"
 
 	|  arg |
-	arg := shellSyntax firstExpandedArgument: 'no*such*file???' inDirectoryPath: '/usr/bin'.
+	arg _ shellSyntax firstExpandedArgument: 'no*such*file???' inDirectoryPath: '/usr/bin'.
 	self shouldnt: [arg isEmpty].
 	self should: [arg = '/usr/bin/no*such*file???']
 ! !
@@ -10328,7 +10333,7 @@ testFirstExpandedArgument04
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '/usr/bin/vi' inDirectoryPath: '/usr/bin'.
+		[arg _ shellSyntax firstExpandedArgument: '/usr/bin/vi' inDirectoryPath: '/usr/bin'.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin/vi']]
 ! !
@@ -10340,7 +10345,7 @@ testFirstExpandedArgument05
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '../bin/vi' inDirectoryPath: '/usr/bin'.
+		[arg _ shellSyntax firstExpandedArgument: '../bin/vi' inDirectoryPath: '/usr/bin'.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin/vi']]
 ! !
@@ -10351,7 +10356,7 @@ testFirstExpandedArgument06
 	"(ShellSyntaxTestCase selector: #testFirstExpandedArgument06) run"
 
 	|  arg |
-	arg := shellSyntax firstExpandedArgument: nil inDirectoryPath: '/usr/bin'.
+	arg _ shellSyntax firstExpandedArgument: nil inDirectoryPath: '/usr/bin'.
 	self should: [arg = '']
 ! !
 
@@ -10362,7 +10367,7 @@ testFirstExpandedArgument07
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '/usr/b[a-z]n/vi' inDirectoryPath: nil.
+		[arg _ shellSyntax firstExpandedArgument: '/usr/b[a-z]n/vi' inDirectoryPath: nil.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin/vi']]
 ! !
@@ -10374,7 +10379,7 @@ testFirstExpandedArgument08
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '/us[r-r]/b[a-z]n/vi' inDirectoryPath: nil.
+		[arg _ shellSyntax firstExpandedArgument: '/us[r-r]/b[a-z]n/vi' inDirectoryPath: nil.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin/vi']]
 ! !
@@ -10386,7 +10391,7 @@ testFirstExpandedArgument09
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '/us[z-a]/bin/vi' inDirectoryPath: nil.
+		[arg _ shellSyntax firstExpandedArgument: '/us[z-a]/bin/vi' inDirectoryPath: nil.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/us[z-a]/bin/vi']]
 ! !
@@ -10398,7 +10403,7 @@ testFirstExpandedArgument10
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '/t[l-n]p' inDirectoryPath: nil.
+		[arg _ shellSyntax firstExpandedArgument: '/t[l-n]p' inDirectoryPath: nil.
 		self should: [arg = '/tmp']]
 ! !
 
@@ -10409,7 +10414,7 @@ testFirstExpandedArgument11
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '../bin/v?' inDirectoryPath: '/usr/bin'.
+		[arg _ shellSyntax firstExpandedArgument: '../bin/v?' inDirectoryPath: '/usr/bin'.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin/vi']]
 ! !
@@ -10421,7 +10426,7 @@ testFirstExpandedArgument12
 
 	|  arg |
 	self unix ifTrue:
-		[arg := shellSyntax firstExpandedArgument: '../bin' inDirectoryPath: '/usr/bin'.
+		[arg _ shellSyntax firstExpandedArgument: '../bin' inDirectoryPath: '/usr/bin'.
 		self shouldnt: [arg isEmpty].
 		self should: [arg = '/usr/bin']]
 ! !
@@ -10433,7 +10438,7 @@ testNewDirPathFrom01
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax newDirPath: 'b?n' from: '/usr'.
+		[path _ shellSyntax newDirPath: 'b?n' from: '/usr'.
 		self should: [path = '/usr/bin']]
 
 
@@ -10447,7 +10452,7 @@ testNewDirPathFrom02
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax newDirPath: '..' from: '/usr/bin'.
+		[path _ shellSyntax newDirPath: '..' from: '/usr/bin'.
 		self should: [path = '/usr']]
 
 
@@ -10461,7 +10466,7 @@ testNewDirPathFrom03
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax newDirPath: '.././bin' from: '/usr/bin'.
+		[path _ shellSyntax newDirPath: '.././bin' from: '/usr/bin'.
 		self should: [path = '/usr/bin']]
 
 
@@ -10475,7 +10480,7 @@ testNewDirPathFrom04
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax newDirPath: '../../../../..' from: '/usr/bin'.
+		[path _ shellSyntax newDirPath: '../../../../..' from: '/usr/bin'.
 		self should: [path = '/']]
 
 
@@ -10489,7 +10494,7 @@ testNewDirPathFrom05
 
 	| path |
 	self unix ifTrue:
-		[path := shellSyntax newDirPath: '../../../../../usr' from: '/usr/bin'.
+		[path _ shellSyntax newDirPath: '../../../../../usr' from: '/usr/bin'.
 		self should: [path = '/usr']]
 
 
@@ -10502,7 +10507,7 @@ testStringTokensFrom01
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom01) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this is 	a	test'.
+	t _ shellSyntax stringTokensFrom: 'this is 	a	test'.
 	self should: [t last isNil].
 	self should: [t first size == 4].
 	self should: [t first last = 'test'].
@@ -10515,7 +10520,7 @@ testStringTokensFrom02
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom02) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this ''is 	a''	test'.
+	t _ shellSyntax stringTokensFrom: 'this ''is 	a''	test'.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10528,7 +10533,7 @@ testStringTokensFrom03
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom03) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: '	this ''is 	a''	test	'.
+	t _ shellSyntax stringTokensFrom: '	this ''is 	a''	test	'.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10541,7 +10546,7 @@ testStringTokensFrom04
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom04) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: ' this ''is 	a''	test '.
+	t _ shellSyntax stringTokensFrom: ' this ''is 	a''	test '.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10554,7 +10559,7 @@ testStringTokensFrom05
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom05) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: ' this \''is 	a\''	test '.
+	t _ shellSyntax stringTokensFrom: ' this \''is 	a\''	test '.
 	self should: [t last isNil].
 	self should: [t first size == 4].
 	self should: [t first last = 'test'].
@@ -10569,7 +10574,7 @@ testStringTokensFrom06
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom06) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: ' this ''is 	a	test '.
+	t _ shellSyntax stringTokensFrom: ' this ''is 	a	test '.
 	self should: [t last = 'unbalanced quotes'].
 	self should: [t first size == 2].
 	self should: [t first last = 'is 	a	test '].
@@ -10582,7 +10587,7 @@ testStringTokensFrom07
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom07) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this is 	a	te\st'.
+	t _ shellSyntax stringTokensFrom: 'this is 	a	te\st'.
 	self should: [t last isNil].
 	self should: [t first size == 4].
 	self should: [t first last = 'test'].
@@ -10595,7 +10600,7 @@ testStringTokensFrom08
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom08) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this ''is\ a'' test'.
+	t _ shellSyntax stringTokensFrom: 'this ''is\ a'' test'.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10609,7 +10614,7 @@ testStringTokensFrom09
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom09) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: '''this is'' 	a	test'.
+	t _ shellSyntax stringTokensFrom: '''this is'' 	a	test'.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10622,7 +10627,7 @@ testStringTokensFrom10
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom10) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this is 	''a	test'''.
+	t _ shellSyntax stringTokensFrom: 'this is 	''a	test'''.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'a	test'].
@@ -10635,7 +10640,7 @@ testStringTokensFrom11
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom11) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this'' is ''	a	test'.
+	t _ shellSyntax stringTokensFrom: 'this'' is ''	a	test'.
 	self should: [t last isNil].
 	self should: [t first size == 3].
 	self should: [t first last = 'test'].
@@ -10648,7 +10653,7 @@ testStringTokensFrom12
 	"(ShellSyntaxTestCase selector: #testStringTokensFrom12) run"
 
 	| t |
-	t := shellSyntax stringTokensFrom: 'this ''is ''	a	test'.
+	t _ shellSyntax stringTokensFrom: 'this ''is ''	a	test'.
 	self should: [t last isNil].
 	self should: [t first size == 4].
 	self should: [t first last = 'test'].
@@ -10662,7 +10667,7 @@ testUpOneDirectoryLevel01
 
 	|  upOne |
 	self unix ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: '/usr/bin'.
+		[upOne _ shellSyntax upOneDirectoryLevel: '/usr/bin'.
 		self should: [upOne = '/usr']]
 ! !
 
@@ -10673,7 +10678,7 @@ testUpOneDirectoryLevel02
 
 	|  upOne |
 	self unix ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: '/usr'.
+		[upOne _ shellSyntax upOneDirectoryLevel: '/usr'.
 		self should: [upOne = '/']]
 ! !
 
@@ -10684,7 +10689,7 @@ testUpOneDirectoryLevel03
 
 	|  upOne |
 	self unix ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: '/'.
+		[upOne _ shellSyntax upOneDirectoryLevel: '/'.
 		self should: [upOne = '/']]
 ! !
 
@@ -10694,7 +10699,7 @@ testUpOneDirectoryLevel04
 	"(ShellSyntaxTestCase selector: #testUpOneDirectoryLevel04) run"
 
 	|  upOne |
-	upOne := shellSyntax upOneDirectoryLevel: ''.
+	upOne _ shellSyntax upOneDirectoryLevel: ''.
 	self should: [upOne = '..']
 ! !
 
@@ -10705,7 +10710,7 @@ testUpOneDirectoryLevel10
 
 	|  upOne |
 	self win32 ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: 'C:\Windows\temp'.
+		[upOne _ shellSyntax upOneDirectoryLevel: 'C:\Windows\temp'.
 		self should: [upOne = 'C:\Windows']]
 ! !
 
@@ -10716,7 +10721,7 @@ testUpOneDirectoryLevel11
 
 	|  upOne |
 	self win32 ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: 'C:\Windows'.
+		[upOne _ shellSyntax upOneDirectoryLevel: 'C:\Windows'.
 		self should: [upOne = 'C:\']]
 ! !
 
@@ -10727,7 +10732,7 @@ testUpOneDirectoryLevel12
 
 	|  upOne |
 	self win32 ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: 'C:\'.
+		[upOne _ shellSyntax upOneDirectoryLevel: 'C:\'.
 		self should: [upOne = 'C:\']]
 ! !
 
@@ -10738,7 +10743,7 @@ testUpOneDirectoryLevel13
 
 	|  upOne |
 	self win32 ifTrue:
-		[upOne := shellSyntax upOneDirectoryLevel: 'D:\Windows\temp'.
+		[upOne _ shellSyntax upOneDirectoryLevel: 'D:\Windows\temp'.
 		self should: [upOne = 'D:\Windows']]
 ! !
 
@@ -10768,7 +10773,7 @@ appendEntry
 		self selectInvisiblyFrom: 1 to: textMorph asText size // 2.
 		self replaceSelectionWith: Text new].
 	self selectInvisiblyFrom: textMorph asText size + 1 to: textMorph asText size.
-	str := model contents.
+	str _ model contents.
 	(str size > 0) ifTrue:
 		[self replaceSelectionWith: (Text
 			string: str
@@ -10804,10 +10809,10 @@ positionAfterPromptString
 	input."
 
 	| t loc |
-	t := self text.
+	t _ self text.
 	(1 to: (t size - model promptString size))
 		reverseDo: [:i |
-			((loc := t findString: model promptString startingAt: i) ~= 0)
+			((loc _ t findString: model promptString startingAt: i) ~= 0)
 				ifTrue: [^ loc + model promptString size]].
 	^ 1
 ! !
@@ -10816,7 +10821,7 @@ positionAfterPromptString
 setText: aText
 	scrollBar setValue: 0.0.
 	textMorph
-		ifNil: [textMorph := TtyTextMorphForEditView new
+		ifNil: [textMorph _ TtyTextMorphForEditView new
 						contents: aText wrappedTo: self innerBounds width-6.
 				textMorph setEditView: self.
 				textMorph setTextStyle: self textStyle.
@@ -10853,10 +10858,10 @@ appendPath: aPathString toPath: startingPathString
 		inject: startingPathString
 		into: [:dirPath :nextPart | 
 			nextPart = '..'
-				ifTrue: [newPath := self upOneDirectoryLevel: dirPath]
+				ifTrue: [newPath _ self upOneDirectoryLevel: dirPath]
 				ifFalse: [nextPart = '.'
-						ifTrue: [newPath := dirPath]
-						ifFalse: [newPath := (self isAtFileSystemRoot: dirPath)
+						ifTrue: [newPath _ dirPath]
+						ifFalse: [newPath _ (self isAtFileSystemRoot: dirPath)
 										ifTrue: [dirPath , nextPart]
 										ifFalse: [dirPath , CommandShell pathSeparator , nextPart]]].
 			newPath]! !
@@ -10878,13 +10883,13 @@ expandArgument: aString inDirectoryPath: aDefaultFileDirectoryPath
 
 	| dirPath pathNames newArgs |
 	aString ifNil: [^ Array new: 0].
-	dirPath := (aDefaultFileDirectoryPath
+	dirPath _ (aDefaultFileDirectoryPath
 				ifNil: [self workingDirectory])
 					ifNil: [CommandShell defaultPathString].
-	pathNames := (self containsExpansionTokens: aString)
+	pathNames _ (self containsExpansionTokens: aString)
 				ifTrue: [self expandedPathsFrom: aString beginningAt: dirPath]
 				ifFalse: [OrderedCollection new].
-	newArgs := pathNames collect:
+	newArgs _ pathNames collect:
 				[:p | (aDefaultFileDirectoryPath notNil and: [p beginsWith: aDefaultFileDirectoryPath, CommandShell pathSeparator])
 					ifTrue: [(ReadStream on: p) next: aDefaultFileDirectoryPath size + CommandShell pathSeparator size; upToEnd]
 					ifFalse: [p]].
@@ -10908,7 +10913,7 @@ expandArgumentsFrom: argArray inDirectoryPath: aDefaultFileDirectoryPath
 		inDirectoryPath: nil"
 
 	| newArgs |
-	newArgs := OrderedCollection new.
+	newArgs _ OrderedCollection new.
 	argArray do:
 		[:arg |
 		(self isFlagParameter: arg)
@@ -10929,31 +10934,31 @@ expandPathParts: pathParts beginningAt: root
 		ifTrue:
 			["Should never get here, but just in case"
 			^ Array with: root].
-	firstPart := pathParts first.
-	remainder := pathParts allButFirst.
+	firstPart _ pathParts first.
+	remainder _ pathParts allButFirst.
 	(firstPart = '.')
 		ifTrue: "Stay at the current directory level"
-			[dirPaths := Array with: root]
+			[dirPaths _ Array with: root]
 		ifFalse:
 			[(firstPart = '..') "Move up a directory level if possible"
 				ifTrue:
-					[dirPaths := Array with: (self upOneDirectoryLevel: root)]
+					[dirPaths _ Array with: (self upOneDirectoryLevel: root)]
 				ifFalse: "Normal case, a directory name"
 					[remainder isEmpty
 						ifTrue:
 							["This condition terminates recursion"
-							names := self glob: firstPart inDirectory: root.
+							names _ self glob: firstPart inDirectory: root.
 							^ (root = CommandShell pathSeparator)
 								ifTrue: [^ names collect: [:n | root, n]]
 								ifFalse: [^ names collect: [:n | root, CommandShell pathSeparator, n]]]
 						ifFalse:
 							["Continue recursion until no more elements"
-							dirNames := self glob: firstPart
+							dirNames _ self glob: firstPart
 											names: (CommandShell directoryNamesInPath: root).
 							(('*', CommandShell pathSeparator) match: root)
-								ifTrue: [basePath := root]
-								ifFalse: [basePath := root, CommandShell pathSeparator].
-							dirPaths := dirNames collect: [:d | basePath, d]]]].
+								ifTrue: [basePath _ root]
+								ifFalse: [basePath _ root, CommandShell pathSeparator].
+							dirPaths _ dirNames collect: [:d | basePath, d]]]].
 		^ dirPaths
 			inject: OrderedCollection new
 			into: [:result :dir |
@@ -11010,12 +11015,12 @@ expandedPathsFromAbsolutePath: anAbsolutePathString
 	 "ShellSyntax new expandedPathsFromAbsolutePath: 'C:\CONFIG.*'"
 
 	| result pathParts a prefix dirPathString root |
-	result := OrderedCollection new.
-	a := self splitLocationPrefixFromPath: anAbsolutePathString.
-	prefix := a at: 1.
-	dirPathString := a at: 2.
-	pathParts := dirPathString findTokens: CommandShell pathSeparator.
-	root := prefix, CommandShell pathSeparator.
+	result _ OrderedCollection new.
+	a _ self splitLocationPrefixFromPath: anAbsolutePathString.
+	prefix _ a at: 1.
+	dirPathString _ a at: 2.
+	pathParts _ dirPathString findTokens: CommandShell pathSeparator.
+	root _ prefix, CommandShell pathSeparator.
 	result addAll: (self expandPathParts: pathParts beginningAt: root).
 	^ result
 
@@ -11036,9 +11041,9 @@ expandedPathsFromRelativePath: aPathString beginningAt: firstPartOfPath
 	 "ShellSyntax new expandedPathsFromRelativePath: '*.*' beginningAt: 'C:\WINDOWS'"
 
 	| result pathParts root |
-	result := OrderedCollection new.
-	pathParts := aPathString findTokens: CommandShell pathSeparator.
-	root := firstPartOfPath isNil
+	result _ OrderedCollection new.
+	pathParts _ aPathString findTokens: CommandShell pathSeparator.
+	root _ firstPartOfPath isNil
 				ifTrue: [CommandShell defaultPathString]
 				ifFalse: [firstPartOfPath].
 	result addAll: (self expandPathParts: pathParts beginningAt: root).
@@ -11060,8 +11065,8 @@ findExecutablePathFor: aString inDirectoryPath: pathString
 
 	| delimiter path localNames fullName fileExists |
 	self canAccessOSProcess ifFalse: [^ nil].
-	delimiter := CommandShell pathNameDelimiter.
-	path := (pathString
+	delimiter _ CommandShell pathNameDelimiter.
+	path _ (pathString
 				ifNil: [self workingDirectory])
 					ifNil: [CommandShell defaultPathString].
 	"Unix compatibility note: If aString contains wildcard characters,
@@ -11076,22 +11081,22 @@ findExecutablePathFor: aString inDirectoryPath: pathString
 				ifNone: [nil]]
 		ifFalse:
 			["Look for the file in the PATH locations"
-			localNames := self glob: aString inDirectory: path.
+			localNames _ self glob: aString inDirectory: path.
 			(localNames size == 0)
 				ifTrue:
 					["Name was not expanded, so use the unmodified value of aString"
-					localNames := Array with: aString].
+					localNames _ Array with: aString].
 			(self pathEntriesInDirectoryPath: path)
 				do: [:pathName |
 					localNames
 						do: [:fileName |
-							fileExists := [ CommandShell useFileSystem
+							fileExists _ [ CommandShell useFileSystem
 									ifTrue: [ CommandShell fileExists: fileName inDirectory: (pathName perform: #asFileReference) ]
 									ifFalse: [ CommandShell fileExists: fileName inDirectory: ((Smalltalk at: #FileDirectory) on: pathName) ]
 								] on: (Smalltalk at: #InvalidDirectoryError ifAbsent: [ Error ]) "Pharo does not have InvalidDirectoryError"
 									do: [:e | false].
 							fileExists ifTrue:
-								[fullName := pathName, CommandShell pathSeparator, fileName.
+								[fullName _ pathName, CommandShell pathSeparator, fileName.
 								(self isExecutable: fullName)
 									ifTrue: [^ fullName]]]].
 			^ nil]! !
@@ -11114,9 +11119,9 @@ firstExpandedArgument: aString inDirectoryPath: aPath
 
 	| expanded path trimmedString |
 	aString ifNil: [^ ''].
-	trimmedString := CommandShell withBlanksTrimmed: aString.
-	expanded := self expandArgument: trimmedString inDirectoryPath: aPath.
-	path := expanded isEmpty
+	trimmedString _ CommandShell withBlanksTrimmed: aString.
+	expanded _ self expandArgument: trimmedString inDirectoryPath: aPath.
+	path _ expanded isEmpty
 			ifTrue: [trimmedString]
 			ifFalse: [expanded first].
 	^ self newPathFor: path fromDefault: aPath
@@ -11189,14 +11194,14 @@ programNameAndArgumentsFrom: aString inDirectoryPath: pathString findExecutable:
 		findExecutable: true"
 
 	| tokens tok args exe |
-	tokens := self argsFromCommand: aString.
+	tokens _ self argsFromCommand: aString.
 	tokens size == 0
-		ifTrue: [tok := '']
-		ifFalse: [tok := tokens at: 1].
-	args := self
+		ifTrue: [tok _ '']
+		ifFalse: [tok _ tokens at: 1].
+	args _ self
 		expandArgumentsFrom: (tokens copyFrom: 2 to: tokens size)
 		inDirectoryPath: pathString.
-	exe := expandExePath
+	exe _ expandExePath
 		ifTrue: [self findExecutablePathFor: tok inDirectoryPath: pathString]
 		ifFalse: [tok].
 	^ exe ifNotNil: [Array with: exe with: args]
@@ -11216,7 +11221,7 @@ doItStringFrom: aCommandString
 	"Answer a string which can be evaluated as Smalltalk doIt, or nil."
 
 	| s |
-	s := CommandShell withBlanksTrimmed: aCommandString.
+	s _ CommandShell withBlanksTrimmed: aCommandString.
 	s last == $!!
 		ifTrue: [^ aCommandString copyUpToLast: $!!]
 		ifFalse: [^ nil]! !
@@ -11257,53 +11262,53 @@ redirectIOFor: commandString inDirectoryPath: dirPathString
 		inDirectoryPath: nil"
 
 	| cmd tokenStream tok target input output error |
-	cmd := nil.
-	input := output := error := nil.
+	cmd _ nil.
+	input _ output _ error _ nil.
 	"Default to nil unless overridden by commandString."
-	tokenStream := ReadStream on: (self tokenizeForRedirect: commandString).
+	tokenStream _ ReadStream on: (self tokenizeForRedirect: commandString).
 	[tokenStream atEnd]
 		whileFalse:
-			[tok := tokenStream next.
+			[tok _ tokenStream next.
 			tok == #inputRedirect
 				ifTrue: ["Do input redirection"
-					target := self firstExpandedArgument: tokenStream next
+					target _ self firstExpandedArgument: tokenStream next
 								inDirectoryPath: dirPathString.
 					"Use StandardFileStream to prevent multi-byte interpretation."
-					input := CommandShell readOnlyFileNamed: target.
+					input _ CommandShell readOnlyFileNamed: target.
 					input
 						ifNil: [self inform: 'Cannot open ' , target , ', using default stdin']]
 				ifFalse: [tok == #outputRedirect
 						ifTrue: ["Do output redirection"
-							target := self firstExpandedArgument: tokenStream next
+							target _ self firstExpandedArgument: tokenStream next
 										inDirectoryPath: dirPathString.
-							output := self truncatedOutputFile: target.
+							output _ self truncatedOutputFile: target.
 							output ifNil:
 									[self inform: 'Cannot open ' , target , ', using default stdout']]
 						ifFalse: [tok == #outputAppendRedirect
 								ifTrue: ["Do output redirection, appended to existing output file if any."
-									target := self firstExpandedArgument: tokenStream next
+									target _ self firstExpandedArgument: tokenStream next
 												inDirectoryPath: dirPathString.
-									output := FileStream fileNamed: target.
+									output _ FileStream fileNamed: target.
 									output isNil
 										ifTrue: [self inform: 'Cannot open ' , target , ', using default stdout']
 										ifFalse: [output setToEnd]]
 								ifFalse: [tok == #errorRedirect
 										ifTrue: ["Do error redirection"
-											target := self firstExpandedArgument: tokenStream next
+											target _ self firstExpandedArgument: tokenStream next
 														inDirectoryPath: dirPathString.
-											error := self truncatedOutputFile: target.
+											error _ self truncatedOutputFile: target.
 											error ifNil:
 													[self inform: 'Cannot open ' , target , ', using default stdout']]
 										ifFalse: [tok == #errorAppendRedirect
 												ifTrue: ["Do error redirection, appended to existing error file if any. "
-													target := self firstExpandedArgument: tokenStream next
+													target _ self firstExpandedArgument: tokenStream next
 																inDirectoryPath: dirPathString.
-													error := FileStream fileNamed: target.
+													error _ FileStream fileNamed: target.
 													error isNil
 														ifTrue: [self inform: 'Cannot open ' , target , ', using default stdout']
 														ifFalse: [error setToEnd]]
 												ifFalse: [cmd isNil
-														ifTrue: [cmd := tok]
+														ifTrue: [cmd _ tok]
 														ifFalse: [self inform: 'Ack!! Pfft!! IO redirection parsing error.']]]]]]].
 	^ Array
 		with: cmd
@@ -11327,16 +11332,16 @@ stringTokensFrom: aString
 	escaped by the backslash character to prevent this interpretation."
 
 	| result r w errorMessage quoteEnabled t |
-	result := OrderedCollection new.
-	r := ReadStream on: aString.
-	w := WriteStream on: String new.
-	errorMessage := nil.
-	(quoteEnabled := r peek == self quoteChar) ifTrue: [r next].
+	result _ OrderedCollection new.
+	r _ ReadStream on: aString.
+	w _ WriteStream on: String new.
+	errorMessage _ nil.
+	(quoteEnabled _ r peek == self quoteChar) ifTrue: [r next].
 	[r atEnd] whileFalse:
-		[t := r next.
+		[t _ r next.
 		(t == self quoteChar)
 			ifTrue:
-				[quoteEnabled := quoteEnabled not]
+				[quoteEnabled _ quoteEnabled not]
 			ifFalse:
 				[quoteEnabled
 					ifTrue:
@@ -11345,7 +11350,7 @@ stringTokensFrom: aString
 						[(t == self escapeChar)
 							ifTrue:
 								["An escaped character is treated as a literal character."
-								t := r next.
+								t _ r next.
 								t isNil
 									ifTrue: ["FIXME: This would indicate an escaped end of line"]
 									ifFalse: [w nextPut: t]]
@@ -11354,11 +11359,11 @@ stringTokensFrom: aString
 									ifTrue:
 										["Whitespace delimits tokens."
 										(w isEmpty) ifFalse: [result add: w contents].
-										w := WriteStream on: String new.
+										w _ WriteStream on: String new.
 										[r peek notNil and: [r peek isSeparator]] whileTrue: [r next].]
 									ifFalse:
 										[w nextPut: t]]]]].
-	quoteEnabled ifTrue: [errorMessage := 'unbalanced quotes'].
+	quoteEnabled ifTrue: [errorMessage _ 'unbalanced quotes'].
 	(w isEmpty) ifFalse: [result add: w contents].
 	^ Array with: result with: errorMessage
 ! !
@@ -11372,22 +11377,22 @@ tokenizeForRedirect: aString
 	"ShellSyntax new tokenizeForRedirect: 'one > two < three 2> four five six 2>> seven eight > nine ten >> eleven twelve 2 > thirteen'"
 
 	| oc rs ws c redirectToken tok |
-	oc := OrderedCollection new.
-	rs := ReadStream on: aString.
-	ws := WriteStream on: String new.
+	oc _ OrderedCollection new.
+	rs _ ReadStream on: aString.
+	ws _ WriteStream on: String new.
 	[rs atEnd]
 		whileFalse:
-			[c := rs next.
+			[c _ rs next.
 			((c == $2) and: [rs peek == $>])
 				ifTrue:
 					[rs next.
 					(rs peek == $>)
 						ifTrue:
 							[rs next.
-							redirectToken := #errorAppendRedirect]
+							redirectToken _ #errorAppendRedirect]
 						ifFalse:
-							[redirectToken := #errorRedirect].
-					c := ws contents.
+							[redirectToken _ #errorRedirect].
+					c _ ws contents.
 					(c size > 0)
 						ifTrue:
 							[oc add: c.
@@ -11399,10 +11404,10 @@ tokenizeForRedirect: aString
 							[(rs peek == $>)
 								ifTrue:
 									[rs next.
-									redirectToken := #outputAppendRedirect]
+									redirectToken _ #outputAppendRedirect]
 								ifFalse:
-									[redirectToken := #outputRedirect].
-							c := ws contents.
+									[redirectToken _ #outputRedirect].
+							c _ ws contents.
 							(c size > 0)
 								ifTrue:
 									[oc add: c.
@@ -11411,14 +11416,14 @@ tokenizeForRedirect: aString
 						ifFalse:
 							[(c == $<)
 								ifTrue:
-									[c := ws contents.
+									[c _ ws contents.
 									(c size > 0)
 										ifTrue:
 											[oc add: c.
 											ws resetContents].
 									oc add: #inputRedirect]
 								ifFalse: [ws nextPut: c]]]].
-	tok := ws contents.
+	tok _ ws contents.
 	(tok size > 0) ifTrue: [oc add: tok].
 	^ oc
 ! !
@@ -11447,7 +11452,7 @@ canAccessOSProcess
 	"ShellSyntax new canAccessOSProcess"
 
 	| osp |
-	^ (osp := Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
+	^ (osp _ Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
 ! !
 
 !ShellSyntax methodsFor: 'globbing' stamp: 'dtl 3/10/2001 18:07'!
@@ -11504,7 +11509,7 @@ glob: aString names: fileNameArray
 	provided by a FileDirectory query."
 
 	| tokens |
-	tokens := self globTokensFrom: aString.
+	tokens _ self globTokensFrom: aString.
 	^ fileNameArray
 		select: [:n |
 			self tokenStream: (ReadStream on: tokens)
@@ -11519,16 +11524,16 @@ globRangeFrom: aString tokenStream: aTokenStream
 
 	| r w c t |
 	(aString includes: $-) ifFalse: [^ aString]. "Simple case"
-	r := ReadStream on: aString.
-	w := WriteStream on: String new.
+	r _ ReadStream on: aString.
+	w _ WriteStream on: String new.
 	(r peek == $!!) ifTrue:
 		[r next.
 		aTokenStream nextPut: #not].
 	[r atEnd] whileFalse: [
-		c := r next.
+		c _ r next.
 		(r peek == $-)
 			ifTrue: [r next.
-					t := r next.
+					t _ r next.
 					(c asciiValue to: t asciiValue) do:
 						[:e | w nextPut: (Character value: e)]]
 			ifFalse: [w nextPut: c]].
@@ -11541,13 +11546,13 @@ globTokensFrom: aString
 	"ShellSyntax new globTokensFrom: 'abc?def\ghi\?jkl*mno\*pqr[hello]there[Xa-eY]Z[!!A-Z]end'"
 
 	| lastToken r w t |
-	lastToken := nil.
-	r := ReadStream on: aString.
-	w := WriteStream on: #().
+	lastToken _ nil.
+	r _ ReadStream on: aString.
+	w _ WriteStream on: #().
 	[r atEnd] whileFalse:
-		[t := self nextGlobToken: r lastToken: lastToken tokenStream: w.
+		[t _ self nextGlobToken: r lastToken: lastToken tokenStream: w.
 		(t ~~ #escape) ifTrue: [w nextPut: t].
-		lastToken := t].
+		lastToken _ t].
 	^ w contents
 ! !
 
@@ -11562,7 +11567,7 @@ nextGlobToken: aStream lastToken: aToken tokenStream: aTokenStream
 		ifTrue:
 			[^ aStream next]
 		ifFalse:
-			[c := aStream next.
+			[c _ aStream next.
 			(c == $[)
 				ifTrue:
 					["character range"
@@ -11592,11 +11597,11 @@ tokenStream: aTokenStream matches: aCharacterStream
 	[aCharacterStream atEnd]
 		whileFalse: [aTokenStream atEnd
 				ifTrue: [^ false].
-			c := aCharacterStream peek.
-			tok := aTokenStream next.
+			c _ aCharacterStream peek.
+			tok _ aTokenStream next.
 			tok == #not
 				ifTrue: ["A negated character range follows"
-					tok := aTokenStream next.
+					tok _ aTokenStream next.
 					(self character: c matches: tok)
 						ifTrue: [^ false].
 					aCharacterStream next]
@@ -11653,21 +11658,21 @@ quoteChar
 cwdDictionary
 	"Current working directory paths indexed by device or file system name"
 
-	^ cwdDictionary ifNil: [cwdDictionary := Dictionary new]
+	^ cwdDictionary ifNil: [cwdDictionary _ Dictionary new]
 ! !
 
 !ShellSyntax methodsFor: 'accessing' stamp: 'dtl 1/25/2013 19:08'!
 cwdIndex
 	"Key to current cwd path name in cwdDictionary"
 
-	^ cwdIndex ifNil: [cwdIndex := self cwdIndexFor: CommandShell defaultPathString]
+	^ cwdIndex ifNil: [cwdIndex _ self cwdIndexFor: CommandShell defaultPathString]
 ! !
 
 !ShellSyntax methodsFor: 'working directory' stamp: 'dtl 12/16/2001 20:06'!
 cwdIndex: aSymbol
 	"Key to current cwd path name in cwdDictionary"
 
-	cwdIndex := aSymbol
+	cwdIndex _ aSymbol
 ! !
 
 !ShellSyntax methodsFor: 'working directory' stamp: 'dtl 12/17/2001 09:56'!
@@ -11675,7 +11680,7 @@ cwdIndexFor: aPathStringWithPrefix
 	"Answer key to use for aPathStringWithPrefix"
 
 	| prefix |
-	prefix := (self splitLocationPrefixFromPath: aPathStringWithPrefix) first.
+	prefix _ (self splitLocationPrefixFromPath: aPathStringWithPrefix) first.
 	^ prefix isEmpty
 		ifTrue: [#default]
 		ifFalse: [prefix]! !
@@ -11691,7 +11696,7 @@ defaultPathFor: aPathStringWithPrefix
 getCwdForPath: aPathString
 
 	| prefix |
-	prefix := (self splitLocationPrefixFromPath: aPathString) first.
+	prefix _ (self splitLocationPrefixFromPath: aPathString) first.
 	^ prefix isEmpty
 		ifTrue: [self workingDirectory]
 		ifFalse: [self cwdDictionary at: prefix ifAbsentPut: [self defaultPathFor: aPathString]]
@@ -11708,7 +11713,7 @@ setCwdIndexFrom: aPathString
 	"Set the current working directory index to a string (Win32 device name) or to #default."
 
 	| prefix |
-	prefix := (self splitLocationPrefixFromPath: aPathString) first.
+	prefix _ (self splitLocationPrefixFromPath: aPathString) first.
 	prefix isEmpty
 		ifTrue: [self cwdIndex: #default]
 		ifFalse: [self cwdIndex: prefix]
@@ -11742,8 +11747,8 @@ isAbsolutePath: aPathString
 
 	| prefixAndPath path |
 	^ ((((CommandShell pathSeparator, '*') match: aPathString)
-		or:	[prefixAndPath := self splitLocationPrefixFromPath: aPathString.
-			(CommandShell pathSeparator, '*') match: (path := prefixAndPath last)])
+		or:	[prefixAndPath _ self splitLocationPrefixFromPath: aPathString.
+			(CommandShell pathSeparator, '*') match: (path _ prefixAndPath last)])
 				or: [prefixAndPath first isEmpty not and: [path isEmpty]]) "One above the root of a Win32 file system tree"
 ! !
 
@@ -11764,9 +11769,9 @@ isDirectoryPath: aPathString
 
 	| fullPath localName entry |
 	^ (('*', CommandShell pathSeparator) match: aPathString) or:
-		[fullPath := CommandShell fullNameFor: aPathString.
-		localName := CommandShell localNameFor: fullPath.
-		[entry := CommandShell dirEntryInPath: fullPath name: localName]
+		[fullPath _ CommandShell fullNameFor: aPathString.
+		localName _ CommandShell localNameFor: fullPath.
+		[entry _ CommandShell dirEntryInPath: fullPath name: localName]
 					on: Error
 					do: [: ex | ^false].
 		entry notNil and: [entry isDirectory]]
@@ -11844,7 +11849,7 @@ pathRoot: aPathString
 	conditional code for other platforms."
 
 	| prefix |
-	prefix := (self splitLocationPrefixFromPath: aPathString) first.
+	prefix _ (self splitLocationPrefixFromPath: aPathString) first.
 	^ prefix, CommandShell pathSeparator
 ! !
 
@@ -11890,16 +11895,16 @@ splitLocationPrefixFromPath: aPathString
 		ifTrue:
 			[((aPathString at: 2 ifAbsent: []) == $:)
 				ifTrue:
-					[prefix := (String new: 2).
+					[prefix _ (String new: 2).
 					prefix at: 1 put: (aPathString at: 1) asUppercase.
 					prefix at: 2 put: $:.
-					path := aPathString copyAfter: $:]
+					path _ aPathString copyAfter: $:]
 				ifFalse:
-					[prefix := ''.
-					path := aPathString]]
+					[prefix _ ''.
+					path _ aPathString]]
 		ifFalse:
-			[prefix := ''.
-			path := aPathString].
+			[prefix _ ''.
+			path _ aPathString].
 	^ Array with: prefix with: path
 ! !
 
@@ -11918,9 +11923,9 @@ upOneDirectoryLevel: aPathName
 	 "ShellSyntax new upOneDirectoryLevel: ''"
 
 	| prefixAndPath prefix path newPath |
-	prefixAndPath := self splitLocationPrefixFromPath: aPathName.
-	prefix := prefixAndPath at: 1.
-	path := prefixAndPath at: 2.
+	prefixAndPath _ self splitLocationPrefixFromPath: aPathName.
+	prefix _ prefixAndPath at: 1.
+	path _ prefixAndPath at: 2.
 	(self isAtFileSystemRoot: aPathName)
 		ifTrue:
 			[(self isAbsolutePath: aPathName)
@@ -11936,7 +11941,7 @@ upOneDirectoryLevel: aPathName
 					as a sytax error."
 					^ '..']]
 		ifFalse:
-			[newPath := (path includes: CommandShell pathNameDelimiter)
+			[newPath _ (path includes: CommandShell pathNameDelimiter)
 				ifTrue: [path copyUpToLast: CommandShell pathNameDelimiter]
 				ifFalse: [''].
 			^ newPath isEmpty
@@ -11956,24 +11961,24 @@ helpSelector
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:08'!
 helpSelector: aSymbol
 
-	helpSelector := aSymbol! !
+	helpSelector _ aSymbol! !
 
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/26/2001 19:54'!
 name: aString
 
-	name := aString! !
+	name _ aString! !
 
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:24'!
 needsPrompt
 	"True if the command should be followed by a prompt"
 
-	^ needsPrompt ifNil: [needsPrompt := true]! !
+	^ needsPrompt ifNil: [needsPrompt _ true]! !
 
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/27/2001 01:22'!
 needsPrompt: trueOrFalse
 	"True if the command should be followed by a prompt"
 
-	needsPrompt := trueOrFalse! !
+	needsPrompt _ trueOrFalse! !
 
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
 procedureSelector
@@ -11983,7 +11988,7 @@ procedureSelector
 !ShellBuiltin methodsFor: 'accessing' stamp: 'dtl 12/31/2001 20:09'!
 procedureSelector: aSymbol
 
-	procedureSelector := aSymbol! !
+	procedureSelector _ aSymbol! !
 
 !ShellBuiltin methodsFor: 'private' stamp: 'dtl 8/7/2002 12:56'!
 canAccessOSProcess
@@ -11992,7 +11997,7 @@ canAccessOSProcess
 	"self canAccessOSProcess"
 
 	| osp |
-	^ (osp := Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
+	^ (osp _ Smalltalk at: #OSProcess ifAbsent: []) notNil and: [osp accessor canAccessSystem]
 ! !
 
 !ShellBuiltin methodsFor: 'private' stamp: 'dtl 4/29/2020 20:48'!
@@ -12004,12 +12009,12 @@ copyUntilDoneFrom: aPipe to: aStream
 	is used to prevent deadlock conditions."
 
 	| sema s |
-	sema := Semaphore new.
+	sema _ Semaphore new.
 	aPipe when: #dataReady send: #signal to: sema.
 	[aPipe atEndOfFile] whileFalse:
 		[self timeoutAfter: 200 notifying: sema.
 		sema wait. "Wait for data available"
-		[(s := aPipe next: 10000) isEmpty] whileFalse:
+		[(s _ aPipe next: 10000) isEmpty] whileFalse:
 			[aStream nextPutAll: s; flush]].
 	aPipe close.
 	^ aStream
@@ -12022,21 +12027,21 @@ dirEntryString: aDirectoryEntry
 	"self new dirEntryString: FileDirectory default entries first"
 
 	| folderString nameStr dateStr sizeStr date time |
-	folderString := ' [...]'.
+	folderString _ ' [...]'.
 	CommandShell useFileSystem
-		ifTrue: [nameStr := aDirectoryEntry isDirectory
+		ifTrue: [nameStr _ aDirectoryEntry isDirectory
 				ifTrue: [(aDirectoryEntry perform: #basename), folderString]
 				ifFalse: [aDirectoryEntry perform: #basename].
-				date := aDirectoryEntry modificationTime asDate.
-				time := aDirectoryEntry modificationTime asTime.
-				sizeStr := aDirectoryEntry size asStringWithCommas]
-		ifFalse: [nameStr := aDirectoryEntry isDirectory
+				date _ aDirectoryEntry modificationTime asDate.
+				time _ aDirectoryEntry modificationTime asTime.
+				sizeStr _ aDirectoryEntry size asStringWithCommas]
+		ifFalse: [nameStr _ aDirectoryEntry isDirectory
 				ifTrue: [aDirectoryEntry name , folderString]
 				ifFalse: [aDirectoryEntry name].
-				date := Date fromSeconds: aDirectoryEntry modificationTime.
-				time := Time fromSeconds: aDirectoryEntry modificationTime \\ 86400.
-				sizeStr := aDirectoryEntry fileSize asStringWithCommas].
-	dateStr := (date printFormat: #(3 2 1 $. 1 1 2)) , ' ' ,
+				date _ Date fromSeconds: aDirectoryEntry modificationTime.
+				time _ Time fromSeconds: aDirectoryEntry modificationTime \\ 86400.
+				sizeStr _ aDirectoryEntry fileSize asStringWithCommas].
+	dateStr _ (date printFormat: #(3 2 1 $. 1 1 2)) , ' ' ,
 					(String streamContents: [:s | time print24: true on: s]).
 	^ nameStr , '    (' , dateStr , ' ' , sizeStr , ')'
 ! !
@@ -12073,25 +12078,25 @@ cdCommand: myProxy shell: commandShell input: stdin output: stdout error: stderr
 	| newPath path arg pathCwd p |
 	argArray size == 0
 		ifTrue:
-			[newPath := commandShell home]
+			[newPath _ commandShell home]
 		ifFalse:
 			[argArray size == 1
 				ifTrue:
-					[path := argArray at: 1.
+					[path _ argArray at: 1.
 					(path = commandShell shellSyntax pathStringAboveRoot)
 						ifTrue:
-							[newPath := commandShell shellSyntax pathAboveRoot]
+							[newPath _ commandShell shellSyntax pathAboveRoot]
 						ifFalse:
-							[pathCwd := commandShell shellSyntax getCwdForPath: path.
-							arg := (path = CommandShell pathSeparator)
+							[pathCwd _ commandShell shellSyntax getCwdForPath: path.
+							arg _ (path = CommandShell pathSeparator)
 								ifTrue: [path]
 								ifFalse: [commandShell shellSyntax
 												firstExpandedArgument: path
 												inDirectoryPath: pathCwd].
-							newPath := arg isEmpty
+							newPath _ arg isEmpty
 								ifTrue: [arg]
 								ifFalse:
-									[p := commandShell shellSyntax newDirPath: arg from: pathCwd.
+									[p _ commandShell shellSyntax newDirPath: arg from: pathCwd.
 									p ifNotNil: [CommandShell fullNameFor: p]]]]
 				ifFalse:
 					[myProxy fail.
@@ -12142,7 +12147,7 @@ copyToErrorCommand: myProxy shell: commandShell input: stdin output: stdout erro
 				[:file |
 				(CommandShell fileExists: file)
 					ifTrue:
-						[fs := CommandShell readOnlyFileNamed: file.
+						[fs _ CommandShell readOnlyFileNamed: file.
 						fs ifNotNil:
 							[self copyUntilDoneFrom: fs to: stderr.
 							fs close]]]]
@@ -12163,7 +12168,7 @@ copyToOutputCommand: myProxy shell: commandShell input: stdin output: stdout err
 				[:file |
 				(CommandShell fileExists: file)
 					ifTrue:
-						[fs := CommandShell readOnlyFileNamed: file.
+						[fs _ CommandShell readOnlyFileNamed: file.
 						fs ifNotNil:
 							[self copyUntilDoneFrom: fs to: stdout.
 							fs close]]]]
@@ -12182,13 +12187,13 @@ editCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 			the caller of this method before the CrLfFileEditor ever has a chance
 			to read it."
 			| workingDir |
-			inputString := stdin isNil
+			inputString _ stdin isNil
 				ifTrue:
 					['']
 				ifFalse:
 					[(self copyUntilDoneFrom: stdin to: (WriteStream on: String new)) contents
 						replaceAll: Character lf with: Character cr].
-			workingDir := CommandShell useFileSystem
+			workingDir _ CommandShell useFileSystem
 					ifTrue: [commandShell workingDirectory perform: #asFileReference]
 					ifFalse: [(Smalltalk at: #FileDirectory) on: commandShell workingDirectory].
 			commandShell scheduleToEvaluate:
@@ -12200,10 +12205,10 @@ editCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 					inDirectory: workingDir
 					defaultFileName: 'buffer.txt']]
 		ifFalse:
-			[controllers := argArray collect:
+			[controllers _ argArray collect:
 				[:arg |
 				"Expand arguments to convert them to full pathnames as expected by CrLfFileEditor"
-				expandedName := commandShell shellSyntax
+				expandedName _ commandShell shellSyntax
 									firstExpandedArgument: arg
 									inDirectoryPath: commandShell shellSyntax workingDirectory.
 				CrLfFileEditor fileNamed: expandedName withLabel: arg].
@@ -12243,12 +12248,12 @@ fcCommand: myProxy shell: commandShell input: stdin output: stdout error: stderr
 		[commandShell scheduleToEvaluate:
 			[argArray size == 0
 				ifTrue:
-					[cmd := commandShell editCommand: (commandShell historyAt: 0)]
+					[cmd _ commandShell editCommand: (commandShell historyAt: 0)]
 				ifFalse:
-					[[index := (argArray at: 1) asNumber]
+					[[index _ (argArray at: 1) asNumber]
 								on: Error
-								do: [:ex | index := nil].
-					cmd := commandShell editCommand:
+								do: [:ex | index _ nil].
+					cmd _ commandShell editCommand:
 							(index isNil
 								ifTrue: ['']
 								ifFalse: [commandShell historyAt: index])].
@@ -12263,7 +12268,7 @@ helpCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 	| topic command cacheStream |
 	argArray size == 0
 		ifTrue:
-			[cacheStream := WriteStream on: String new.
+			[cacheStream _ WriteStream on: String new.
 			(commandShell builtinCommands
 				collect: [:c | c helpSelector] thenSelect: [:s | s notNil])
 					asArray sort do:
@@ -12278,8 +12283,8 @@ helpCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 				nextPut: Character lf.
 			stdout nextPutAll: cacheStream contents]
 		ifFalse:
-			[topic := argArray at: 1.
-			command := commandShell builtinCommands at: topic ifAbsent: [^ self].
+			[topic _ argArray at: 1.
+			command _ commandShell builtinCommands at: topic ifAbsent: [^ self].
 			command helpSelector ifNotNil:
 				[stdout nextPutAll: (self perform: command helpSelector); nextPut: Character lf]]
 ! !
@@ -12289,8 +12294,8 @@ historyCommand: myProxy shell: commandShell input: stdin output: stdout error: s
 	"Display the command history list."
 
 	| ws rs |
-	ws := WriteStream on: Character lf asString.
-	rs := ReadStream on: commandShell commandHistory.
+	ws _ WriteStream on: Character lf asString.
+	rs _ ReadStream on: commandShell commandHistory.
 	[rs atEnd]
 		whileFalse: [ws nextPutAll: rs next.
 			ws nextPutAll: ' '.
@@ -12314,7 +12319,7 @@ inspectCommand: myProxy shell: commandShell input: stdin output: stdout error: s
 				is scheduled to be created later, and the input pipe will be closed by
 				the caller of this method before the deferred block ever has a
 				chance to read it."
-				inputString := stdin ifNotNil:
+				inputString _ stdin ifNotNil:
 					[(self copyUntilDoneFrom: stdin to: (WriteStream on: String new)) contents
 						replaceAll: Character lf with: Character cr].
 				commandShell scheduleToEvaluate: [inputString inspect]]]
@@ -12325,10 +12330,10 @@ inspectCommand: myProxy shell: commandShell input: stdin output: stdout error: s
 				ifFalse:
 					[argArray do:
 						[:e |
-						pathName := commandShell shellSyntax
+						pathName _ commandShell shellSyntax
 							firstExpandedArgument: e
 							inDirectoryPath: commandShell shellSyntax workingDirectory.
-						fs := (CommandShell fileExists: pathName)
+						fs _ (CommandShell fileExists: pathName)
 							ifTrue: [CommandShell readOnlyFileNamed: pathName]
 							ifFalse: [nil].
 						fs isNil
@@ -12347,8 +12352,8 @@ pwdCommand: myProxy shell: commandShell input: stdin output: stdout error: stder
 	"Answer the current working directory (a string) or an invalid command message."
 
 	| directoryString |
-	directoryString := commandShell workingDirectory.
-	directoryString isEmpty ifTrue: [directoryString := self nullDirectoryString].
+	directoryString _ commandShell workingDirectory.
+	directoryString isEmpty ifTrue: [directoryString _ self nullDirectoryString].
 	argArray size == 0 ifFalse:
 		[myProxy fail.
 		^ commandShell invalidCommandMessage].
@@ -12364,47 +12369,47 @@ slsCommand: myProxy shell: commandShell input: stdin output: stdout error: stder
 	"A small value of linesToPrint will prevent an ExternalCommandShell from
 	overdriving is stdout stream. Maybe. A larger value allows faster updates to
 	an interactive CommandShell display."
-	linesToPrint := 16.
+	linesToPrint _ 16.
 
 	(argArray isNil or: [argArray size == 0])
 		ifTrue:
 			["Contents of current directory."
-			filePatterns := Array with: '*']
+			filePatterns _ Array with: '*']
 		ifFalse:
 			["List named files"
-			filePatterns := argArray].
+			filePatterns _ argArray].
 	CommandShell useFileSystem
-		ifTrue: [d := commandShell workingDirectory perform: #asFileReference]
-		ifFalse: [d := (Smalltalk at: #FileDirectory) on: commandShell workingDirectory].
-	entries := d entries.
-	names := Set new.
+		ifTrue: [d _ commandShell workingDirectory perform: #asFileReference]
+		ifFalse: [d _ (Smalltalk at: #FileDirectory) on: commandShell workingDirectory].
+	entries _ d entries.
+	names _ Set new.
 	filePatterns do: [:pat | names addAll: (commandShell shellSyntax glob: pat inDirectory: commandShell workingDirectory)].
-	dirs := OrderedCollection new.
-	files := OrderedCollection new.
+	dirs _ OrderedCollection new.
+	files _ OrderedCollection new.
 	names asArray sort do:
 		[:n |
-		entry := entries detect: [:e | (CommandShell entryName: e) = n].
+		entry _ entries detect: [:e | (CommandShell entryName: e) = n].
 		entry isDirectory
 			ifTrue: [dirs add: entry]
 			ifFalse: [files add: entry]].
 
-	linesToPrint := 5.
-	lineCount := 1.
-	cacheStream := WriteStream on: String new.
+	linesToPrint _ 5.
+	lineCount _ 1.
+	cacheStream _ WriteStream on: String new.
 	dirs do:	[:dir |
-		lineCount := lineCount + 1.
+		lineCount _ lineCount + 1.
 		cacheStream nextPutAll: (self dirEntryString: dir); nextPut: Character lf.
 		(lineCount > linesToPrint) ifTrue:
 			[stdout nextPutAll: cacheStream contents.
-			cacheStream := WriteStream on: String new.
-			lineCount := 1]].
+			cacheStream _ WriteStream on: String new.
+			lineCount _ 1]].
 	files do: [:file |
-		lineCount := lineCount + 1.
+		lineCount _ lineCount + 1.
 		cacheStream nextPutAll: (self dirEntryString: file); nextPut: Character lf.
 		(lineCount > linesToPrint) ifTrue:
 			[stdout nextPutAll: cacheStream contents.
-			cacheStream := WriteStream on: String new.
-			lineCount := 1]].
+			cacheStream _ WriteStream on: String new.
+			lineCount _ 1]].
 	stdout nextPutAll: cacheStream contents.! !
 
 !ShellBuiltin methodsFor: 'implementations' stamp: 'dtl 12/23/2007 12:23'!
@@ -12414,7 +12419,7 @@ snapshotCommand: myProxy shell: commandShell input: stdin output: stdout error: 
 	| s |
 	Smalltalk at: #WorldState ifPresent:
 		[:ws |
-		s := Semaphore new.
+		s _ Semaphore new.
 		commandShell safeToExit: false.
 		stdout nextPutAll: self imageName; nextPut: Character lf.
 		ws addDeferredUIMessage:
@@ -12432,7 +12437,7 @@ sqshCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 		ifTrue:
 			[commandShell scheduleToEvaluate: [commandShell class open]]
 		ifFalse:
-			[ws := WriteStream on: String new.
+			[ws _ WriteStream on: String new.
 			argArray inject: true into:
 				[:first :each |
 				first ifFalse: [ws nextPut: Character space].
@@ -12460,7 +12465,7 @@ typeCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 		ifTrue:
 			[^ '']
 		ifFalse:
-			[results := WriteStream on: Array new.
+			[results _ WriteStream on: Array new.
 			argArray do:
 			[:arg |
 			(commandShell isBuiltInCommand: arg)
@@ -12475,8 +12480,8 @@ typeCommand: myProxy shell: commandShell input: stdin output: stdout error: stde
 									ifFalse: [commandShell class name]), ' cannot access system'.
 							stdout nextPutAll: 'cannot access system'; nextPut: Character lf.
 							^ self].
-					exe := commandShell shellSyntax findExecutablePathFor: arg inDirectoryPath: commandShell workingDirectory.
-					(commandShell shellSyntax isExecutable: exe) ifFalse: [exe := nil].
+					exe _ commandShell shellSyntax findExecutablePathFor: arg inDirectoryPath: commandShell workingDirectory.
+					(commandShell shellSyntax isExecutable: exe) ifFalse: [exe _ nil].
 					exe isNil
 						ifTrue: [results nextPut: arg, ': not found']
 								ifFalse: [results nextPut: arg, ' is ', exe]]].
@@ -12760,7 +12765,7 @@ commandDictionaryFor: aCommandShell commands: commandNameArray
 		inject: Dictionary new
 		into:
 			[:d :cmd | | b |
-			b := self perform: cmd with: aCommandShell.
+			b _ self perform: cmd with: aCommandShell.
 			d at: b name put: b; yourself]! !
 
 !ShellBuiltin class methodsFor: 'private' stamp: 'dtl 1/4/2002 21:28'!
@@ -12801,7 +12806,7 @@ getResult
 	SerializingStrategy = #referenceStream
 		ifTrue: [ | bytes | "Must read from a positionable stream"
 				childProxy pipeFromOutput reader binary.
-				bytes := childProxy upToEndOfFile.
+				bytes _ childProxy upToEndOfFile.
 				^(Materializer on: bytes readStream) next].
 
 	SerializingStrategy = #fuel
@@ -12819,7 +12824,7 @@ put: result
 
 	SerializingStrategy = #referenceStream
 		ifTrue: [ | ws | "Must write to a positionable stream"
-				ws := ByteArray new writeStream.
+				ws _ ByteArray new writeStream.
 				(Serializer on: ws) nextPut: result.
 				^ OSProcess thisOSProcess stdOut nextPutAll: ws contents; flush].
 
@@ -12838,7 +12843,7 @@ result
 	result object back to its parent Squeak before exiting."
 
 	| result |
-	result := self getResult.
+	result _ self getResult.
 	childProxy pipeFromOutput close.
 	^ result
 ! !
@@ -12852,9 +12857,9 @@ runState
 !RemoteTask methodsFor: 'evaluating' stamp: 'dtl 2/17/2018 11:54'!
 setCompletionBlock: aOneArgumentBlock
 
-	aioHandler := AioEventHandler new.
+	aioHandler _ AioEventHandler new.
 	aioHandler addDependent: self.
-	completionBlock := [ :arg |
+	completionBlock _ [ :arg |
 		aOneArgumentBlock value: arg.
 		aioHandler ifNotNil: [aioHandler close]].
 ! !
@@ -12868,26 +12873,26 @@ start
 	self registerForFinalization.
 
 	"Create block to be evaluated in a Squeak child process."
-	childBlock := ["First set standard input to blocking. This avoids a delay to wait for
+	childBlock _ ["First set standard input to blocking. This avoids a delay to wait for
 		data to be available, but note that it is dangerous to do this unless you
 		are certain that you know in advance that the correct number of characters
 		will be available on the input. If this is not the case, then the VM will block
 		on the read and lock up the child squeak process."
 
 		HeadlessChild
-			ifTrue: [result := [self task value]
+			ifTrue: [result _ [self task value]
 					on: Exception
 					do: [:e | | strm |
-						strm := '' writeStream.
+						strm _ '' writeStream.
 						strm nextPutAll:  'remote task execution failed: '.
 						e printVerboseOn: strm.
-						result := strm contents]]
-			ifFalse: [result := self task value].
+						result _ strm contents]]
+			ifFalse: [result _ self task value].
 		OSProcess thisOSProcess stdIn setBlocking.
 		self put: result.
 		OSProcess thisOSProcess stdOut flush; close].
 	"Fork a child Squeak that will evaluate the childBlock then exit"
-	childProxy := PipeableOSProcess
+	childProxy _ PipeableOSProcess
 					forkSqueakAndDoThenQuit: childBlock
 					errorPipelineStream: InternalPipe nonBlockingPipe
 					headless: HeadlessChild
@@ -12923,8 +12928,8 @@ task: taskBlock whenComplete: aOneArgumentBlock taskIdentifier: anObject
 	the result of the remote task. Provide a task identifier to uniquely identify the
 	remote task."
 
-	task := taskBlock.
-	taskIdentifier := anObject.
+	task _ taskBlock.
+	taskIdentifier _ anObject.
 	self setCompletionBlock: aOneArgumentBlock.
 	self start
 ! !
@@ -12947,7 +12952,7 @@ value
 
 	| result |
 	self start.
-	result := self result.
+	result _ self result.
 	childProxy closePipes.
 	^ result
 ! !
@@ -12960,7 +12965,7 @@ task
 task: valuableObject
 	"A block or other object responding to #value"
 
-	task := valuableObject! !
+	task _ valuableObject! !
 
 !RemoteTask methodsFor: 'accessing' stamp: 'dtl 2/21/2015 17:13'!
 taskIdentifier
@@ -13000,7 +13005,7 @@ do: taskBlock whenComplete: aOneArgumentBlock
 
 	"RemoteTask
 		do: [ | oc |
-			oc := OrderedCollection new.
+			oc _ OrderedCollection new.
 			(1 to: 5000000) do: [ :e | e isPrime ifTrue: [oc add: e]].
 			oc ]
 		whenComplete: [ :result | result inspect ]"
@@ -13018,7 +13023,7 @@ do: taskBlock whenComplete: aOneArgumentBlock taskIdentifier: anObject
 
 	"RemoteTask
 		do: [ | oc |
-			oc := OrderedCollection new.
+			oc _ OrderedCollection new.
 			(1 to: 5000000) do: [ :e | e isPrime ifTrue: [oc add: e]].
 			oc ]
 		whenComplete: [ :result | result inspect ]
@@ -13039,7 +13044,7 @@ headlessChild: boolean
 	"RemoteTask headlessChild:true"
 	"RemoteTask headlessChild:false" "for debugging the child image"
 
-	HeadlessChild := boolean! !
+	HeadlessChild _ boolean! !
 
 !RemoteTask class methodsFor: 'class initialization' stamp: 'dtl 2/19/2015 22:32'!
 initialize
@@ -13068,25 +13073,25 @@ initialize
 useFuelSerializer
 	"RemoteTask useFuelSerializer"
 
-	Serializer := (Smalltalk at: #FLSerializer ifAbsent: [self error: 'Fuel not installed']) newDefault.
-	Materializer := (Smalltalk at: #FLMaterializer) newDefault..
-	^SerializingStrategy := #fuel! !
+	Serializer _ (Smalltalk at: #FLSerializer ifAbsent: [self error: 'Fuel not installed']) newDefault.
+	Materializer _ (Smalltalk at: #FLMaterializer) newDefault..
+	^SerializingStrategy _ #fuel! !
 
 !RemoteTask class methodsFor: 'class initialization' stamp: 'dtl 2/16/2015 19:00'!
 useMagmaSerializer
 	"RemoteTask useMagmaSerializer"
 
-	Serializer := (Smalltalk at: #MaObjectSerializer ifAbsent: [self error: 'Magma serializer not installed']) new.
-	Materializer := Serializer.
-	^SerializingStrategy := #magma! !
+	Serializer _ (Smalltalk at: #MaObjectSerializer ifAbsent: [self error: 'Magma serializer not installed']) new.
+	Materializer _ Serializer.
+	^SerializingStrategy _ #magma! !
 
 !RemoteTask class methodsFor: 'class initialization' stamp: 'dtl 2/16/2015 19:01'!
 useReferenceStreamSerializer
 	"RemoteTask useReferenceStreamSerializer"
 
-	Serializer := (Smalltalk at: #ReferenceStream).
-	Materializer := Serializer.
-	^SerializingStrategy := #referenceStream! !
+	Serializer _ (Smalltalk at: #ReferenceStream).
+	Materializer _ Serializer.
+	^SerializingStrategy _ #referenceStream! !
 
 !RemoteTask class methodsFor: 'examples' stamp: 'dtl 11/13/2011 00:29'!
 parallelPerformance
@@ -13098,23 +13103,23 @@ parallelPerformance
 	"RemoteTask parallelPerformance"
 
 	| parallelExecutionTime results sema task1 task2 task3 serialExecutionTime p1 p2 p3 |
-	parallelExecutionTime := Time millisecondsToRun: [
-		results := Array new: 3.
-		sema := Semaphore new.
-		task1 := [(100000000000000000000000000000 to: 100000000000000000000000019999)
+	parallelExecutionTime _ Time millisecondsToRun: [
+		results _ Array new: 3.
+		sema _ Semaphore new.
+		task1 _ [(100000000000000000000000000000 to: 100000000000000000000000019999)
 					select: [:f | f isPrime] thenCollect: [:s | s asString]].
-		task2 := [(100000000000000000000000020000 to: 100000000000000000000000039999)
+		task2 _ [(100000000000000000000000020000 to: 100000000000000000000000039999)
 					select: [:f | f isPrime] thenCollect: [:s | s asString]].
-		task3 := [(100000000000000000000000040000 to: 100000000000000000000000059999)
+		task3 _ [(100000000000000000000000040000 to: 100000000000000000000000059999)
 					select: [:f | f isPrime] thenCollect: [:s | s asString]].
 		"n.b. assign to variables to prevent RemoteTask from being finalized"
-		p1 := RemoteTask do: task1 whenComplete: [:result |  results at: 1 put: result. sema signal].
-		p2 := RemoteTask do: task2 whenComplete: [:result | results at: 2 put: result. sema signal].
-		p3 := RemoteTask do: task3 whenComplete: [:result |  results at: 3 put: result. sema signal].
+		p1 _ RemoteTask do: task1 whenComplete: [:result |  results at: 1 put: result. sema signal].
+		p2 _ RemoteTask do: task2 whenComplete: [:result | results at: 2 put: result. sema signal].
+		p3 _ RemoteTask do: task3 whenComplete: [:result |  results at: 3 put: result. sema signal].
 		sema wait; wait; wait.
 		results].
 
-	serialExecutionTime :=  Time millisecondsToRun: [
+	serialExecutionTime _  Time millisecondsToRun: [
 		(100000000000000000000000000000 to: 100000000000000000000000019999)
 					select: [:f | f isPrime] thenCollect: [:s | s asString].
 		(100000000000000000000000020000 to: 100000000000000000000000039999)
@@ -13130,21 +13135,21 @@ searchForPrimes
 	"RemoteTask searchForPrimes"
 
 	| poolCount range tasks results start sema proc |
-	start := 100000000000000000000000000000.
-	range := 20000.
-	poolCount := 7.
-	tasks := OrderedCollection new.
-	results := OrderedCollection new. "FIXME make thread safe"
+	start _ 100000000000000000000000000000.
+	range _ 20000.
+	poolCount _ 7.
+	tasks _ OrderedCollection new.
+	results _ OrderedCollection new. "FIXME make thread safe"
 
-	sema := Semaphore new.
+	sema _ Semaphore new.
 	poolCount timesRepeat: [ sema signal ]. "limit task count"
-	proc := [ [ | end task osp |
-		end := start + range - 1.
-		task := [ (start to: end) select: [ :f | f isPrime]].
-		osp := RemoteTask do: task
+	proc _ [ [ | end task osp |
+		end _ start + range - 1.
+		task _ [ (start to: end) select: [ :f | f isPrime]].
+		osp _ RemoteTask do: task
 			whenComplete: [ :result | results add: result. sema signal ].
 		tasks add: osp. "Do not allow the task to be GCed"
-		start := start + range.
+		start _ start + range.
 		sema wait.
 	] repeat ] fork.
 	^ { proc . tasks . results }.! !
@@ -13159,20 +13164,20 @@ threeParallelTasks
 	"RemoteTask threeParallelTasks"
 
 	| p1 p2 p3 results task1 task2 task3 |
-	results := Array new: 3.
-	task1 := [(100000000000000000000000000000
+	results _ Array new: 3.
+	task1 _ [(100000000000000000000000000000
 					to: 100000000000000000000000019999)
 				select: [:f | f isPrime] thenCollect: [:s | s asString]].
-	task2 := [(100000000000000000000000020000
+	task2 _ [(100000000000000000000000020000
 					to: 100000000000000000000000039999)
 				select: [:f | f isPrime] thenCollect: [:s | s asString]].
-	task3 := [(100000000000000000000000040000
+	task3 _ [(100000000000000000000000040000
 					to: 100000000000000000000000059999)
 				select: [:f | f isPrime] thenCollect: [:s | s asString]].
 	"n.b. Assign task to a variable to prevent RemoteTask from being finalized"
-	p1 := RemoteTask do: task1 whenComplete: [:result | results at: 1 put: result].
-	p2 := RemoteTask do: task2 whenComplete: [:result | results at: 2 put: result].
-	p3 := RemoteTask do: task3 whenComplete: [:result | results at: 3 put: result].
+	p1 _ RemoteTask do: task1 whenComplete: [:result | results at: 1 put: result].
+	p2 _ RemoteTask do: task2 whenComplete: [:result | results at: 2 put: result].
+	p3 _ RemoteTask do: task3 whenComplete: [:result | results at: 3 put: result].
 	^ { #tasks -> { p1 . p2 . p3 } . #results -> results }! !
 
 !RemoteTask class methodsFor: 'instance creation' stamp: 'dtl 3/10/2015 19:24'!
@@ -13192,7 +13197,7 @@ cliShell
 cliShell: anObject
 	"Set the value of cliShell"
 
-	cliShell := anObject! !
+	cliShell _ anObject! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 7/12/2002 19:15'!
 inputStream
@@ -13202,14 +13207,14 @@ inputStream
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:24'!
 inputStream: externalStream
 
-	inputStream := externalStream! !
+	inputStream _ externalStream! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:24'!
 isRunning
 	"True if my evaluation loop should be running. This instance variable supports
 	restarting the evaluation loop after an image restart."
 
-	^ isRunning ifNil: [isRunning := false]
+	^ isRunning ifNil: [isRunning _ false]
 ! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:24'!
@@ -13217,32 +13222,32 @@ isRunning: trueOrFalse
 	"True if my evaluation loop should be running. This instance variable supports
 	restarting the evaluation loop after an image restart."
 
-	isRunning := trueOrFalse
+	isRunning _ trueOrFalse
 ! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 2/24/2013 10:23'!
 lineBuffer
 	"Answer the value of lineBuffer"
 
-	^ lineBuffer ifNil: [lineBuffer := WriteStream on: String new]! !
+	^ lineBuffer ifNil: [lineBuffer _ WriteStream on: String new]! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:24'!
 lineBuffer: anObject
 	"Set the value of lineBuffer"
 
-	lineBuffer := anObject! !
+	lineBuffer _ anObject! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:25'!
 sigIntHandler
 	"The interrupt handler process, for catching <ctl>C from the keyboard."
 
-	^ sigIntHandler ifNil: [sigIntHandler := self sigIntHandlerProcess]! !
+	^ sigIntHandler ifNil: [sigIntHandler _ self sigIntHandlerProcess]! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 11/8/2007 20:25'!
 sigIntHandler: aProcess
 	"The interrupt handler process, for catching <ctl>C from the keyboard."
 
-	sigIntHandler := aProcess! !
+	sigIntHandler _ aProcess! !
 
 !ExternalCommandShell methodsFor: 'accessing' stamp: 'dtl 8/4/2002 12:48'!
 sigIntSema
@@ -13256,7 +13261,7 @@ sigIntSema: aSemaphore
 	"A Smalltalk Semaphore which will be signalled when an external SIGINT signal is
 	received from the operating system."
 
-	sigIntSema := aSemaphore
+	sigIntSema _ aSemaphore
 ! !
 
 !ExternalCommandShell methodsFor: 'interrupt handling' stamp: 'dtl 2/18/2007 15:57'!
@@ -13305,7 +13310,7 @@ startHandlingInterruptSignal
 		ifPresent:
 			[:osp |
 			osp accessor handlesOsSignals ifTrue:
-				[sema := osp accessor forwardSignal: osp accessor primSigIntNumber.
+				[sema _ osp accessor forwardSignal: osp accessor primSigIntNumber.
 				sema ifNotNil: [self sigIntSema: sema].
 				self sigIntHandler]]
 ! !
@@ -13332,7 +13337,7 @@ confirmBeforeKilling: externalProxies
 	| msgStrm |
 	(externalProxies size > 0)
 		ifTrue:
-			[msgStrm := WriteStream on: String new.
+			[msgStrm _ WriteStream on: String new.
 			(externalProxies size > 1)
 				ifTrue: [msgStrm nextPutAll: 'kill processes']
 				ifFalse: [msgStrm nextPutAll: 'kill process'].
@@ -13352,8 +13357,8 @@ cr
 inputFrom: aStream
 
 	| strm s |
-	strm := '' writeStream.
-	[ (s := aStream upToEnd) isEmpty not ] whileTrue: [ strm nextPutAll: s ].
+	strm _ '' writeStream.
+	[ (s _ aStream upToEnd) isEmpty not ] whileTrue: [ strm nextPutAll: s ].
 	^ strm contents.! !
 
 !ExternalCommandShell methodsFor: 'updating' stamp: 'dtl 2/26/2017 01:09'!
@@ -13415,9 +13420,9 @@ handleInput: str
 		ifFalse: [
 			self lineBuffer nextPutAll: str.
 			[self lineBuffer contents includes: Character lf]
-				whileTrue: [rs := ReadStream on: lineBuffer contents.
+				whileTrue: [rs _ ReadStream on: lineBuffer contents.
 					self lineBuffer: nil.
-					line := rs upTo: Character lf.
+					line _ rs upTo: Character lf.
 					self cliShell command: line echo: false.
 					self lineBuffer nextPutAll: rs upToEnd]]! !
 
@@ -13549,7 +13554,7 @@ onTty
 
 	"ExternalCommandShell onTty"
 
-	^ ExternalShell ifNil: [ExternalShell := self basicNew initialize].! !
+	^ ExternalShell ifNil: [ExternalShell _ self basicNew initialize].! !
 
 !ExternalCommandShell class methodsFor: 'class initialization' stamp: 'dtl 2/19/2016 19:00'!
 initialize
@@ -13562,7 +13567,7 @@ initialize
 
 	ExternalShell
 		ifNotNil: [ ExternalShell stop.
-			ExternalShell := nil ].
+			ExternalShell _ nil ].
 	ShellSyntax new isPharo5Update50558AndLater
 		ifFalse:
 			[ Smalltalk addToStartUpList: self ]
@@ -13665,14 +13670,14 @@ accept
 acceptOnCr
 	"If true, notify my view to accept whenever a <cr> is input"
 
-	acceptOnCr ifNil: [acceptOnCr := false].
+	acceptOnCr ifNil: [acceptOnCr _ false].
 	^ acceptOnCr! !
 
 !TtyPluggableTextController methodsFor: 'accessing' stamp: 'dtl 5/30/2001 22:00'!
 acceptOnCr: trueOrFalse
 	"If true, notify my view to accept whenever a <cr> is input"
 
-	acceptOnCr := trueOrFalse! !
+	acceptOnCr _ trueOrFalse! !
 
 !TtyPluggableTextController methodsFor: 'accessing' stamp: 'dtl 6/13/2001 22:07'!
 callbackQueue
@@ -13680,13 +13685,13 @@ callbackQueue
 	can place a block in this queue, and the block will later be evaluated
 	in my control loop."
 
-	^ callbackQueue ifNil: [callbackQueue := SharedQueue new]! !
+	^ callbackQueue ifNil: [callbackQueue _ SharedQueue new]! !
 
 !TtyPluggableTextController methodsFor: 'accessing' stamp: 'dtl 6/24/2001 20:42'!
 closed
 	"True after user enters an 'exit' command"
 
-	closed ifNil: [closed := false].
+	closed ifNil: [closed _ false].
 	^ closed
 ! !
 
@@ -13694,7 +13699,7 @@ closed
 closed: trueOrFalse
 	"True after user enters an 'exit' command"
 
-	closed := trueOrFalse
+	closed _ trueOrFalse
 ! !
 
 !TtyPluggableTextController methodsFor: 'callbacks' stamp: 'dtl 7/1/2001 18:48'!
